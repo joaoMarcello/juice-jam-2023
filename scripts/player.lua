@@ -13,6 +13,17 @@ local States = {
     dash = 3
 }
 
+
+local keyboard_is_down = love.keyboard.isDown
+local math_abs = math.abs
+
+local function collision(x1, y1, w1, h1, x2, y2, w2, h2)
+    return x1 + w1 > x2
+        and x1 < x2 + w2
+        and y1 + h1 > y2
+        and y1 < y2 + h2
+end
+
 ---@param self Game.Player
 local function get_state_string(self)
     for _, s in pairs(States) do
@@ -21,10 +32,6 @@ local function get_state_string(self)
         end
     end
 end
-
-local keyboard_is_down = love.keyboard.isDown
-local math_abs = math.abs
-
 
 local function pressing(self, key)
     key = "key_" .. key
@@ -73,7 +80,9 @@ local function move_default(self, dt)
     local wall = self.wall
 
     if wall and not body.ground and body.speed_y >= 0 then
-        if self.x > wall.x + wall.w then
+        if not collision(self.x, self.y, self.w, self.h,
+            wall.x - 1, wall.y, wall.w + 2, wall.h)
+        then
             self.wall = nil
 
         elseif pressing(self, 'left') or pressing(self, 'right') then
@@ -90,17 +99,21 @@ local function move_default(self, dt)
         self.wall = nil
     end
 
+
     if body.speed_y > 0 then
         body.allowed_air_dacc = true
     end
 
     if body.ground then
-        self.dash_lock = false
         self.dash_count = 0
+        self.jump_count = 0
     end
 end
 
+---@param self Game.Player
 local function ground_pound(self, dt)
+    local body = self.body
+    body.speed_x = 0
     return false
 end
 
@@ -113,7 +126,7 @@ local function dashing(self, dt)
     if self.dash_direction > 0 and pressing(self, 'left')
         or (self.dash_direction < 0 and pressing(self, 'right'))
     then
-        self.dash_time = self.dash_time + dt * 1.5
+        self.dash_time = self.dash_time + dt * 7
         if self.dash_instant_stop then
             self.dash_time = self.dash_duration + 1
         end
@@ -176,9 +189,22 @@ function Player:__constructor__(Game, args)
     self.dash_duration = 0.5
     self.dash_max = 3
     self.dash_count = 0
+    self.dash_lock = false
+
+    self.jump_count = 0
+    self.jump_max = 2
 
     self.wall_jump_ready = false
     self.wall = nil
+
+    -- ========   ATRIBUTES  ===============================
+    self.attr_hp = 2
+    self.attr_hp_max = 6
+    self.attr_def = 1
+    self.attr_def_max = 3
+    self.attr_atk = 1
+    self.attr_atk_max = 3
+    --=======================================================
 
     self.current_movement = move_default
     self.state = States.default
@@ -189,19 +215,11 @@ function Player:finish_state(next_state)
 
     if self.state == States.groundPound then
         body:on_event("ground_touch", function() end)
-        self.dash_lock = false
 
     elseif self.state == States.dash then
         body:on_event("axis_x_collision", function() end)
         body:on_event("ground_touch", function() end)
 
-        if next_state == States.groundPound then
-            -- self.dash_lock = true
-        else
-            --self.dash_lock = false
-        end
-
-        -- self.dash_count = 0
         self:restaure_height()
     end
 end
@@ -224,7 +242,7 @@ function Player:set_state(state)
             self:set_state(States.default)
         end)
 
-    elseif state == States.dash and not self.dash_lock then
+    elseif state == States.dash then
         self.current_movement = dashing
         body.speed_y = 0.0
 
@@ -240,8 +258,6 @@ function Player:set_state(state)
         end
 
         body:dash(self.dash_distance, self.dash_direction)
-
-        --self.dash_lock = self.dash_count >= self.dash_max
 
         local h = math.floor(self.h * 0.5)
         body:refresh(nil, body.y + body.h - h, nil, h)
@@ -270,11 +286,14 @@ function Player:restaure_height()
 end
 
 function Player:jump()
+
     local body = self.body
 
     local h = (math_abs(body.speed_x) >= self.max_speed
         or self.state == States.dash)
         and 4.5 or 3.5
+
+    self.jump_count = self.jump_count + 1
 
     body:jump(32 * h)
 end
@@ -285,13 +304,16 @@ function Player:key_pressed(key)
     if self.state == States.default then
 
         if pressed(self, 'jump', key) then
-            if body.speed_y == 0 then
+            if not self.wall_jump_ready and self.jump_count < self.jump_max then
                 self:jump()
 
             elseif self.wall_jump_ready then
                 self:jump()
                 body.speed_x = body.max_speed_x * 0.5
-                body.allowed_air_dacc = false
+                if body.x < self.wall.x then
+                    body.speed_x = -body.speed_x
+                end
+                --body.allowed_air_dacc = false
                 self.wall_jump_ready = false
             end
 
@@ -300,10 +322,12 @@ function Player:key_pressed(key)
             self:set_state(States.groundPound)
             self.dash_count = temp
 
-        elseif pressed(self, 'dash', key) and not self.dash_lock
+        elseif pressed(self, 'dash', key)
+            and not self.dash_lock
             and self.dash_count < self.dash_max
-            and body.speed_x ~= 0 and (pressing(self, 'right')
-                or pressing(self, 'left'))
+            and not self.wall_jump_ready
+            and body.speed_x ~= 0
+            and (pressing(self, 'right') or pressing(self, 'left'))
         then
 
             self:set_state(States.dash)
@@ -311,12 +335,16 @@ function Player:key_pressed(key)
         end
 
     elseif self.state == States.dash then
-        if pressed(self, 'jump', key) and body.ground and body.speed_y >= 0 then
+        if pressed(self, 'jump', key)
+            and self.jump_count < self.jump_max
+        then
             self:restaure_height()
             self:jump()
 
-        elseif pressed(self, 'dash', key) and self.dash_count < self.dash_max
-            and not body.ground
+        elseif pressed(self, 'dash', key)
+            and not self.dash_lock
+            and self.dash_count < self.dash_max
+            and not body.ground and self.dash_time > self.dash_duration
         then
             self.state = nil
             self:set_state(States.dash)
@@ -328,7 +356,8 @@ function Player:key_pressed(key)
         end
 
     elseif self.state == States.groundPound then
-        if pressed(self, 'dash', key) and not self.dash_lock
+        if pressed(self, 'dash', key)
+            and not self.dash_lock
             and self.dash_count < self.dash_max
         then
             if pressing(self, 'right') then
@@ -370,6 +399,8 @@ function Player:draw()
     else
         Font:print('<color, 1, 0, 0>' .. self.dash_count, self.x, self.y - Font.current.__font_size * 2 - 30)
     end
+
+    Font:print('<color, 1, 1,0>' .. self.jump_count, self.x + self.w, self.y - Font.current.__font_size * 2 - 30)
 end
 
 return Player

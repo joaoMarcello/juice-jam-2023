@@ -1,6 +1,7 @@
 local Pack = _G.Pack
 local Player = require "/scripts/player"
 local Font = Pack.Font
+local Physics = Pack.Physics
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 24, 32 * 14)
 
 --=========================================================================
@@ -10,15 +11,22 @@ local player
 ---@type JM.Physics.World
 local world
 
-local rects = {
-    { 0, 32 * 12, 32 * 40, 32 * 2 },
-    { 0, -32 * 10, 1, 32 * 40 }
-}
+---@type table
+local rects
+
+---@type table
+local components
 --=========================================================================
 
 Game:implements({
     load = function()
-        world = Pack.Physics:newWorld()
+        rects = {
+            { 0, 32 * 12, 32 * 40, 32 * 2 },
+            { 0, -32 * 10, 1, 32 * 40 },
+            { 32 * 20, 32 * 4, 32 * 2, 32 * 20 }
+        }
+
+        world = Physics:newWorld()
 
         player = Player:new(Game, world, {
             x = 32 * 3,
@@ -29,8 +37,13 @@ Game:implements({
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
-            Pack.Physics:newBody(world, x, y, w, h, "static")
+            Physics:newBody(world, x, y, w, h, "static")
         end
+    end,
+
+    init = function()
+        components = {}
+        table.insert(components, player)
     end,
 
     keypressed = function(key)
@@ -44,14 +57,20 @@ Game:implements({
 
     update = function(dt)
         world:update(dt)
-        player:update(dt)
+
+        for i = 1, #components do
+            local r = components[i].update and components[i]:update(dt)
+        end
+
         Game.camera:follow(player:get_cx(), player:get_cy(), "player")
     end,
 
     draw = function(camera)
         world:draw()
 
-        player:draw()
+        for i = 1, #components do
+            local r = components[i].draw and components[i]:draw()
+        end
 
         Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
     end

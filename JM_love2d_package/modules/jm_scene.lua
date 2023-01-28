@@ -66,6 +66,7 @@ end
 
 ---@class JM.Scene
 ---@field load function
+---@field init function
 ---@field keypressed function
 ---@field keyreleased function
 ---@field mousepressed function

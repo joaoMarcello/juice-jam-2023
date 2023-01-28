@@ -11,6 +11,7 @@ local t = 0.0
 
 function love.load()
     scene:load()
+    scene:init()
     -- collectgarbage()
 end
 
