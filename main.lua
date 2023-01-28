@@ -6,13 +6,9 @@ love.graphics.setBackgroundColor(0, 0, 0, 1)
 
 local scene = require("/scripts/gameState/game_01")
 
-
-local t = 0.0
-
 function love.load()
     scene:load()
     scene:init()
-    -- collectgarbage()
 end
 
 function love.keypressed(key)
@@ -29,7 +25,6 @@ end
 
 function love.mousepressed(x, y, button, istouch, presses)
     scene:mousepressed(x, y, button, istouch, presses)
-    --scene:mousepressed()
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
@@ -47,12 +42,6 @@ function love.update(dt)
     end
 
     scene:update(dt)
-
-    -- t = t + dt
-    -- if t >= 5.0 then
-    --     t = 0.0
-    --     collectgarbage()
-    -- end
 end
 
 function love.draw()
