@@ -35,7 +35,7 @@ end
 ---@param Game GameState.Game
 function Timer:__constructor__(Game, args)
     self.game = Game
-    self.time = args.init_time or 150
+    self.time = args.init_time or 20
     self.time_init = self.time
     self.speed = 0.5
     self.acumulator = 0.0
@@ -68,12 +68,16 @@ function Timer:on_evt(name, action, args)
 end
 
 function Timer:pulse(cycles, reset)
+    if self.time == 0 then return end
+
     if self.actives_eff['pulse'] then
         if reset then
             self.actives_eff['pulse'].cycle_count = 0
         end
         return
     end
+    -- self.actives_eff['pulse'] = self:apply_effect("pulse", { max_sequence = cycles, speed = 0.5, range = 0.1 })
+
     self.actives_eff['pulse'] = self:apply_effect("pulse", { max_sequence = cycles, speed = 0.5, range = 0.1 })
 
     self.actives_eff['pulse']:set_final_action(function()
@@ -85,7 +89,9 @@ end
 function Timer:increment(value, reset_cycle)
     self.time = self.time + value
     self:pulse(3, reset_cycle)
-    self.time_capture = self.time
+    if self.time > self.time_warning then
+        self.time_capture = self.time
+    end
 end
 
 function Timer:update(dt)
@@ -99,6 +105,9 @@ function Timer:update(dt)
 
         if self.time == 0 then
             dispatch_event(self, "timeEnd")
+            if self.actives_eff["pulse"] then
+                self.actives_eff["pulse"].__remove = true
+            end
         else
             dispatch_event(self, "timeDown")
         end
@@ -111,7 +120,7 @@ function Timer:update(dt)
         and not self.actives_eff["pulse"]
         and self.time ~= self.time_init
     then
-        local cycles
+        local cycles = 5
         if self.time > risk_time then
             cycles = 5
             if self.time > self.time_warning then
@@ -126,6 +135,10 @@ function Timer:update(dt)
         end
 
         self:pulse(cycles)
+    end
+
+    if self.time_capture and self.time_capture > risk_time then
+        self.time_capture = nil
     end
 end
 
@@ -156,8 +169,8 @@ function Timer:draw()
     self:draw_circle()
 
     if self.time > self.time_warning then
-        Affectable.draw(self, self.draw_number, "<color, 0.6, 0.6, 0.6>", 1)
-        Affectable.draw(self, self.draw_number)
+        Affectable.draw(self, self.draw_number, "<color, 0, 0, 0>", 1)
+        Affectable.draw(self, self.draw_number, "<color, 1, 1, 0>")
     else
         Affectable.draw(self, self.draw_number, "<color, 0, 0, 0>", 1)
         Affectable.draw(self, self.draw_number, "<color, 1, 0.1, 0.1>")

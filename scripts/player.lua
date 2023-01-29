@@ -117,6 +117,7 @@ end
 local function ground_pound(self, dt)
     local body = self.body
     body.speed_x = 0
+    body.mass = body.world.default_mass * 1.4
     return false
 end
 
@@ -212,6 +213,7 @@ function Player:__constructor__(Game, args)
     --=======================================================
 
     self.current_movement = move_default
+    ---@type Game.Player.States
     self.state = States.default
 end
 
@@ -233,11 +235,16 @@ function Player:set_attribute(attr, mode, value)
     return true
 end
 
+function Player:load()
+    Pill:load()
+end
+
 function Player:finish_state(next_state)
     local body = self.body
 
     if self.state == States.groundPound then
         body:on_event("ground_touch", function() end)
+        body.mass = body.world.default_mass
 
     elseif self.state == States.dash then
         body:on_event("axis_x_collision", function() end)
@@ -306,6 +313,16 @@ function Player:restaure_height()
     if body.h ~= h then
         body:refresh(nil, body.y + body.h - h, nil, h)
     end
+
+    local col = body:check(nil, body.y - 1,
+        ---@param item JM.Physics.Body
+        function(obj, item)
+            return item.type == 2
+        end)
+
+    if col.n > 0 then
+        body:resolve_collisions_y(col)
+    end
 end
 
 function Player:jump()
@@ -316,9 +333,21 @@ function Player:jump()
         or self.state == States.dash)
         and 4.5 or 3.5
 
+    if self.jump_count >= 1 then h = 2.5 end
+
     self.jump_count = self.jump_count + 1
 
     body:jump(32 * h)
+end
+
+---@param type  "atk"|"def"|"hp"|"time"
+function Player:throw_pill(type)
+    local pill_atk = Pill:new(self.Game, self.body.world, self,
+        { x = self.x + self.w / 2, y = self.y - 32 })
+
+    pill_atk.x = self.x + self.w / 2 - pill_atk.w / 2
+    pill_atk.body:refresh(pill_atk.x)
+    self.Game:game_add_component(pill_atk)
 end
 
 function Player:key_pressed(key)
@@ -330,7 +359,7 @@ function Player:key_pressed(key)
             if not self.wall_jump_ready and self.jump_count < self.jump_max then
                 self:jump()
 
-            elseif self.wall_jump_ready then
+            elseif self.wall_jump_ready and self.wall then
                 self:jump()
                 body.speed_x = body.max_speed_x * 0.5
                 if body.x < self.wall.x then
@@ -355,9 +384,8 @@ function Player:key_pressed(key)
             self:set_state(States.dash)
 
         elseif pressed(self, 'pill_atk', key) then
-            local pill_atk = Pill:new(self.Game, self.body.world, self,
-                { x = self.x, y = self.y - 32 })
-            self.Game:game_add_component(pill_atk)
+            self:throw_pill("atk")
+
         end
 
     elseif self.state == States.dash then
@@ -379,6 +407,9 @@ function Player:key_pressed(key)
             local temp = self.dash_count
             self:set_state(States.groundPound)
             self.dash_count = temp
+
+        elseif pressed(self, 'pill_atk', key) then
+            self:throw_pill("atk")
         end
 
     elseif self.state == States.groundPound then

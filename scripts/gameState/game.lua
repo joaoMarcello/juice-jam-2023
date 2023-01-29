@@ -54,10 +54,13 @@ Game:implements({
         rects = {
             { 0, 32 * 12, 32 * 40, 32 * 2 },
             { 0, -32 * 10, 1, 32 * 40 },
-            { 32 * 20, 32 * 4, 32 * 2, 32 * 20 }
+            { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
+            { 32 * 10, 32 * 7, 32 * 5, 32 }
         }
 
         world = Physics:newWorld()
+
+        Player:load()
 
         player = Player:new(Game, world, {
             x = 32 * 3,
@@ -103,8 +106,13 @@ Game:implements({
         end
 
         for i = #components, 1, -1 do
-            local r = components[i].update and components[i]:update(dt)
-            if components[i].__remove then
+            ---@type GameComponent
+            local gc = components[i]
+
+            local r = gc.update and gc.is_enable
+                and not gc.__remove and gc:update(dt)
+
+            if gc.__remove then
                 Game:game_remove_component(i)
             end
         end

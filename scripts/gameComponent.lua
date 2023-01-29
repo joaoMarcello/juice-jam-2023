@@ -25,11 +25,14 @@ function Component:__constructor__(world, args)
     self.w = args.w
     self.h = args.h
 
+    self.is_enable = true
+    self.__remove = false
+
     self.body = Phys:newBody(world, args.x, args.y, args.w, args.h, args.type or "static")
 
     if self.body.type ~= 2 then
         self.max_speed = args.max_speed or (64 * 5)
-        self.acc = args.acc or (64 * 3)
+        self.acc = args.acc or (64 * 4)
         self.dacc = args.dacc or (64 * 10)
     end
 end
