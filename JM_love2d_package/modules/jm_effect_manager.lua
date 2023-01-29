@@ -79,7 +79,7 @@ function EffectManager:update(dt)
             ---@type JM.Effect
             local eff = self.__effects_list[i]
             local r1 = eff:__update__(dt)
-            local r2 = eff.__is_enabled and eff:update(dt)
+            local r2 = eff.__is_enabled and not eff.__remove and eff:update(dt)
 
             if eff.__remove then
                 if eff.__final_action then

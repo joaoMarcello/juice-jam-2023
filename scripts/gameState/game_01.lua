@@ -1,7 +1,11 @@
 local Pack = _G.Pack
-local Player = require "/scripts/player"
 local Font = Pack.Font
 local Physics = Pack.Physics
+
+local Player = require "/scripts/player"
+local Timer = require "/scripts/timer"
+
+---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 24, 32 * 14)
 
 --=========================================================================
@@ -16,6 +20,11 @@ local rects
 
 ---@type table
 local components
+
+local components_gui
+
+---@type Game.GUI.Timer
+local timer
 --=========================================================================
 
 Game:implements({
@@ -42,8 +51,12 @@ Game:implements({
     end,
 
     init = function()
+        timer = Timer:new(Game)
         components = {}
+        components_gui = {}
+
         table.insert(components, player)
+        table.insert(components_gui, timer)
     end,
 
     keypressed = function(key)
@@ -58,6 +71,10 @@ Game:implements({
     update = function(dt)
         world:update(dt)
 
+        for i = 1, #components_gui do
+            local r = components_gui[i].update and components_gui[i]:update(dt)
+        end
+
         for i = 1, #components do
             local r = components[i].update and components[i]:update(dt)
         end
@@ -65,15 +82,33 @@ Game:implements({
         Game.camera:follow(player:get_cx(), player:get_cy(), "player")
     end,
 
-    draw = function(camera)
-        world:draw()
+    layers = {
+        {
+            name = "main",
+            
+            draw = function(self, camera)
+                world:draw()
 
-        for i = 1, #components do
-            local r = components[i].draw and components[i]:draw()
-        end
+                for i = 1, #components do
+                    local r = components[i].draw and components[i]:draw()
+                end
 
-        Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
-    end
+                Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
+            end
+        },
+
+        {
+            draw = function(self, camera)
+                for i = 1, #components_gui do
+                    local r = components_gui[i].draw
+                        and components_gui[i]:draw()
+                end
+            end,
+            factor_x = -1,
+            factor_y = -1,
+            name = "GUI"
+        }
+    }
 })
 
 return Game

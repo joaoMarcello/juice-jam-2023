@@ -60,8 +60,10 @@ function Pulse:__constructor__(args)
 end
 
 function Pulse:update(dt)
+
     self.__speed = self.__speed + self.__acc / 1.0 * dt
 
+    local last_rad = self.__rad
     self.__rad = (self.__rad + (PI * 2.0) / self.__speed * dt)
 
     if self.__rad >= (PI * 2) then

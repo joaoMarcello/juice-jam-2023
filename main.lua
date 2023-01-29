@@ -6,6 +6,14 @@ love.graphics.setBackgroundColor(0, 0, 0, 1)
 
 local scene = require("/scripts/gameState/game_01")
 
+function Change_gamestate(new_state)
+    scene:finish()
+    new_state:load()
+    new_state:init()
+    scene = new_state
+    collectgarbage()
+end
+
 function love.load()
     scene:load()
     scene:init()

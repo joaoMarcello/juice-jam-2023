@@ -71,6 +71,7 @@ end
 ---@field keyreleased function
 ---@field mousepressed function
 ---@field mousereleased function
+---@field finish function
 local Scene = {}
 Scene.__index = Scene
 
@@ -402,6 +403,7 @@ function Scene:implements(param)
         "draw",
         "errorhandler",
         "filedropped",
+        "finish",
         "gamepadaxis",
         "gamepadpressed",
         "gamepadreleased",

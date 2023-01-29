@@ -348,7 +348,7 @@ function Phrase:text_height(lines)
     lines = lines or self:get_lines(self.x)
 
     ---@type JM.Font.Word
-    local word = lines[1][1]
+    local word = lines[1][1] or lines[1][2]
 
     if word then
         local h = word:get_height() * (#lines)

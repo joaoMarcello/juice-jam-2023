@@ -174,7 +174,7 @@ end
 ---@param eff_type JM.Effect.id_string
 ---@param eff_args any
 function Affectable:apply_effect(eff_type, eff_args)
-    self.__effect_manager:apply_effect(self, eff_type, eff_args)
+    return self.__effect_manager:apply_effect(self, eff_type, eff_args)
 end
 
 ---@param eff_type JM.Effect.id_string
