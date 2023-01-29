@@ -149,6 +149,7 @@ local function dashing(self, dt)
         end
 
         move_default(self, dt)
+        self:set_state(States.default)
 
         if body.speed_y == 0 and body.ground then
             self:set_state(States.default)
@@ -224,11 +225,10 @@ function Player:set_attribute(attr, mode, value)
     local max = self["attr_" .. attr .. "_max"]
 
     if mode == "add" then
-        field = Utils:clamp(field + value, 0, max)
+        self[key] = Utils:clamp(field + value, 0, max)
     else
-        field = Utils:clamp(field - value, 0, max)
+        self[key] = Utils:clamp(field - value, 0, max)
     end
-
     return true
 end
 

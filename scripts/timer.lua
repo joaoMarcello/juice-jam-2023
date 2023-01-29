@@ -67,6 +67,27 @@ function Timer:on_evt(name, action, args)
     }
 end
 
+function Timer:pulse(cycles, reset)
+    if self.actives_eff['pulse'] then
+        if reset then
+            self.actives_eff['pulse'].cycle_count = 0
+        end
+        return
+    end
+    self.actives_eff['pulse'] = self:apply_effect("pulse", { max_sequence = cycles, speed = 0.5, range = 0.1 })
+
+    self.actives_eff['pulse']:set_final_action(function()
+        self.time_capture = nil
+        self.actives_eff['pulse'] = false
+    end)
+end
+
+function Timer:increment(value, reset_cycle)
+    self.time = self.time + value
+    self:pulse(3, reset_cycle)
+    self.time_capture = self.time
+end
+
 function Timer:update(dt)
     Affectable.update(self, dt)
 
@@ -104,12 +125,7 @@ function Timer:update(dt)
             dispatch_event(self, "timeWarning")
         end
 
-        self.actives_eff['pulse'] = self:apply_effect("pulse", { max_sequence = cycles, speed = 0.5, range = 0.1 })
-
-        self.actives_eff['pulse']:set_final_action(function()
-            self.time_capture = nil
-            self.actives_eff['pulse'] = false
-        end)
+        self:pulse(cycles)
     end
 end
 

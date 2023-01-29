@@ -6,7 +6,7 @@ local Player = require "/scripts/player"
 local Timer = require "/scripts/timer"
 
 ---@class GameState.Game: JM.Scene
-local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 24, 32 * 14)
+local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
 Game.camera:toggle_debug()
 Game.camera:toggle_grid()
 Game.camera:toggle_world_bounds()
@@ -32,6 +32,19 @@ local timer
 ---@param gc GameComponent
 function Game:game_add_component(gc)
     table.insert(components, gc)
+end
+
+function Game:game_remove_component(index)
+    ---@type JM.Physics.Body
+    local body = components[index].body
+    if body then
+        body.__remove = true
+    end
+    table.remove(components, index)
+end
+
+function Game:game_get_timer()
+    return timer
 end
 
 --=========================================================================
@@ -89,8 +102,11 @@ Game:implements({
             local r = components_gui[i].update and components_gui[i]:update(dt)
         end
 
-        for i = 1, #components do
+        for i = #components, 1, -1 do
             local r = components[i].update and components[i]:update(dt)
+            if components[i].__remove then
+                Game:game_remove_component(i)
+            end
         end
 
         Game.camera:follow(player:get_cx(), player:get_cy(), "player")
@@ -140,7 +156,7 @@ Game:implements({
                 if timer:get_time() <= 0 then
                     Font.current:push()
                     Font.current:set_font_size(32)
-                    local obj = Font:get_phrase("<color, 1, 1, 0><effect=scream>RUN OUT\nOF TIME!", 0, 0, "left",
+                    local obj = Font:get_phrase("<color, 1, 1, 0><effect=scream>TIME iS UP!", 0, 0, "left",
                         math.huge)
 
                     local obj_w = obj:width()
