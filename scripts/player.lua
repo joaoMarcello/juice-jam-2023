@@ -92,6 +92,7 @@ local function move_default(self, dt)
 
             self:set_state(States.default)
 
+            self.jump_count = 0
             self.wall_jump_ready = true
         else
             self.wall = nil
