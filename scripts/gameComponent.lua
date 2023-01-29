@@ -1,13 +1,14 @@
 local Phys = _G.Pack.Physics
+local Affectable = Pack.Affectable
 
----@class GameComponent
-local Component = {}
+---@class GameComponent: JM.Template.Affectable
+local Component = setmetatable({}, Affectable)
 Component.__index = Component
 
 ---@param world JM.Physics.World
 ---@param args any
 function Component:new(world, args)
-    local obj = {}
+    local obj = Affectable:new()
     setmetatable(obj, self)
     Component.__constructor__(obj, world, args)
     return obj
@@ -42,7 +43,7 @@ function Component:get_cy()
 end
 
 function Component:update(dt)
-    return false
+    Affectable.update(self, dt)
 end
 
 function Component:draw()

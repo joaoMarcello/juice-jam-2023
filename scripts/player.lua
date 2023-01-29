@@ -1,6 +1,7 @@
----@diagnostic disable: param-type-mismatch
 ---@type GameComponent
 local GC = require "/scripts/gameComponent"
+
+local Pill = require "/scripts/pill"
 
 local Utils = _G.Pack.Utils
 
@@ -41,7 +42,8 @@ local function pressing(self, key)
     if type(field) == "string" then
         return keyboard_is_down(field)
     else
-        return keyboard_is_down(field[1]) or keyboard_is_down(field[2])
+        return keyboard_is_down(field[1])
+            or (field[2] and keyboard_is_down(field[2]))
     end
 end
 
@@ -169,17 +171,18 @@ function Player:new(Game, world, args)
     return obj
 end
 
----@param Game JM.Scene
+---@param Game GameState.Game
 function Player:__constructor__(Game, args)
     self.Game = Game
 
-    self.key_left = { 'a', 'left' }
-    self.key_right = { 'd', 'right' }
-    self.key_down = { 's', 'down' }
+    self.key_left = { 'left' }
+    self.key_right = { 'right' }
+    self.key_down = { 'down' }
     self.key_up = 'w'
-    self.key_jump = { 'space', 'z' }
+    self.key_jump = { 'space' }
     self.key_attack = 'u'
-    self.key_dash = { 'f', 'j' }
+    self.key_dash = { 'f' }
+    self.key_pill_atk = { 'd' }
 
     self.body.max_speed_x = self.max_speed
     self.body.allowed_air_dacc = true
@@ -208,6 +211,25 @@ function Player:__constructor__(Game, args)
 
     self.current_movement = move_default
     self.state = States.default
+end
+
+---@param attr "hp"|"def"|"atk"
+---@param mode "add"|"sub"
+---@param value number
+function Player:set_attribute(attr, mode, value)
+    local key = "attr_" .. attr
+    local field = self[key]
+    if not field then return false end
+
+    local max = self["attr_" .. attr .. "_max"]
+
+    if mode == "add" then
+        field = Utils:clamp(field + value, 0, max)
+    else
+        field = Utils:clamp(field - value, 0, max)
+    end
+
+    return true
 end
 
 function Player:finish_state(next_state)
@@ -329,9 +351,12 @@ function Player:key_pressed(key)
             and body.speed_x ~= 0
             and (pressing(self, 'right') or pressing(self, 'left'))
         then
-
             self:set_state(States.dash)
 
+        elseif pressed(self, 'pill_atk', key) then
+            local pill_atk = Pill:new(self.Game, self.body.world, self,
+                { x = self.x, y = self.y - 32 })
+            self.Game:game_add_component(pill_atk)
         end
 
     elseif self.state == States.dash then

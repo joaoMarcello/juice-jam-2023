@@ -27,6 +27,13 @@ local components_gui
 local timer
 --=========================================================================
 
+---@param gc GameComponent
+function Game:game_add_component(gc)
+    table.insert(components, gc)
+end
+
+--=========================================================================
+
 Game:implements({
     load = function()
         rects = {
@@ -55,7 +62,7 @@ Game:implements({
         components = {}
         components_gui = {}
 
-        table.insert(components, player)
+        Game:game_add_component(player)
         table.insert(components_gui, timer)
     end,
 
@@ -65,7 +72,12 @@ Game:implements({
             Game.camera:toggle_debug()
             Game.camera:toggle_world_bounds()
         end
+
         player:key_pressed(key)
+
+        if key == "p" then
+            table.insert(components)
+        end
     end,
 
     update = function(dt)
@@ -83,6 +95,8 @@ Game:implements({
     end,
 
     layers = {
+        --================================================================
+        --================================================================
         {
             name = "main",
 
@@ -96,35 +110,47 @@ Game:implements({
                 Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
             end
         },
-
+        --================================================================
+        --================================================================
         {
+            name = "GUI",
+            factor_x = -1,
+            factor_y = -1,
+
             draw = function(self, camera)
+                local left, top, right, bottom =
+                Game.camera:get_viewport_in_world_coord()
+
+                local width = right - left - Game.camera.x
+                local height = bottom - top - Game.camera.y
+
                 for i = 1, #components_gui do
                     local r = components_gui[i].draw
                         and components_gui[i]:draw()
                 end
 
+                local font = Font.current
+                font:print("HP: " .. player.attr_hp .. "\nDEF: " .. player.attr_def .. "\nATK: " .. player.attr_atk,
+                    left - Game.camera.x + 45,
+                    top + height * 0.3 - Game.camera.y)
+
                 -- Showing the Time End message
                 if timer:get_time() <= 0 then
                     Font.current:push()
                     Font.current:set_font_size(32)
-
-                    local obj = Font:get_phrase("<effect=scream>RUN OUT\nOF TIME!", 0, 0, "left", math.huge)
-                    local l, t, r, b =
-                    Game.camera:get_viewport_in_world_coord()
-
-                    local w, h = r - l - Game.camera.x, b - t - Game.camera.y
+                    local obj = Font:get_phrase("<color, 1, 1, 0><effect=scream>RUN OUT\nOF TIME!", 0, 0, "left",
+                        math.huge)
 
                     local obj_w = obj:width()
-                    obj:draw(l + w / 2 - obj_w / 2, t + h * 0.3, "left")
+                    obj:draw(left + width / 2 - obj_w / 2, top + height * 0.3, "left")
 
                     Font.current:pop()
                 end
-            end,
-            factor_x = -1,
-            factor_y = -1,
-            name = "GUI"
+            end
         }
+        --================================================================
+        --================================================================
+
     }
 })
 

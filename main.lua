@@ -4,7 +4,7 @@ Pack = require "/JM_love2d_package/init"
 math.randomseed(os.time())
 love.graphics.setBackgroundColor(0, 0, 0, 1)
 
-local scene = require("/scripts/gameState/game_01")
+local scene = require("/scripts/gameState/game")
 
 function Change_gamestate(new_state)
     scene:finish()
