@@ -85,7 +85,7 @@ Game:implements({
     layers = {
         {
             name = "main",
-            
+
             draw = function(self, camera)
                 world:draw()
 
@@ -102,6 +102,23 @@ Game:implements({
                 for i = 1, #components_gui do
                     local r = components_gui[i].draw
                         and components_gui[i]:draw()
+                end
+
+                -- Showing the Time End message
+                if timer:get_time() <= 0 then
+                    Font.current:push()
+                    Font.current:set_font_size(32)
+
+                    local obj = Font:get_phrase("<effect=scream>RUN OUT\nOF TIME!", 0, 0, "left", math.huge)
+                    local l, t, r, b =
+                    Game.camera:get_viewport_in_world_coord()
+
+                    local w, h = r - l - Game.camera.x, b - t - Game.camera.y
+
+                    local obj_w = obj:width()
+                    obj:draw(l + w / 2 - obj_w / 2, t + h * 0.3, "left")
+
+                    Font.current:pop()
                 end
             end,
             factor_x = -1,
