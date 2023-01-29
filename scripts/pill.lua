@@ -31,12 +31,17 @@ function Pill:__constructor__(Game, player, args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
-    self:apply_effect("swing", { speed = 1.2, range=0.05})
+    self.eff_swing = self:apply_effect("swing", { speed = 0.25, range = 0.05 })
 
     self.body.mass = self.body.world.default_mass * 2
     self.body:jump(32 * 3, -1)
+
     self.body:on_event("start_falling", function()
-        self.body.mass = self.body.world.default_mass
+        self.body.mass = self.body.world.default_mass * 0.8
+    end)
+
+    self.body:on_event("ground_touch", function()
+        self.eff_swing.__speed = 1.2
     end)
 end
 

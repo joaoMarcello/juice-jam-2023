@@ -7,7 +7,9 @@ local Timer = require "/scripts/timer"
 
 ---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 24, 32 * 14)
-
+Game.camera:toggle_debug()
+Game.camera:toggle_grid()
+Game.camera:toggle_world_bounds()
 --=========================================================================
 ---@type Game.Player
 local player
