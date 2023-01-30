@@ -1,4 +1,4 @@
----@type GameComponent
+---@type BodyComponent
 local GC = require "/scripts/gameComponent"
 
 local Utils = Pack.Utils
@@ -32,7 +32,7 @@ local function get_type_string(self)
     end
 end
 
----@class Game.Component.Pill: GameComponent
+---@class Game.Component.Pill: BodyComponent
 local Pill = setmetatable({}, GC)
 Pill.__index = Pill
 Pill.TypeMove = TypeMove
@@ -51,7 +51,7 @@ function Pill:new(Game, world, player, args)
     args.pill_type = args.pill_type or TypePill.time
     args.pill_type_move = args.pill_type_move or TypeMove.dynamic
 
-    local obj = GC:new(world, args)
+    local obj = GC:new(Game, world, args)
     setmetatable(obj, self)
     Pill.__constructor__(obj, Game, player, args)
     return obj
@@ -190,11 +190,11 @@ function Pill:punish(gain, except)
     if attr == "time" or (not attr and type_pill ~= "time") then
         self.game:game_get_timer():decrement(15 * self.__gain, true)
 
-        player:set_debbug('lost', '- 15 s TIME')
+        player:set_debbug('lost', string.format('- %d s TIME', 15 * self.__gain))
 
         local result = extra_punish(0.4)
         if result then
-            player:set_debbug('lost', '- 15 s TIME and -1 ' .. result)
+            player:set_debbug('lost', string.format('- %d s TIME and -1 ' .. result, self.__gain * 15))
         end
 
     elseif attr then

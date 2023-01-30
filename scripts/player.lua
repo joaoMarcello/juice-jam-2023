@@ -1,4 +1,4 @@
----@type GameComponent
+---@type BodyComponent
 local GC = require "/scripts/gameComponent"
 
 local Pill = require "/scripts/pill"
@@ -160,7 +160,7 @@ local function dashing(self, dt)
     end
 end
 
----@class Game.Player: GameComponent
+---@class Game.Player: BodyComponent
 local Player = setmetatable({}, GC)
 Player.__index = Player
 
@@ -168,7 +168,7 @@ Player.__index = Player
 ---@return Game.Player
 function Player:new(Game, world, args)
     args.type = "dynamic"
-    local obj = GC:new(world, args)
+    local obj = GC:new(Game, world, args)
     setmetatable(obj, self)
 
     Player.__constructor__(obj, Game, args)
@@ -523,6 +523,8 @@ function Player:draw()
         -- , "left", math.huge
         )
     end
+
+    Font:print(self.draw_order, self.x - 100, self.y)
 end
 
 return Player

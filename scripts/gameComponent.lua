@@ -1,15 +1,22 @@
 local Phys = _G.Pack.Physics
 local Affectable = Pack.Affectable
+local GC = require "/scripts/component"
 
----@class GameComponent: JM.Template.Affectable
-local Component = setmetatable({}, Affectable)
-Component.__index = Component
+-- ---@class BodyComponent: JM.Template.Affectable
+-- local Component = setmetatable({}, Affectable)
+-- Component.__index = Component
 
+---@class BodyComponent: JM.Template.Affectable, GameComponent
+local Component = JM_Utils:create_class(Affectable, GC)
+
+---@param game GameState.Game
 ---@param world JM.Physics.World
----@param args any
-function Component:new(world, args)
-    local obj = Affectable:new()
+---@param args table
+function Component:new(game, world, args)
+    local obj = GC:new(game, args) --Affectable:new()
+
     setmetatable(obj, self)
+    Affectable.__constructor__(obj)
     Component.__constructor__(obj, world, args)
     return obj
 end
