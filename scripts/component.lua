@@ -30,6 +30,16 @@ function GC:__constructor__(game, args)
     self.update_order = self.update_order + math.random()
 end
 
+function GC:set_draw_order(value)
+    value = math.abs(value)
+    self.draw_order = value + math.random()
+end
+
+function GC:set_update_order(value)
+    value = math.abs(value)
+    self.update_order = value + math.random()
+end
+
 function GC:update(dt)
     return false
 end

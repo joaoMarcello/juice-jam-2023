@@ -11,7 +11,8 @@ local Font = _G.Pack.Font
 local States = {
     default = 1,
     groundPound = 2,
-    dash = 3
+    dash = 3,
+    dead = 4
 }
 
 local debbug = {}
@@ -238,7 +239,7 @@ end
 ---@param mode "add"|"sub"
 ---@param value number
 function Player:set_attribute(attr, mode, value)
-    if not attr then return false end
+    if not attr or self.state == States.dead then return false end
 
     local key = "attr_" .. attr
     local field = self[key]
@@ -260,6 +261,14 @@ end
 
 function Player:load()
     Pill:load()
+end
+
+function Player:kill()
+    self:set_state(States.dead)
+end
+
+function Player:is_dead()
+    return self.state == States.dead
 end
 
 function Player:finish_state(next_state)
@@ -323,8 +332,23 @@ function Player:set_state(state)
             self.dash_lock = false
             self:set_state(States.default)
         end)
-    else
 
+
+    elseif state == States.dead then
+        self.current_movement = function(self, dt)
+            self.body.speed_x = 0
+            self.body.acc_x = 0
+        end
+
+        body.speed_x = 0
+        body.speed_y = 0
+        body.mass = body.world.default_mass * 0.5
+        body.type = Pack.Physics.BodyTypes.ghost
+        body:jump(32 * 3, -1)
+        body:on_event("start_falling", function()
+            body.mass = body.mass * 0.5
+        end)
+    else
         self.current_movement = move_default
     end
 end

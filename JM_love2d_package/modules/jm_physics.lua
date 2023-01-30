@@ -702,7 +702,10 @@ do
         local obj
         obj = self
 
-        if is_dynamic(obj) or is_kinematic(obj) then
+        if is_dynamic(obj) or is_kinematic(obj)
+            or obj.type == BodyTypes.ghost
+        then
+
             local goalx, goaly
 
             -- applying the gravity
@@ -739,6 +742,11 @@ do
                     dispatch_event(obj, BodyEvents.speed_y_change_direction)
                 end
 
+                if obj.type == BodyTypes.ghost then
+                    obj:refresh(nil, goaly)
+                    goto skip_collision_y
+                end
+
                 ---@type JM.Physics.Collisions
                 local col = obj:check(nil, goaly, colliders_filter)
 
@@ -771,6 +779,7 @@ do
                 if last_sy <= 0.0 and obj.speed_y > 0.0 then
                     dispatch_event(self, BodyEvents.start_falling)
                 end
+                ::skip_collision_y::
             end
             --=================================================================
 
@@ -799,6 +808,11 @@ do
                     obj.speed_x = 0.0
                     obj.acc_x = 0.0
                     dispatch_event(obj, BodyEvents.speed_x_change_direction)
+                end
+
+                if obj.type == BodyTypes.ghost then
+                    obj:refresh(goalx)
+                    goto skip_collision_x
                 end
 
                 --- will store the body collisions with other bodies
@@ -845,6 +859,8 @@ do
                     -- dacc = obj.ground and dacc * 0.3 or dacc
                     obj:apply_force(dacc * -obj:direction_x())
                 end
+
+                ::skip_collision_x::
 
             end -- end moving in x axis
 
@@ -1229,6 +1245,7 @@ end
 
 ---@class JM.Physics
 local Phys = {}
+Phys.BodyTypes = BodyTypes
 
 ---@return JM.Physics.World
 function Phys:newWorld(args)

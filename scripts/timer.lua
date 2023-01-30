@@ -35,7 +35,7 @@ end
 ---@param Game GameState.Game
 function Timer:__constructor__(Game, args)
     self.game = Game
-    self.time = args.init_time or 300
+    self.time = args.init_time or 16
     self.time_init = self.time
     self.speed = 0.5
     self.acumulator = 0.0
@@ -110,9 +110,12 @@ function Timer:update(dt)
 
         if self.time == 0 then
             dispatch_event(self, "timeEnd")
+
             if self.actives_eff["pulse"] then
                 self.actives_eff["pulse"].__remove = true
             end
+
+            self.game:get_player():kill()
         else
             dispatch_event(self, "timeDown")
         end
@@ -135,7 +138,7 @@ function Timer:update(dt)
 
         if self.time == self.time_warning then
             dispatch_event(self, "redTimeWarning")
-        elseif self.time ~= risk_time then
+        elseif self.time > risk_time then
             dispatch_event(self, "timeWarning")
         end
 

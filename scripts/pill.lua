@@ -36,7 +36,6 @@ Pill.__index = Pill
 Pill.TypeMove = TypeMove
 Pill.TypeAttr = TypePill
 
----comment
 ---@param Game any
 ---@param world any
 ---@param player any
@@ -125,8 +124,18 @@ function Pill:__constructor__(Game, player, args)
     end)
 
     self.anima = Pack.Anima:new({ img = img[self.type] })
+
+
+    if self.type == TypePill.time then
+        self:set_draw_order(self.draw_order + 1.0)
+    elseif self.type == TypePill.hp then
+        self:set_draw_order(self.draw_order + 2.0)
+    end
+
     if self.__gain > 1 then
         self.anima:apply_effect("flash", { color = { 0.6, 0.6, 0.2 }, speed = 0.4 })
+
+        self:set_draw_order(self.draw_order + 1.0)
     end
 end
 
@@ -221,7 +230,9 @@ function Pill:update(dt)
         self.__remove = not on_view and body.y > self.game.camera.y
     end
 
-    if body:check_collision(self.player.body:rect()) then
+    if not self.player:is_dead()
+        and body:check_collision(self.player.body:rect())
+    then
         self.__remove = true
 
         if self.type == TypePill.time then

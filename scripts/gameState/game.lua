@@ -27,6 +27,9 @@ local components_gui
 
 ---@type Game.GUI.Timer
 local timer
+
+local sort_update = function(a, b) return a.update_order < b.update_order end
+local sort_draw = function(a, b) return a.draw_order < b.draw_order end
 --=========================================================================
 
 ---@param gc GameComponent
@@ -45,6 +48,10 @@ end
 
 function Game:game_get_timer()
     return timer
+end
+
+function Game:get_player()
+    return player
 end
 
 --=========================================================================
@@ -105,6 +112,7 @@ Game:implements({
             local r = components_gui[i].update and components_gui[i]:update(dt)
         end
 
+        -- table.sort(components, )
         for i = #components, 1, -1 do
             ---@type GameComponent
             local gc = components[i]
@@ -129,6 +137,7 @@ Game:implements({
             draw = function(self, camera)
                 world:draw()
 
+                table.sort(components, sort_draw)
                 for i = 1, #components do
                     local r = components[i].draw and components[i]:draw()
                 end
