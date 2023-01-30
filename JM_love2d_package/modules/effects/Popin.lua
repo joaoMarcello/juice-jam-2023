@@ -30,8 +30,8 @@ function Popin:__constructor__(args)
     self.__state = 1
 
     if self.__object then
-        self.__object:set_effect_transform("sx", 0)
-        self.__object:set_effect_transform("sy", 0)
+        self.__object:set_effect_transform("sx", args.min or 0)
+        self.__object:set_effect_transform("sy", args.min or 0)
     end
 
     if self.__id == Effect.TYPE.popout then

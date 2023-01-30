@@ -35,7 +35,7 @@ end
 ---@param Game GameState.Game
 function Timer:__constructor__(Game, args)
     self.game = Game
-    self.time = args.init_time or 20
+    self.time = args.init_time or 300
     self.time_init = self.time
     self.speed = 0.5
     self.acumulator = 0.0
@@ -92,6 +92,11 @@ function Timer:increment(value, reset_cycle)
     if self.time > self.time_warning then
         self.time_capture = self.time
     end
+end
+
+function Timer:decrement(value, reset_cycle)
+    value = -math.abs(value)
+    self:increment(value, reset_cycle)
 end
 
 function Timer:update(dt)

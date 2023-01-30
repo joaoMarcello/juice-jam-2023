@@ -19,7 +19,9 @@ local TypePill = {
     atk = 1,
     def = 2,
     hp = 3,
-    time = 4
+    time = 4,
+    dash = 5,
+    jump = 6
 }
 
 ---@param self Game.Component.Pill
@@ -32,6 +34,8 @@ end
 ---@class Game.Component.Pill: GameComponent
 local Pill = setmetatable({}, GC)
 Pill.__index = Pill
+Pill.TypeMove = TypeMove
+Pill.TypeAttr = TypePill
 
 ---comment
 ---@param Game any
@@ -77,10 +81,10 @@ function Pill:__constructor__(Game, player, args)
     self.eff_swing = self:apply_effect("swing", { speed = 0.25, range = 0.05 })
 
     if self.type_move == TypeMove.dynamic then
-        self.eff_popin = self:apply_effect("popin", { speed = 0.5 })
+        self.eff_popin = self:apply_effect("popin", { speed = 0.5, min = 0.6 })
     end
 
-    self.body.mass = self.body.world.default_mass * 1.6
+    self.body.mass = self.body.world.default_mass * 1.5
     self.body:jump(32 * 3, -1)
     self.body.bouncing_y = 0.3
     self.body.bouncing_x = 0.3
@@ -112,6 +116,80 @@ function Pill:__constructor__(Game, player, args)
     self.anima = Pack.Anima:new({ img = pill_img })
 end
 
+function Pill:reward()
+    local gain = (math.random() >= 0.2 and 1) or 2
+    self.player:set_attribute(get_type_string(self), "add", gain)
+    return gain
+end
+
+function Pill:punish(gain, except)
+    local player = self.player
+
+    local type_pill = get_type_string(self)
+    local len_type_punish = 3
+    local attr
+    local types_punish = {
+        ["hp"] = true,
+        ["atk"] = true,
+        ["def"] = true,
+        ["time"] = true
+    }
+    types_punish[type_pill] = nil
+
+    if except and types_punish[except] then
+        types_punish[except] = nil
+        len_type_punish = len_type_punish - 1
+    end
+
+    local count = 1
+    for field, _ in pairs(types_punish) do
+        local key = "attr_" .. field
+
+        if (player[key] and math.random() >= 0.5)
+            or count == len_type_punish
+        then
+            if player[key] and player[key] <= 0 then goto continue end
+            attr = field
+            break
+        end
+
+        ::continue::
+        count = count + 1
+    end
+
+    local function extra_punish(prob, except)
+        prob = prob or 0.5
+        if math.random() >= (1.0 - prob) then
+            local temp = math.random() >= 0.5 and "def" or "atk"
+
+            if temp ~= type_pill then
+                if not except or (except and not except:match(type_pill)) then
+                    player:set_attribute(temp, "sub", 1)
+                    return temp
+                end
+            end
+        end
+    end
+
+    if attr == "time" or not attr then
+        self.game:game_get_timer():decrement(15, true)
+
+        player:set_debbug('lost', '- 15 s TIME')
+
+        local result = extra_punish(0.4)
+        if result then
+            player:set_debbug('lost', '- 15 s TIME and -1 ' .. result)
+        end
+
+    elseif attr then
+        player:set_attribute(attr, "sub", gain)
+        local r = type_pill ~= "hp" and extra_punish(0.3, attr)
+        if r then
+            player:set_debbug('lost', string.format('- %d %s and - 1 %s', gain, attr, r))
+        end
+    end
+end
+
 function Pill:update(dt)
     Affectable.update(self, dt)
 
@@ -128,7 +206,8 @@ function Pill:update(dt)
         if self.type == TypePill.time then
             self.game:game_get_timer():increment(20, true)
         else
-            self.player:set_attribute(get_type_string(self), "add", 1)
+            local gain = self:reward()
+            self:punish(gain)
         end
     end
 

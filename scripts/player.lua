@@ -14,6 +14,7 @@ local States = {
     dash = 3
 }
 
+local debbug = {}
 
 local keyboard_is_down = love.keyboard.isDown
 local math_abs = math.abs
@@ -182,10 +183,15 @@ function Player:__constructor__(Game, args)
     self.key_right = { 'right' }
     self.key_down = { 'down' }
     self.key_up = 'w'
-    self.key_jump = { 'space' }
+    self.key_jump = { 'space', 'up' }
     self.key_attack = 'u'
     self.key_dash = { 'f' }
-    self.key_pill_atk = { 'd' }
+
+    self.key_pill_atk = { 'a' }
+    self.key_pill_def = { 's' }
+    self.key_pill_hp = { 'd' }
+    self.key_pill_time = { 'v' }
+
 
     self.body.max_speed_x = self.max_speed
     self.body.allowed_air_dacc = true
@@ -217,10 +223,14 @@ function Player:__constructor__(Game, args)
     self.state = States.default
 end
 
----@param attr "hp"|"def"|"atk"
+---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"
+
+---@param attr Game.Component.Player.Attributes
 ---@param mode "add"|"sub"
 ---@param value number
 function Player:set_attribute(attr, mode, value)
+    if not attr then return false end
+
     local key = "attr_" .. attr
     local field = self[key]
     if not field then return false end
@@ -229,9 +239,15 @@ function Player:set_attribute(attr, mode, value)
 
     if mode == "add" then
         self[key] = Utils:clamp(field + value, 0, max)
+        debbug['gain'] = "+ " .. value .. ' ' .. key
+        debbug['lost'] = ''
     else
+        value = math.abs(value)
         self[key] = Utils:clamp(field - value, 0, max)
+        debbug['lost'] = "- " .. value .. ' ' .. key
     end
+
+
     return true
 end
 
@@ -342,12 +358,34 @@ end
 
 ---@param type  "atk"|"def"|"hp"|"time"
 function Player:throw_pill(type)
-    local pill_atk = Pill:new(self.Game, self.body.world, self,
-        { x = self.x + self.w / 2, y = self.y - 32 })
+    type = type or "atk"
 
-    pill_atk.x = self.x + self.w / 2 - pill_atk.w / 2
-    pill_atk.body:refresh(pill_atk.x)
-    self.Game:game_add_component(pill_atk)
+    local pill = Pill:new(self.Game, self.body.world, self,
+        {
+            x = self.x + self.w / 2,
+            y = self.y - 32,
+            pill_type = Pill.TypeAttr[type]
+        })
+
+    pill.x = self.x + self.w / 2 - pill.w / 2
+    pill.body:refresh(pill.x)
+    self.Game:game_add_component(pill)
+end
+
+function Player:try_throw_pill(key)
+    if pressed(self, 'pill_atk', key) then
+        self:throw_pill("atk")
+
+    elseif pressed(self, 'pill_def', key) then
+        self:throw_pill("def")
+
+    elseif pressed(self, 'pill_hp', key) then
+        self:throw_pill("hp")
+
+    elseif pressed(self, 'pill_time', key) then
+        self:throw_pill("time")
+
+    end
 end
 
 function Player:key_pressed(key)
@@ -383,9 +421,8 @@ function Player:key_pressed(key)
         then
             self:set_state(States.dash)
 
-        elseif pressed(self, 'pill_atk', key) then
-            self:throw_pill("atk")
-
+        else
+            self:try_throw_pill(key)
         end
 
     elseif self.state == States.dash then
@@ -433,6 +470,10 @@ function Player:key_pressed(key)
     end
 end
 
+function Player:set_debbug(index, value)
+    debbug[index] = value
+end
+
 function Player:update(dt)
     local body = self.body
 
@@ -458,6 +499,15 @@ function Player:draw()
     end
 
     Font:print('<color, 1, 1,0>' .. self.jump_count, self.x + self.w, self.y - Font.current.__font_size * 2 - 30)
+
+    if debbug['gain'] and debbug['lost'] then
+        Font:print('<color, 0.1, 1, 0.1>' ..
+            debbug['gain'] .. "\n<color>" .. debbug['lost'],
+            self.x + self.w + 10,
+            self.y + 10
+        -- , "left", math.huge
+        )
+    end
 end
 
 return Player
