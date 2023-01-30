@@ -89,7 +89,7 @@ function Pill:__constructor__(Game, player, args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
-    self.__gain = math.random() >= 0.3 and 1 or 2
+    self.__gain = math.random() >= 0.3333 and 1 or 2
 
     self.eff_swing = self:apply_effect("swing", { speed = 0.25, range = 0.05 })
 
@@ -187,8 +187,8 @@ function Pill:punish(gain, except)
         end
     end
 
-    if attr == "time" or not attr then
-        self.game:game_get_timer():decrement(15, true)
+    if attr == "time" or (not attr and type_pill ~= "time") then
+        self.game:game_get_timer():decrement(15 * self.__gain, true)
 
         player:set_debbug('lost', '- 15 s TIME')
 
@@ -198,7 +198,12 @@ function Pill:punish(gain, except)
         end
 
     elseif attr then
+        if gain >= 2 and attr:match("hp") and player.attr_hp <= 2 then
+            gain = 1
+        end
+
         player:set_attribute(attr, "sub", gain)
+
         local r = type_pill ~= "hp" and extra_punish(0.75, attr)
         if r then
             player:set_debbug('lost', string.format('- %d %s and - 1 %s', gain, attr, r))
@@ -222,7 +227,7 @@ function Pill:update(dt)
         self.__remove = true
 
         if self.type == TypePill.time then
-            self.game:game_get_timer():increment(20, true)
+            self.game:game_get_timer():increment(25 * self.__gain, true)
             self:punish(1, "hp")
         else
             local gain = self:reward()
