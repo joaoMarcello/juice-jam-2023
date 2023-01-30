@@ -5,14 +5,15 @@ local Utils = Pack.Utils
 
 local Affectable = Pack.Affectable
 
----@type love.Image
-local pill_img
+local img = {}
 
 ---@enum Game.Component.Pill.TypeMove
 local TypeMove = {
     dynamic = 1,
     fixed = 2
 }
+
+local img = {}
 
 ---@enum Game.Component.Pill.Type
 local TypePill = {
@@ -57,11 +58,21 @@ function Pill:new(Game, world, player, args)
 end
 
 function Pill:load()
-    pill_img = pill_img or love.graphics.newImage('/data/aseprite/pill.png')
+    img[TypePill.atk] = img[TypePill.atk]
+        or love.graphics.newImage('/data/aseprite/pill_atk.png')
+
+    img[TypePill.def] = img[TypePill.def]
+        or love.graphics.newImage('/data/aseprite/pill_def.png')
+
+    img[TypePill.hp] = img[TypePill.hp]
+        or love.graphics.newImage('/data/aseprite/pill_hp.png')
+
+    img[TypePill.time] = img[TypePill.time]
+        or love.graphics.newImage('/data/aseprite/pill_time.png')
 end
 
 function Pill:finish()
-    pill_img:release()
+    -- img = {}
 end
 
 ---@param Game GameState.Game
@@ -113,7 +124,7 @@ function Pill:__constructor__(Game, player, args)
         if self.eff_popin then self.eff_popin.__remove = true end
     end)
 
-    self.anima = Pack.Anima:new({ img = pill_img })
+    self.anima = Pack.Anima:new({ img = img[self.type] })
 end
 
 function Pill:reward()
