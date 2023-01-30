@@ -216,6 +216,15 @@ function Player:__constructor__(Game, args)
     self.attr_def_max = 3
     self.attr_atk = 1
     self.attr_atk_max = 3
+
+    self.attr_pill_hp = 5
+    self.attr_pill_hp_max = 10
+    self.attr_pill_atk = 3
+    self.attr_pill_atk_max = 5
+    self.attr_pill_def = 3
+    self.attr_pill_def_max = 5
+    self.attr_pill_time = 10
+    self.attr_pill_time_max = 15
     --=======================================================
 
     self.current_movement = move_default
@@ -223,7 +232,7 @@ function Player:__constructor__(Game, args)
     self.state = States.default
 end
 
----@alias Game.Component.Player.Attributes "hp"|"def"|"atk"
+---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"
 
 ---@param attr Game.Component.Player.Attributes
 ---@param mode "add"|"sub"
@@ -246,8 +255,6 @@ function Player:set_attribute(attr, mode, value)
         self[key] = Utils:clamp(field - value, 0, max)
         debbug['lost'] = "- " .. value .. ' ' .. key
     end
-
-
     return true
 end
 
@@ -360,6 +367,10 @@ end
 function Player:throw_pill(type)
     type = type or "atk"
 
+    local key = "attr_pill_" .. type
+    local amount = self[key]
+    if amount and amount <= 0 then return end
+
     local pill = Pill:new(self.Game, self.body.world, self,
         {
             x = self.x + self.w / 2,
@@ -370,6 +381,10 @@ function Player:throw_pill(type)
     pill.x = self.x + self.w / 2 - pill.w / 2
     pill.body:refresh(pill.x)
     self.Game:game_add_component(pill)
+
+    self[key] = self[key] - 1
+
+    return pill
 end
 
 function Player:try_throw_pill(key)
@@ -445,8 +460,8 @@ function Player:key_pressed(key)
             self:set_state(States.groundPound)
             self.dash_count = temp
 
-        elseif pressed(self, 'pill_atk', key) then
-            self:throw_pill("atk")
+        else
+            self:try_throw_pill(key)
         end
 
     elseif self.state == States.groundPound then

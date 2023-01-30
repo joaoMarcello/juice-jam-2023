@@ -89,6 +89,8 @@ function Pill:__constructor__(Game, player, args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
+    self.__gain = math.random() >= 0.3 and 1 or 2
+
     self.eff_swing = self:apply_effect("swing", { speed = 0.25, range = 0.05 })
 
     if self.type_move == TypeMove.dynamic then
@@ -125,10 +127,13 @@ function Pill:__constructor__(Game, player, args)
     end)
 
     self.anima = Pack.Anima:new({ img = img[self.type] })
+    if self.__gain > 1 then
+        self.anima:apply_effect("flash", { color = { 0.6, 0.6, 0.2 }, speed = 0.4 })
+    end
 end
 
 function Pill:reward()
-    local gain = (math.random() >= 0.2 and 1) or 2
+    local gain = self.__gain
     self.player:set_attribute(get_type_string(self), "add", gain)
     return gain
 end
@@ -194,7 +199,7 @@ function Pill:punish(gain, except)
 
     elseif attr then
         player:set_attribute(attr, "sub", gain)
-        local r = type_pill ~= "hp" and extra_punish(0.3, attr)
+        local r = type_pill ~= "hp" and extra_punish(0.75, attr)
         if r then
             player:set_debbug('lost', string.format('- %d %s and - 1 %s', gain, attr, r))
         end
@@ -203,6 +208,8 @@ end
 
 function Pill:update(dt)
     Affectable.update(self, dt)
+
+    self.anima:update(dt)
 
     local body = self.body
 
@@ -216,6 +223,7 @@ function Pill:update(dt)
 
         if self.type == TypePill.time then
             self.game:game_get_timer():increment(20, true)
+            self:punish(1, "hp")
         else
             local gain = self:reward()
             self:punish(gain)
