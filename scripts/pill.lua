@@ -1,11 +1,9 @@
 ---@type BodyComponent
-local GC = require "/scripts/gameComponent"
+local bodyGC = require "/scripts/bodyComponent"
 
 local Utils = Pack.Utils
 
 local Affectable = Pack.Affectable
-
-local img = {}
 
 ---@enum Game.Component.Pill.TypeMove
 local TypeMove = {
@@ -33,7 +31,7 @@ local function get_type_string(self)
 end
 
 ---@class Game.Component.Pill: BodyComponent
-local Pill = setmetatable({}, GC)
+local Pill = setmetatable({}, bodyGC)
 Pill.__index = Pill
 Pill.TypeMove = TypeMove
 Pill.TypeAttr = TypePill
@@ -51,7 +49,7 @@ function Pill:new(Game, world, player, args)
     args.pill_type = args.pill_type or TypePill.time
     args.pill_type_move = args.pill_type_move or TypeMove.dynamic
 
-    local obj = GC:new(Game, world, args)
+    local obj = bodyGC:new(Game, world, args)
     setmetatable(obj, self)
     Pill.__constructor__(obj, Game, player, args)
     return obj

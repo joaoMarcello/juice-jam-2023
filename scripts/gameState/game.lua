@@ -29,7 +29,7 @@ local components_gui
 local timer
 --=========================================================================
 
----@param gc BodyComponent
+---@param gc GameComponent
 function Game:game_add_component(gc)
     table.insert(components, gc)
 end
@@ -106,7 +106,7 @@ Game:implements({
         end
 
         for i = #components, 1, -1 do
-            ---@type BodyComponent
+            ---@type GameComponent
             local gc = components[i]
 
             local r = gc.update and gc.is_enable

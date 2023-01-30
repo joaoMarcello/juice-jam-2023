@@ -1,5 +1,5 @@
 ---@type BodyComponent
-local GC = require "/scripts/gameComponent"
+local bodyGC = require "/scripts/bodyComponent"
 
 local Pill = require "/scripts/pill"
 
@@ -161,14 +161,14 @@ local function dashing(self, dt)
 end
 
 ---@class Game.Player: BodyComponent
-local Player = setmetatable({}, GC)
+local Player = setmetatable({}, bodyGC)
 Player.__index = Player
 
 
 ---@return Game.Player
 function Player:new(Game, world, args)
     args.type = "dynamic"
-    local obj = GC:new(Game, world, args)
+    local obj = bodyGC:new(Game, world, args)
     setmetatable(obj, self)
 
     Player.__constructor__(obj, Game, args)
