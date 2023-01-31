@@ -42,17 +42,17 @@ do
         tab_size = 4
     })
 
-    Font.fonts[2] = Generator:new_by_ttf({
-        path = "/data/font/Cyrodiil.otf",
-        path_bold = "/data/font/Cyrodiil Bold.otf",
-        path_italic = "/data/font/Cyrodiil Italic.otf",
-        dpi = 64,
-        name = "cyrodiil",
-        font_size = 12,
-        tab_size = 4
-    })
+    -- Font.fonts[2] = Generator:new_by_ttf({
+    --     path = "/data/font/Cyrodiil.otf",
+    --     path_bold = "/data/font/Cyrodiil Bold.otf",
+    --     path_italic = "/data/font/Cyrodiil Italic.otf",
+    --     dpi = 64,
+    --     name = "cyrodiil",
+    --     font_size = 12,
+    --     tab_size = 4
+    -- })
 
-    Font.fonts[3] = Generator:new_by_ttf({
+    Font.fonts[2] = Generator:new_by_ttf({
         path = "/data/font/Garamond Premier Pro Regular.ttf",
         -- path_bold = "/data/font/Cyrodiil Bold.otf",
         path_italic = "/data/font/Garamond Premier Pro_italic.otf",

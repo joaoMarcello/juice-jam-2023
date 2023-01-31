@@ -243,7 +243,7 @@ function Player:__constructor__(Game, args)
     self.state = States.default
 
     ---@type Game.Player.Modes
-    self.mode = Modes.normal
+    self.mode = Modes.jump
 end
 
 ---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"

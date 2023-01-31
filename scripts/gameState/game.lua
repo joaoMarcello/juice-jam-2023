@@ -76,6 +76,7 @@ Game:implements({
         world = Physics:newWorld()
 
         Player:load()
+        DisplayHP:load()
 
         player = Player:new(Game, world, {
             x = 32 * 3,

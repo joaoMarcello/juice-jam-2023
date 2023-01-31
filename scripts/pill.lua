@@ -66,6 +66,10 @@ function Pill:load()
 
     img[TypePill.time] = img[TypePill.time]
         or love.graphics.newImage('/data/aseprite/pill_time.png')
+
+    for _, img in pairs(img) do
+        img:setFilter("linear", "linear")
+    end
 end
 
 function Pill:finish()
@@ -124,7 +128,6 @@ function Pill:__constructor__(Game, player, args)
     end)
 
     self.anima = Pack.Anima:new({ img = img[self.type] })
-
 
     if self.type == TypePill.time then
         self:set_draw_order(self.draw_order + 1.0)
