@@ -117,8 +117,10 @@ Game:implements({
     update = function(dt)
         world:update(dt)
 
-        for i = 1, #components_gui do
-            local r = components_gui[i].update and components_gui[i]:update(dt)
+        if not player:is_dead() then
+            for i = 1, #components_gui do
+                local r = components_gui[i].update and components_gui[i]:update(dt)
+            end
         end
 
         -- table.sort(components, )
@@ -183,6 +185,17 @@ Game:implements({
                     Font.current:push()
                     Font.current:set_font_size(32)
                     local obj = Font:get_phrase("<color, 1, 1, 0><effect=scream>TIME iS UP!", 0, 0, "left",
+                        math.huge)
+
+                    local obj_w = obj:width()
+                    obj:draw(left + width / 2 - obj_w / 2, top + height * 0.3, "left")
+
+                    Font.current:pop()
+
+                elseif player:is_dead() then
+                    Font.current:push()
+                    Font.current:set_font_size(32)
+                    local obj = Font:get_phrase("<color, 1, 1, 0><effect=scream>YOU ARE DEAD!", 0, 0, "left",
                         math.huge)
 
                     local obj_w = obj:width()

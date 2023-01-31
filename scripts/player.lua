@@ -15,6 +15,16 @@ local States = {
     dead = 4
 }
 
+---@enum Game.Player.Modes
+local Modes = {
+    normal = 0,
+    jump = 1,
+    dash = 2,
+    jump_ex = 3,
+    dash_ex = 4,
+    extreme = 5
+}
+
 local debbug = {}
 
 local keyboard_is_down = love.keyboard.isDown
@@ -164,7 +174,7 @@ end
 ---@class Game.Player: BodyComponent
 local Player = setmetatable({}, bodyGC)
 Player.__index = Player
-
+Player.Modes = Modes
 
 ---@return Game.Player
 function Player:new(Game, world, args)
@@ -231,6 +241,9 @@ function Player:__constructor__(Game, args)
     self.current_movement = move_default
     ---@type Game.Player.States
     self.state = States.default
+
+    ---@type Game.Player.Modes
+    self.mode = Modes.normal
 end
 
 ---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"
@@ -255,6 +268,10 @@ function Player:set_attribute(attr, mode, value)
         value = math.abs(value)
         self[key] = Utils:clamp(field - value, 0, max)
         debbug['lost'] = "- " .. value .. ' ' .. key
+    end
+
+    if self:is_dead() then
+        self:kill()
     end
     return true
 end

@@ -34,7 +34,7 @@ function Display:__constructor__(game, args)
 
     self.color_bar = Utils:get_rgba(42 / 255, 199 / 255, 57 / 255, 1)
     self.color_outline = Utils:get_rgba(34 / 255, 28 / 255, 26 / 255, 1)
-    self.color_nule = Utils:get_rgba(75 / 255, 62 / 255, 58 / 255, 1)
+    self.color_nule = Utils:get_rgba(110 / 255, 91 / 255, 86 / 255, 1)
 
     self.eff_flash = nil
     self.eff_fadeout = nil
@@ -46,7 +46,9 @@ function Display:__constructor__(game, args)
             love.graphics.setColor(arg.color)
             love.graphics.rectangle("fill", self.x, self.y, self.last_width, self.h)
         end)
-    self.vanish:set_color2(166 / 255, 22 / 255, 12 / 255, 1)
+    self.color_vanish_normal = Utils:get_rgba(199 / 255, 40 / 255, 53 / 255, 1)
+    self.color_vanish_dying = Utils:get_rgba(1, 1, 0, 1)
+    self.vanish:set_color(self.color_vanish_normal)
 
     self.last_width = width(self)
     self.player_last_hp = self.game:get_player().attr_hp
@@ -87,25 +89,39 @@ function Display:update(dt)
             speed = 0.3, min = 0.2, max = 0.9
         })
 
+        self.vanish:set_color(self.color_vanish_dying)
     end
 
     if player.attr_hp < self.player_last_hp
     -- and player.attr_hp ~= self.player_last_hp
     then
+        local lost = self.player_last_hp - player.attr_hp
+
         if self.eff_fadeout then
             self.eff_fadeout.__remove = true
         end
 
         self.eff_fadeout = self.vanish:apply_effect("fadeout", {
-            delay = 0.7
+            delay = 0.8
         })
 
         self.last_width = width(self, self.player_last_hp)
         self.player_last_hp = player.attr_hp
+        self:apply_effect("earthquake", {
+            duration = lost <= 1 and 0.3 or 0.5,
+            random = true,
+            range_x = 5,
+            range_y = 5
+        })
 
     elseif player.attr_hp > self.player_last_hp then
         self.last_width = width(self)
         self.player_last_hp = player.attr_hp
+        self.vanish:set_color(self.color_vanish_normal)
+        if self.eff_flash then
+            self.eff_flash.__remove = true
+            self.eff_flash = nil
+        end
     end
 end
 
@@ -122,7 +138,7 @@ local function draw_bar(self)
     end
 end
 
-function Display:draw()
+function Display:my_draw()
     local font = Pack.Font
     local player = self.game:get_player()
 
@@ -132,14 +148,17 @@ function Display:draw()
     love.graphics.setColor(self.color_nule)
     love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
 
-    local is_dead = player:is_dead()
-    if not is_dead then
+    if not player:is_dead() then
         self.vanish:draw()
     end
 
-    Affectable.draw(self, draw_bar)
+    draw_bar(self)
 
     font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
+end
+
+function Display:draw()
+    Affectable.draw(self, self.my_draw)
 end
 
 return Display
