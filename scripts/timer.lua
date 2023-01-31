@@ -102,6 +102,8 @@ end
 function Timer:update(dt)
     Affectable.update(self, dt)
 
+    if self.game:get_player():is_dead() then return end
+
     self.acumulator = self.acumulator + dt
     if self.acumulator >= self.speed and self.time > 0 then
         self.acumulator = self.acumulator - self.speed

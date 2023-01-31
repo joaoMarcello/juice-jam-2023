@@ -352,9 +352,16 @@ function Player:set_state(state)
 
 
     elseif state == States.dead then
-        self.current_movement = function(self, dt)
+        self.current_movement =
+        ---@param self Game.Player
+        function(self, dt)
             self.body.speed_x = 0
             self.body.acc_x = 0
+            if not self.Game.camera:rect_is_on_view(self.x, self.y - 64, self.w, self.h) then
+                self.body.speed_y = 0
+                self.body.acc_y = 0
+                self.body.allowed_gravity = false
+            end
         end
 
         body.speed_x = 0

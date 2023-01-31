@@ -92,9 +92,7 @@ function Display:update(dt)
         self.vanish:set_color(self.color_vanish_dying)
     end
 
-    if player.attr_hp < self.player_last_hp
-    -- and player.attr_hp ~= self.player_last_hp
-    then
+    if player.attr_hp < self.player_last_hp then
         local lost = self.player_last_hp - player.attr_hp
 
         if self.eff_fadeout then
@@ -123,6 +121,7 @@ function Display:update(dt)
             self.eff_flash = nil
         end
     end
+    
 end
 
 ---@param self Game.GUI.DisplayHP
