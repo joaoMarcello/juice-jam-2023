@@ -38,7 +38,7 @@ function Display:__constructor__(game, args)
     self.color_outline = Utils:get_rgba(34 / 255, 28 / 255, 26 / 255, 1)
 
     self.arrow = JM_Anima:new({ img = img_seta or '' })
-    self.arrow:set_size((self.radius - 12) * 2, (self.radius - 12) * 2)
+    self.arrow:set_size((self.radius - 11) * 2, (self.radius - 11) * 2)
     -- self.arrow:apply_effect('clockWise')
 
     ---@type JM.Template.Affectable

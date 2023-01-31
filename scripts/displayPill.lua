@@ -49,6 +49,10 @@ function Display:rect()
     return self.x, self.y, self.w, self.h
 end
 
+function Display:shake()
+    self:apply_effect("earthquake", { random = true, range_x = 3, range_y = 3, duration = 0.25 })
+end
+
 function Display:update(dt)
     Affectable.update(self, dt)
 end

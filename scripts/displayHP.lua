@@ -221,13 +221,14 @@ function Display:my_draw()
 
     self.display_atk:draw()
     self.display_def:draw()
-    self.display_pill:draw()
 
     -- font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
 end
 
 function Display:draw()
     Affectable.draw(self, self.my_draw)
+
+    self.display_pill:draw()
 end
 
 return Display

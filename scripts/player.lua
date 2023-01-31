@@ -501,21 +501,26 @@ end
 
 function Player:try_throw_pill(key)
     local throw
-
+    local press = false
     if pressed(self, 'pill_atk', key) then
         throw = self:throw_pill("atk")
+        press = true
 
     elseif pressed(self, 'pill_def', key) then
         throw = self:throw_pill("def")
+        press = true
 
     elseif pressed(self, 'pill_hp', key) then
         throw = self:throw_pill("hp")
+        press = true
 
     elseif pressed(self, 'pill_time', key) then
         throw = self:throw_pill("time")
+        press = true
     end
 
-    if not throw then
+    if not throw and press then
+        self.Game:game_get_displayHP().display_pill:shake()
     end
 end
 
