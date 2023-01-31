@@ -50,7 +50,6 @@ function Display:__constructor__(game, args)
 
     ---@type JM.Effect
     self.eff_rot = self.affect:apply_effect('clockWise', { speed = 1.2 })
-    --self.affect:set_effect_transform("rot", math.pi / 2)
     self.eff_rot.__is_enabled = false
 
     self:set_mode()
@@ -63,6 +62,11 @@ end
 
 function Display:init()
 
+end
+
+function Display:finish()
+    local r = img_seta and img_seta:release()
+    img_seta = nil
 end
 
 ---@param mode Game.Player.Modes|nil
@@ -117,11 +121,6 @@ function Display:flash()
     end)
 end
 
-function Display:finish()
-    local r = img_seta and img_seta:release()
-    img_seta = nil
-end
-
 function Display:update(dt)
     Affectable.update(self, dt)
     self.arrow:update(dt)
@@ -155,12 +154,18 @@ function Display:my_draw()
     self.affect.x = x
     self.affect.y = y
 
+    local player = self.game:get_player()
+    local modes = player.Modes
     self.affect:draw(function()
         self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
         self.arrow:draw(self.x + 1, self.y + 4 + 1)
         self.arrow:draw(self.x + 1, self.y - 12 + 4 + 1)
 
-        self.arrow:set_color2(1, 1, 1, 1)
+        if self.mode == modes.normal then
+            self.arrow:set_color2(0.5, 0.5, 0.5, 1)
+        else
+            self.arrow:set_color2(1, 1, 1, 1)
+        end
         self.arrow:draw(self.x, self.y + 4)
         self.arrow:draw(self.x, self.y - 12 + 4)
     end)

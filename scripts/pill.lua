@@ -233,7 +233,7 @@ function Pill:update(dt)
         local direction = self.body:direction_x()
 
         if direction ~= self.player.body:direction_x()
-        -- and direction ~= 0
+            and direction ~= 0
         then
             self.follow_player = false
         end

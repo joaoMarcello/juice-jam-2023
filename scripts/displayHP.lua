@@ -1,6 +1,7 @@
 local Affectable = Pack.Affectable
 local Utils = Pack.Utils
 local DisplayMode = require "/scripts/displayMode"
+local DisplayAttr = require "/scripts/displayAttr"
 
 ---@param self Game.GUI.DisplayHP
 local function width(self, hp)
@@ -35,7 +36,7 @@ function Display:__constructor__(game, args)
 
     self.color_bar = Utils:get_rgba(42 / 255, 199 / 255, 57 / 255, 1)
     self.color_outline = Utils:get_rgba(34 / 255, 28 / 255, 26 / 255, 1)
-    self.color_nule = Utils:get_rgba(110 / 255, 91 / 255, 86 / 255, 1)
+    self.color_nule = Utils:get_rgba(93 / 255, 93 / 255, 102 / 255, 1)
 
     self.eff_flash = nil
     self.eff_fadeout = nil
@@ -48,7 +49,7 @@ function Display:__constructor__(game, args)
             love.graphics.rectangle("fill", self.x, self.y, self.last_width, self.h)
         end)
     self.color_vanish_normal = Utils:get_rgba(199 / 255, 26 / 255, 26 / 255, 1)
-    self.color_vanish_dying = Utils:get_rgba(1, 1, 0, 1)
+    self.color_vanish_dying = Utils:get_rgba(199 / 255, 108 / 255, 53 / 255, 1)
     self.vanish:set_color(self.color_vanish_normal)
 
     self.last_width = width(self)
@@ -59,10 +60,23 @@ function Display:__constructor__(game, args)
     self.displayMode.y = self.y + self.h / 2 + self.displayMode.radius * 0.3
     self.displayMode.x = Utils:round(self.displayMode.x)
     self.displayMode.y = Utils:round(self.displayMode.y)
+
+    self.display_atk = DisplayAttr:new(game, {
+        attr = "atk",
+        x = self.x + 6,
+        y = self.y + self.h + 6
+    })
+
+    self.display_def = DisplayAttr:new(game, {
+        attr = "def",
+        x = self.x + 6,
+        y = self.display_atk.y + self.display_atk.h + 5
+    })
 end
 
 function Display:load()
     DisplayMode:load()
+    DisplayAttr:load()
 end
 
 function Display:init()
@@ -71,6 +85,14 @@ function Display:init()
     self.last_width = width(self)
     self.player_last_hp = self.game:get_player().attr_hp
     self.__effect_manager:clear()
+
+    DisplayMode:init()
+    DisplayAttr:init()
+end
+
+function Display:finish()
+    DisplayMode:finish()
+    DisplayAttr:finish()
 end
 
 function Display:player_is_dying()
@@ -93,7 +115,7 @@ function Display:flash(cycles)
     self:set_color2(1, 1, 0, 1)
 
     self.eff_flash = self:apply_effect("ghost", {
-        speed = 0.2, min = 0.2, max = 0.9, max_sequence = cycles
+        speed = 0.2, min = 0.2, max = 1, max_sequence = cycles
     })
 
     self.eff_flash:set_final_action(function()
@@ -147,6 +169,7 @@ function Display:update(dt)
             self.eff_flash.__remove = true
             self.eff_flash = nil
         end
+        self:flash(4)
     end
 
 end
@@ -180,6 +203,9 @@ function Display:my_draw()
     draw_bar(self)
 
     self.displayMode:draw()
+
+    self.display_atk:draw()
+    self.display_def:draw()
 
     -- font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
 end

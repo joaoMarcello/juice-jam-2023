@@ -511,11 +511,11 @@ function Player:key_pressed(key)
     local body = self.body
 
     if key == 'p' then
-        self:set_mode(Modes.dash_ex)
+        self:set_mode(Modes.dash)
     elseif key == 'i' then
         self:set_mode(Modes.extreme)
     elseif key == 'u' then
-        self:set_mode(Modes.jump_ex)
+        self:set_mode(Modes.jump)
     end
 
     if self.state == States.default then
