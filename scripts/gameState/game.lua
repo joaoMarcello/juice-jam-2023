@@ -6,6 +6,8 @@ local Player = require "/scripts/player"
 local Timer = require "/scripts/timer"
 local DisplayHP = require "/scripts/displayHP"
 
+
+
 ---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
 Game.camera:toggle_debug()
@@ -31,6 +33,9 @@ local timer
 
 ---@type Game.GUI.DisplayHP
 local displayHP
+
+---@type Game.GUI.DisplayPill
+local displayPill
 
 local sort_update = function(a, b) return a.update_order < b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
@@ -103,6 +108,7 @@ Game:implements({
         Game:game_add_component(player)
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
+        table.insert(components_gui, displayPill)
     end,
 
     keypressed = function(key)
@@ -152,7 +158,7 @@ Game:implements({
                     local r = components[i].draw and components[i]:draw()
                 end
 
-                Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
+                -- Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
             end
         },
         --================================================================
@@ -175,9 +181,9 @@ Game:implements({
                 end
 
                 local font = Font.current
-                font:print("HP: " .. player.attr_hp .. "\nDEF: " .. player.attr_def .. "\nATK: " .. player.attr_atk,
-                    left - Game.camera.x + 45,
-                    top + height * 0.3 - Game.camera.y)
+                -- font:print("HP: " .. player.attr_hp .. "\nDEF: " .. player.attr_def .. "\nATK: " .. player.attr_atk,
+                --     left - Game.camera.x + 45,
+                --     top + height * 0.3 - Game.camera.y)
 
                 -- Showing the Time End message
                 if timer:get_time() <= 0 then

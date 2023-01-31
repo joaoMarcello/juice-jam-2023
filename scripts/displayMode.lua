@@ -47,6 +47,7 @@ function Display:__constructor__(game, args)
     self.affect.ox = self.radius
     self.affect.oy = self.radius
     self.affect:set_color2(1, 1, 0.5, 1)
+    self.affect:apply_effect("pulse", { range = 0.09, speed = 0.5 })
 
     ---@type JM.Effect
     self.eff_rot = self.affect:apply_effect('clockWise', { speed = 1.2 })

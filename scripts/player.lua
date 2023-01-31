@@ -121,6 +121,8 @@ local function move_default(self, dt)
 
     if body.speed_y > 0 and self.jump_count == 0
         and not self.wall_jump_ready
+        and self.mode ~= Modes.jump and self.mode ~= Modes.jump_ex
+        and self.mode ~= Modes.extreme
     then
         self.jump_count = 1
     else
@@ -498,18 +500,22 @@ function Player:throw_pill(type)
 end
 
 function Player:try_throw_pill(key)
+    local throw
+
     if pressed(self, 'pill_atk', key) then
-        self:throw_pill("atk")
+        throw = self:throw_pill("atk")
 
     elseif pressed(self, 'pill_def', key) then
-        self:throw_pill("def")
+        throw = self:throw_pill("def")
 
     elseif pressed(self, 'pill_hp', key) then
-        self:throw_pill("hp")
+        throw = self:throw_pill("hp")
 
     elseif pressed(self, 'pill_time', key) then
-        self:throw_pill("time")
+        throw = self:throw_pill("time")
+    end
 
+    if not throw then
     end
 end
 
@@ -642,7 +648,7 @@ function Player:draw()
         )
     end
 
-    Font:print(self.draw_order, self.x - 100, self.y)
+    -- Font:print(self.draw_order, self.x - 100, self.y)
 end
 
 return Player

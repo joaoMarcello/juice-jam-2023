@@ -2,6 +2,7 @@ local Affectable = Pack.Affectable
 local Utils = Pack.Utils
 local DisplayMode = require "/scripts/displayMode"
 local DisplayAttr = require "/scripts/displayAttr"
+local DisplayPill = require "/scripts/displayPill"
 
 ---@param self Game.GUI.DisplayHP
 local function width(self, hp)
@@ -56,27 +57,34 @@ function Display:__constructor__(game, args)
     self.player_last_hp = self.game:get_player().attr_hp
 
     self.displayMode = DisplayMode:new(game, {})
-    self.displayMode.x = self.x - self.displayMode.radius + 5
-    self.displayMode.y = self.y + self.h / 2 + self.displayMode.radius * 0.3
+    self.displayMode.x = self.x - self.displayMode.radius + 6
+    self.displayMode.y = self.y + self.h / 2 + self.displayMode.radius * 0.35
     self.displayMode.x = Utils:round(self.displayMode.x)
     self.displayMode.y = Utils:round(self.displayMode.y)
 
     self.display_atk = DisplayAttr:new(game, {
         attr = "atk",
-        x = self.x + 6,
+        x = self.x + 8,
         y = self.y + self.h + 6
     })
 
     self.display_def = DisplayAttr:new(game, {
         attr = "def",
-        x = self.x + 6,
+        x = self.x + 8,
         y = self.display_atk.y + self.display_atk.h + 5
+    })
+
+    self.display_pill = DisplayPill:new(game, {
+        -- x = self.displayMode.x - self.displayMode.radius,
+        y = self.y - 15,
+        x = self.x + self.w + 32 * 6.5 - (28 + 4) * 4
     })
 end
 
 function Display:load()
     DisplayMode:load()
     DisplayAttr:load()
+    DisplayPill:load()
 end
 
 function Display:init()
@@ -88,11 +96,13 @@ function Display:init()
 
     DisplayMode:init()
     DisplayAttr:init()
+    DisplayPill:init()
 end
 
 function Display:finish()
     DisplayMode:finish()
     DisplayAttr:finish()
+    DisplayPill:finish()
 end
 
 function Display:player_is_dying()
@@ -109,10 +119,14 @@ function Display:rect2()
     return self.x - 2, self.y - 2, self.w + 4, self.h + 4
 end
 
-function Display:flash(cycles)
+function Display:flash(cycles, white)
     if self.eff_flash then self.eff_flash.__remove = true end
 
-    self:set_color2(1, 1, 0, 1)
+    if white then
+        self:set_color2(141 / 255, 255 / 255, 99 / 255, 1)
+    else
+        self:set_color2(1, 1, 0, 1)
+    end
 
     self.eff_flash = self:apply_effect("ghost", {
         speed = 0.2, min = 0.2, max = 1, max_sequence = cycles
@@ -127,6 +141,7 @@ function Display:update(dt)
     Affectable.update(self, dt)
     self.vanish:update(dt)
     self.displayMode:update(dt)
+    self.display_pill:update(dt)
 
     local player = self.game:get_player()
 
@@ -169,7 +184,7 @@ function Display:update(dt)
             self.eff_flash.__remove = true
             self.eff_flash = nil
         end
-        self:flash(4)
+        self:flash(4, true)
     end
 
 end
@@ -206,6 +221,7 @@ function Display:my_draw()
 
     self.display_atk:draw()
     self.display_def:draw()
+    self.display_pill:draw()
 
     -- font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
 end
