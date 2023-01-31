@@ -307,11 +307,12 @@ function Scene:main_camera()
     return self.camera
 end
 
-function Scene:pause(time)
+function Scene:pause(time, action)
     if self.time_pause then
         return
     end
     self.time_pause = time
+    self.pause_action = action or nil
 end
 
 ---@param skip integer
@@ -462,6 +463,7 @@ function Scene:implements(param)
             if self.time_pause <= 0 then
                 self.time_pause = nil
             else
+                local r = self.pause_action and self.pause_action(dt)
                 return
             end
         end

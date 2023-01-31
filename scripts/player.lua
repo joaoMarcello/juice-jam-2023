@@ -268,11 +268,19 @@ function Player:set_attribute(attr, mode, value)
         value = math.abs(value)
         self[key] = Utils:clamp(field - value, 0, max)
         debbug['lost'] = "- " .. value .. ' ' .. key
+
+        if self:is_dead() then
+            self:kill()
+        end
+
+        if attr == "hp" then
+            self.Game:pause(((self:is_dead() or value > 1) and 0.55) or 0.3,
+                function(dt)
+                    self.Game:game_get_displayHP():update(dt)
+                end)
+        end
     end
 
-    if self:is_dead() then
-        self:kill()
-    end
     return true
 end
 

@@ -205,7 +205,8 @@ function Pill:punish(gain, except)
         end
 
     elseif attr then
-        if gain >= 2 and attr:match("hp") and player.attr_hp <= 2 then
+        local punish_hp = attr:match("hp")
+        if gain >= 2 and punish_hp and player.attr_hp <= 2 then
             gain = 1
         end
 

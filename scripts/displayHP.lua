@@ -29,7 +29,7 @@ function Display:__constructor__(game, args)
 
     self.x = 32 * 1
     self.y = 32
-    self.w = 32 * 3.5
+    self.w = Utils:round(32 * 4)
     self.h = 16
 
     self.color_bar = Utils:get_rgba(42 / 255, 199 / 255, 57 / 255, 1)
@@ -121,7 +121,7 @@ function Display:update(dt)
             self.eff_flash = nil
         end
     end
-    
+
 end
 
 ---@param self Game.GUI.DisplayHP

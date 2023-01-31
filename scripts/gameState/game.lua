@@ -58,6 +58,10 @@ function Game:get_player()
     return player
 end
 
+function Game:game_get_displayHP()
+    return displayHP
+end
+
 --=========================================================================
 
 Game:implements({
