@@ -42,12 +42,18 @@ function Display:__constructor__(game, args)
     -- self.arrow:apply_effect('clockWise')
 
     ---@type JM.Template.Affectable
-    self.aff = Affectable:new()
+    self.affect = Affectable:new()
 
-    self.aff.ox = self.radius
-    self.aff.oy = self.radius
-    self.aff:apply_effect('clockWise')
-    -- self.arrow:set_rotation(math.pi / 2)
+    self.affect.ox = self.radius
+    self.affect.oy = self.radius
+    self.affect:set_color2(1, 1, 0, 1)
+
+    ---@type JM.Effect
+    self.eff_rot = self.affect:apply_effect('clockWise')
+    --self.affect:set_effect_transform("rot", math.pi / 2)
+    self.eff_rot.__is_enabled = false
+
+    self:set_mode()
 end
 
 function Display:load()
@@ -59,6 +65,41 @@ function Display:init()
 
 end
 
+---@param mode Game.Player.Modes|nil
+function Display:set_mode(mode)
+    local player = self.game:get_player()
+    mode = mode or player.mode
+
+    local function rotate(rad)
+        self.eff_rot.__rad = rad
+        self.affect:set_effect_transform("rot", rad)
+    end
+
+    local modes = player.Modes
+
+    if mode == modes.dash then
+        rotate(math.pi / 2)
+    elseif mode == modes.jump then
+        rotate(0)
+    end
+
+    self.mode = mode
+
+    self:flash()
+
+    return true
+end
+
+function Display:flash()
+    if self.eff_flash then self.eff_flash.__remove = true end
+
+    self.eff_flash = self.affect:apply_effect("ghost", { speed = 0.25, max_sequence = 4 })
+
+    self.eff_flash:set_final_action(function()
+        self.eff_flash = nil
+    end)
+end
+
 function Display:finish()
     local r = img_seta and img_seta:release()
     img_seta = nil
@@ -67,7 +108,13 @@ end
 function Display:update(dt)
     Affectable.update(self, dt)
     self.arrow:update(dt)
-    self.aff:update(dt)
+    self.affect:update(dt)
+end
+
+---@param self Game.GUI.DisplayMode
+local function draw_arrow(self)
+    self.arrow:draw(self.x, self.y + 4)
+    self.arrow:draw(self.x, self.y - 12 + 4)
 end
 
 function Display:my_draw()
@@ -79,19 +126,26 @@ function Display:my_draw()
     love.graphics.setColor(self.__colors[mode])
     love.graphics.circle("fill", self.x, self.y, self.radius - 2)
 
-    local x, y, w, h = self.x - self.radius, self.y - self.radius, self.radius * 2, self.radius * 2
+    if self.eff_flash then
+        love.graphics.setColor(self.affect.color)
+        love.graphics.circle("fill", self.x, self.y, self.radius - 2)
+    end
 
+    local x, y = self.x - self.radius, self.y - self.radius
 
-    self.aff.x = x
-    self.aff.y = y
-    self.aff:draw(function()
+    self.affect.x = x
+    self.affect.y = y
+
+    self.affect:draw(function()
         self.arrow:draw(self.x, self.y + 4)
         self.arrow:draw(self.x, self.y - 12 + 4)
     end)
 end
 
 function Display:draw()
-    self:my_draw()
+    --self:my_draw()
+    Affectable.draw(self, self.my_draw)
+
 end
 
 return Display

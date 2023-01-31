@@ -34,7 +34,11 @@ end
 
 function Ghost:update(dt)
     self.__rad = (self.__rad + (PI * 2) / self.__speed * dt)
-        % (PI * 2)
+
+    if self.__rad >= (PI * 2) then
+        self.__rad = self.__rad % (PI * 2)
+        self:__increment_cycle()
+    end
 
     self.__object:set_color2(
         nil, nil, nil,

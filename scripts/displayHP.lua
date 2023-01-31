@@ -87,6 +87,20 @@ function Display:rect2()
     return self.x - 2, self.y - 2, self.w + 4, self.h + 4
 end
 
+function Display:flash(cycles)
+    if self.eff_flash then self.eff_flash.__remove = true end
+
+    self:set_color2(1, 1, 0, 1)
+
+    self.eff_flash = self:apply_effect("ghost", {
+        speed = 0.3, min = 0.2, max = 0.9, max_sequence = cycles
+    })
+
+    self.eff_flash:set_final_action(function()
+        self.eff_flash = nil
+    end)
+end
+
 function Display:update(dt)
     Affectable.update(self, dt)
     self.vanish:update(dt)
@@ -95,11 +109,8 @@ function Display:update(dt)
     local player = self.game:get_player()
 
     if self:player_is_dying() and not self.eff_flash then
-        self:set_color2(1, 1, 0, 1)
 
-        self.eff_flash = self:apply_effect("ghost", {
-            speed = 0.3, min = 0.2, max = 0.9
-        })
+        self:flash()
 
         self.vanish:set_color(self.color_vanish_dying)
     end
@@ -124,6 +135,10 @@ function Display:update(dt)
             range_y = 5
         })
 
+        if not self:player_is_dying() then
+            self:flash(3)
+        end
+
     elseif player.attr_hp > self.player_last_hp then
         self.last_width = width(self)
         self.player_last_hp = player.attr_hp
@@ -143,7 +158,7 @@ local function draw_bar(self)
     love.graphics.setColor(is_dying and Utils:get_rgba(1, 0, 0, 1) or self.color_bar)
     love.graphics.rectangle("fill", self:rect())
 
-    if is_dying then
+    if self.eff_flash then
         love.graphics.setColor(self.color)
         love.graphics.rectangle("fill", self:rect())
     end

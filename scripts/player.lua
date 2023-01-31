@@ -243,7 +243,7 @@ function Player:__constructor__(Game, args)
     self.state = States.default
 
     ---@type Game.Player.Modes
-    self.mode = Modes.jump
+    self.mode = Modes.dash
 end
 
 ---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"
@@ -365,7 +365,7 @@ function Player:set_state(state)
         function(self, dt)
             self.body.speed_x = 0
             self.body.acc_x = 0
-            if not self.Game.camera:rect_is_on_view(self.x, self.y - 64, self.w, self.h) then
+            if not self.Game.camera:rect_is_on_view(self.x, self.y - 64, self.w, self.h + 64 * 2) then
                 self.body.speed_y = 0
                 self.body.acc_y = 0
                 self.body.allowed_gravity = false
