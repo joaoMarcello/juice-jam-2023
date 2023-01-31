@@ -60,7 +60,7 @@ end
 function Display:my_draw()
     local font = Pack.Font.current
 
-    love.graphics.setColor(34 / 255, 28 / 255, 26 / 255, 1)
+    love.graphics.setColor((34 + 20) / 255, (28 + 20) / 255, (26 + 20) / 255, 1)
     love.graphics.rectangle("fill", self:rect())
 
     font:push()

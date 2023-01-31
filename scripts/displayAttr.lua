@@ -130,7 +130,7 @@ function Display:draw()
         end
     end
 
-    font:print('' .. self.last_attr, self.x + self.w * 3 + 30, self.y)
+    -- font:print('' .. self.last_attr, self.x + self.w * 3 + 30, self.y)
 end
 
 return Display

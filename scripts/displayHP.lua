@@ -8,6 +8,7 @@ local DisplayPill = require "/scripts/displayPill"
 local function width(self, hp)
     local player = self.game:get_player()
     local hp = hp or player.attr_hp
+    hp = math.ceil(hp)
     local hp_max = player.attr_hp_max
 
     return self.w * (hp / hp_max)
