@@ -165,7 +165,6 @@ local function draw_bar(self)
 end
 
 function Display:my_draw()
-    local font = Pack.Font
     local player = self.game:get_player()
 
     love.graphics.setColor(self.color_outline)
@@ -182,7 +181,7 @@ function Display:my_draw()
 
     self.displayMode:draw()
 
-    font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
+    -- font:print('' .. self.player_last_hp .. '\n' .. self.last_width, self.x + self.w + 10, self.y)
 end
 
 function Display:draw()

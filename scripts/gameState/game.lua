@@ -113,10 +113,6 @@ Game:implements({
         end
 
         player:key_pressed(key)
-
-        if key == "p" then
-            table.insert(components)
-        end
     end,
 
     update = function(dt)

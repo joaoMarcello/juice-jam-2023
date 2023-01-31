@@ -175,6 +175,7 @@ end
 local Player = setmetatable({}, bodyGC)
 Player.__index = Player
 Player.Modes = Modes
+Player.States = States
 
 ---@return Game.Player
 function Player:new(Game, world, args)
@@ -243,7 +244,9 @@ function Player:__constructor__(Game, args)
     self.state = States.default
 
     ---@type Game.Player.Modes
-    self.mode = Modes.dash
+    self.mode = nil
+
+    self:set_mode(Modes.normal)
 end
 
 ---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"
@@ -279,6 +282,40 @@ function Player:set_attribute(attr, mode, value)
                     self.Game:game_get_displayHP():update(dt)
                 end)
         end
+    end
+
+    return true
+end
+
+---@param mode Game.Player.Modes
+function Player:set_mode(mode)
+    mode = mode or Modes.normal
+    if self.mode == mode then return false end
+
+    self.mode = mode
+    if mode == Modes.jump then
+        self.jump_max = 2
+        self.dash_max = 0
+
+    elseif mode == Modes.jump_ex then
+        self.jump_max = 3
+        self.dash_max = 0
+
+    elseif mode == Modes.dash then
+        self.dash_max = 1
+        self.jump_max = 1
+
+    elseif mode == Modes.dash_ex then
+        self.dash_max = 2
+        self.jump_max = 1
+
+    elseif mode == Modes.extreme then
+        self.dash_max = 2
+        self.jump_max = 2
+
+    else
+        self.dash_max = 0
+        self.jump_max = 1
     end
 
     return true
@@ -461,6 +498,12 @@ end
 
 function Player:key_pressed(key)
     local body = self.body
+
+    if key == 'p' then
+        self:set_mode(Modes.dash_ex)
+    elseif key == 'i' then
+        self:set_mode(Modes.jump_ex)
+    end
 
     if self.state == States.default then
 

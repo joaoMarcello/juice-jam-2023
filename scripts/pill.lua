@@ -229,6 +229,16 @@ function Pill:update(dt)
 
     local body = self.body
 
+    if self.follow_player and self.player.state == self.player.States.dash then
+        local direction = self.body:direction_x()
+
+        if direction ~= self.player.body:direction_x()
+        -- and direction ~= 0
+        then
+            self.follow_player = false
+        end
+    end
+
     if self.type_move == TypeMove.dynamic then
         local on_view = self.game.camera:rect_is_on_view(body:rect())
         self.__remove = not on_view and body.y > self.game.camera.y

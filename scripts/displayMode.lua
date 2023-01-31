@@ -29,9 +29,9 @@ function Display:__constructor__(game, args)
     self.__colors = {
         [modes.normal] = Utils:get_rgba(89 / 255, 89 / 255, 89 / 255, 1),
         [modes.jump] = Utils:get_rgba(212 / 255, 108 / 255, 129 / 255, 1),
-        [modes.jump_ex] = Utils:get_rgba(),
+        [modes.jump_ex] = Utils:get_rgba(212 / 255, 108 / 255, 129 / 255, 1),
         [modes.dash] = Utils:get_rgba(130 / 255, 108 / 255, 212 / 255, 1),
-        [modes.dash_ex] = Utils:get_rgba(),
+        [modes.dash_ex] = Utils:get_rgba(130 / 255, 108 / 255, 212 / 255, 1),
         [modes.extreme] = Utils:get_rgba(212 / 255, 111 / 255, 68 / 255, 1),
     }
 
@@ -46,7 +46,7 @@ function Display:__constructor__(game, args)
 
     self.affect.ox = self.radius
     self.affect.oy = self.radius
-    self.affect:set_color2(1, 1, 0, 1)
+    self.affect:set_color2(1, 1, 0.5, 1)
 
     ---@type JM.Effect
     self.eff_rot = self.affect:apply_effect('clockWise')
@@ -69,6 +69,8 @@ end
 function Display:set_mode(mode)
     local player = self.game:get_player()
     mode = mode or player.mode
+
+    if self.mode == mode then return false end
 
     local function rotate(rad)
         self.eff_rot.__rad = rad
@@ -93,7 +95,7 @@ end
 function Display:flash()
     if self.eff_flash then self.eff_flash.__remove = true end
 
-    self.eff_flash = self.affect:apply_effect("ghost", { speed = 0.25, max_sequence = 4 })
+    self.eff_flash = self.affect:apply_effect("ghost", { speed = 0.2, max_sequence = 4 })
 
     self.eff_flash:set_final_action(function()
         self.eff_flash = nil
@@ -109,6 +111,8 @@ function Display:update(dt)
     Affectable.update(self, dt)
     self.arrow:update(dt)
     self.affect:update(dt)
+
+    self:set_mode()
 end
 
 ---@param self Game.GUI.DisplayMode
@@ -137,6 +141,11 @@ function Display:my_draw()
     self.affect.y = y
 
     self.affect:draw(function()
+        self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
+        self.arrow:draw(self.x + 1, self.y + 4 + 1)
+        self.arrow:draw(self.x + 1, self.y - 12 + 4 + 1)
+
+        self.arrow:set_color2(1, 1, 1, 1)
         self.arrow:draw(self.x, self.y + 4)
         self.arrow:draw(self.x, self.y - 12 + 4)
     end)
