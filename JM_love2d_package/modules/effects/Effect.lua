@@ -192,6 +192,12 @@ function Effect:__increment_cycle()
     self.cycle_count = self.cycle_count + 1
 end
 
+function Effect:completed_cycle()
+    return self.__max_sequence
+        and self.__ends_by_cycle
+        and (self.cycle_count >= self.__max_sequence)
+end
+
 function Effect:update(dt)
     return false
 end

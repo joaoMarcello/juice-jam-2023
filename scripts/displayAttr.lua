@@ -4,6 +4,9 @@ local Utils = Pack.Utils
 ---@type love.Image|nil
 local img
 
+---@type love.Image|nil
+local img2
+
 ---@class Game.GUI.DisplayAttr: JM.Template.Affectable
 local Display = setmetatable({}, Affectable)
 Display.__index = Display
@@ -19,11 +22,16 @@ end
 function Display:load()
     img = img or love.graphics.newImage('/data/aseprite/attribute.png')
     local r = img and img:setFilter("linear", "linear")
+
+    img2 = img2 or love.graphics.newImage('/data/aseprite/attribute_white.png')
+    local r = img2 and img2:setFilter("linear", "linear")
 end
 
 function Display:finish()
     local r = img and img:release()
     img = nil
+    local r = img2 and img2:release()
+    img2 = nil
 end
 
 function Display:init()
@@ -44,18 +52,44 @@ function Display:__constructor__(game, args)
     end
 
     self.icon = Pack.Anima:new({ img = img or '' })
+    self.icon_dark = Pack.Anima:new({ img = img or '' })
+    self.icon_dark:set_color2(0.4, 0.4, 0.4, 1)
 
-    if self.track == "atk" then
-        self.icon:set_color(args.color or Utils:get_rgba(1, 0.3, 0.3))
-    elseif self.track == "def" then
-        self.icon:set_color(args.color or Utils:get_rgba(0.3, 0.3, 1))
-    end
+    self.icon_eff = Pack.Anima:new({ img = img2 or '' })
+    self.icon_eff:set_color2(1, 1, 0.7, 1)
+
+    self.__color = {
+        ["attr_atk"] = Utils:get_rgba(1, 0.3, 0.3),
+        ["attr_def"] = Utils:get_rgba(0.3, 0.3, 1)
+    }
 
     self.key = 'attr_' .. self.track
+
+    if self.track == "atk" then
+        self.icon:set_color(self.__color[self.key])
+    elseif self.track == "def" then
+        self.icon:set_color(self.__color[self.key])
+    end
+
+    self.last_attr = self.game:get_player()[self.key]
 end
 
 function Display:update(dt)
     self.icon:update(dt)
+    self.icon_eff:update(dt)
+
+    local player = self.game:get_player()
+
+    if self.last_attr ~= player[self.key]
+        and (not self.eff_flash or self.eff_flash.__remove)
+    then
+        if self.eff_flash then self.eff_flash.__remove = true end
+
+        self.last_attr = player[self.key]
+
+        self.eff_flash = self.icon_eff:apply_effect("ghost",
+            { speed = 0.17, duration = 0.17 * 3 })
+    end
 end
 
 function Display:draw()
@@ -83,9 +117,20 @@ function Display:draw()
     )
     font:pop()
 
-    for i = 1, player[self.key] do
-        self.icon:draw_rec(self.x + (self.w - 3) * (i - 1) + 25, self.y, self.w, self.h - 1)
+    for i = 1, player[self.key .. "_max"] do
+        local px, py, pw, ph = self.x + (self.w - 3) * (i - 1) + 25, self.y, self.w, self.h - 1
+
+        if i > player[self.key] then
+            self.icon_dark:draw_rec(px, py, pw, ph)
+        else
+            self.icon:draw_rec(px, py, pw, ph)
+            if self.eff_flash and not self.eff_flash.__remove then
+                self.icon_eff:draw_rec(px, py, pw, ph)
+            end
+        end
     end
+
+    font:print('' .. self.last_attr, self.x + self.w * 3 + 30, self.y)
 end
 
 return Display

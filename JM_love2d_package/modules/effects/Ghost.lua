@@ -33,17 +33,17 @@ function Ghost:__constructor__(args)
 end
 
 function Ghost:update(dt)
+    self.__object:set_color2(
+        nil, nil, nil,
+        self.__center + m_sin(self.__rad) * self.__range
+    )
+
     self.__rad = (self.__rad + (PI * 2) / self.__speed * dt)
 
     if self.__rad >= (PI * 2) then
         self.__rad = self.__rad % (PI * 2)
         self:__increment_cycle()
     end
-
-    self.__object:set_color2(
-        nil, nil, nil,
-        self.__center + m_sin(self.__rad) * self.__range
-    )
 end
 
 return Ghost

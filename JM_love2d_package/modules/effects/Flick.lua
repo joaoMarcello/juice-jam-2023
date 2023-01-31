@@ -46,16 +46,18 @@ end
 
 function Flick:update(dt)
     self.__time = self.__time + dt
-    if self.__time >= self.__speed then
-        self.__flick_state = -self.__flick_state
-        self.__time = self.__time - self.__speed
-        self:__increment_cycle()
-    end
+
 
     if self.__flick_state == 1 then
         self.__object:set_visible(true)
     elseif self.__flick_state == -1 then
         self.__object:set_visible(false)
+    end
+
+    if self.__time >= self.__speed then
+        self.__flick_state = -self.__flick_state
+        self.__time = self.__time - self.__speed
+        self:__increment_cycle()
     end
 end
 

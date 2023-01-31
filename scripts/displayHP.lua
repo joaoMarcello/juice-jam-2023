@@ -141,6 +141,8 @@ function Display:update(dt)
     Affectable.update(self, dt)
     self.vanish:update(dt)
     self.displayMode:update(dt)
+    self.display_atk:update(dt)
+    self.display_def:update(dt)
     self.display_pill:update(dt)
 
     local player = self.game:get_player()
