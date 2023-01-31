@@ -93,7 +93,7 @@ function Display:flash(cycles)
     self:set_color2(1, 1, 0, 1)
 
     self.eff_flash = self:apply_effect("ghost", {
-        speed = 0.3, min = 0.2, max = 0.9, max_sequence = cycles
+        speed = 0.2, min = 0.2, max = 0.9, max_sequence = cycles
     })
 
     self.eff_flash:set_final_action(function()
@@ -136,7 +136,7 @@ function Display:update(dt)
         })
 
         if not self:player_is_dying() then
-            self:flash(3)
+            self:flash(4)
         end
 
     elseif player.attr_hp > self.player_last_hp then

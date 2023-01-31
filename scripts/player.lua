@@ -280,6 +280,7 @@ function Player:set_attribute(attr, mode, value)
             self.Game:pause(((self:is_dead() or value > 1) and 0.55) or 0.3,
                 function(dt)
                     self.Game:game_get_displayHP():update(dt)
+                    self.Game.camera:update(dt)
                 end)
         end
     end
@@ -311,7 +312,10 @@ function Player:set_mode(mode)
 
     elseif mode == Modes.extreme then
         self.dash_max = 2
-        self.jump_max = 2
+        self.jump_max = 3
+        local value = self.attr_hp - 1
+        value = value <= 0 and 1 or value
+        self:set_attribute("hp", "sub", value)
 
     else
         self.dash_max = 0
@@ -402,12 +406,19 @@ function Player:set_state(state)
         function(self, dt)
             self.body.speed_x = 0
             self.body.acc_x = 0
-            if not self.Game.camera:rect_is_on_view(self.x, self.y - 64, self.w, self.h + 64 * 2) then
+            if not self.Game.camera:rect_is_on_view(self.x, self.y - 64,
+                self.w, self.h + 64 * 2)
+                and self.body.y > (32 * 26)
+            then
                 self.body.speed_y = 0
                 self.body.acc_y = 0
                 self.body.allowed_gravity = false
             end
         end
+
+        self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
+        self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
+        self.Game.camera.shake_rad_y = math.pi
 
         body.speed_x = 0
         body.speed_y = 0
@@ -502,6 +513,8 @@ function Player:key_pressed(key)
     if key == 'p' then
         self:set_mode(Modes.dash_ex)
     elseif key == 'i' then
+        self:set_mode(Modes.extreme)
+    elseif key == 'u' then
         self:set_mode(Modes.jump_ex)
     end
 

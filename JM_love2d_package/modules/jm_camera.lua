@@ -1326,39 +1326,6 @@ end
 
 ---@param self JM.Camera.Camera
 local function debbug(self)
-    --if not self.debug then return end
-
-    -- -- printing some useful information
-    -- do
-    --     love_set_color(0, 0, 0, 1)
-    --     local x, y = mfloor((self.x + self.focus_x / self.scale) / self.tile_size),
-    --         mfloor((self.y + self.focus_y / self.scale) / self.tile_size)
-
-    --     love.graphics.print("Focus: (" .. tostring(x) .. ", " .. tostring(y) .. ")",
-    --         self.viewport_x + (self.tile_size + 5) * self.scale,
-    --         self.viewport_y + (self.tile_size + 20) * self.scale
-    --     )
-
-    --     if self.target and self.target.x and self.target.y then
-    --         local x, y
-    --         x, y = mfloor((self.target.x + self.focus_x / self.scale) / self.tile_size),
-    --             mfloor((self.target.y + self.focus_y / self.scale) / self.tile_size)
-
-    --         love.graphics.print("Target: (" .. tostring(x) .. ", " .. tostring(y) .. ")",
-    --             self.viewport_x + (self.tile_size + 5) * self.scale,
-    --             self.viewport_y + (self.tile_size + 40) * self.scale)
-
-    --         local camx = (self.x)
-    --         local t = self.target.x
-    --         love.graphics.print("Cam (x = " ..
-    --             tostring(self.x) ..
-    --             ", y = " .. tostring(self.y) .. ")",
-    --             self.viewport_x + (self.tile_size + 5) * self.scale,
-    --             self.viewport_y + (self.tile_size + 60) * self.scale
-    --         )
-    --     end
-    -- end
-    --===================================================================
 
     --Drawing a yellow rectangle
     if not self:hit_border() then
@@ -1417,17 +1384,17 @@ local function debbug(self)
     love_set_color(r, g, b, a)
 
     if Font then
-        Font.current:push()
-        Font.current:set_font_size(clamp(round(12 * self.scale), 10, 14))
-        Font:print(("<color, %.1f, %.1f, %.1f, %.1f>"):format(r, g, b, a) .. self:get_state(),
+        --Font.current:push()
+        --Font.current:set_font_size(clamp(round(12 * self.scale), 10, 14))
+        local state = '<color>' .. self:get_state()
+        Font:print(state,
             self.viewport_x + border_len + 2,
             self.viewport_y + self.viewport_h - border_len - 20)
-        Font.current:pop()
+        --Font.current:pop()
 
         -- Showing the message DEBUG MODE
         Font.current:push()
         Font.current:set_font_size(12)
-
         local fr = Font:get_phrase("<color><effect=ghost, min=0.4, max=1.0, speed=0.5>DEBUG MODE")
         fr:draw(
             self.viewport_x + self.viewport_w - border_len - fr:width() - 10,

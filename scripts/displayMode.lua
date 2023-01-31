@@ -49,7 +49,7 @@ function Display:__constructor__(game, args)
     self.affect:set_color2(1, 1, 0.5, 1)
 
     ---@type JM.Effect
-    self.eff_rot = self.affect:apply_effect('clockWise')
+    self.eff_rot = self.affect:apply_effect('clockWise', { speed = 1.2 })
     --self.affect:set_effect_transform("rot", math.pi / 2)
     self.eff_rot.__is_enabled = false
 
@@ -79,10 +79,14 @@ function Display:set_mode(mode)
 
     local modes = player.Modes
 
-    if mode == modes.dash then
+    self.eff_rot.__is_enabled = false
+
+    if mode == modes.dash or mode == modes.dash_ex then
         rotate(math.pi / 2)
-    elseif mode == modes.jump then
+    elseif mode == modes.jump or mode == modes.jump_ex then
         rotate(0)
+    elseif mode == modes.extreme then
+        self.eff_rot.__is_enabled = true
     end
 
     self.mode = mode
@@ -92,13 +96,24 @@ function Display:set_mode(mode)
     return true
 end
 
+function Display:get_mode_string()
+    for mode, _ in pairs(self.game:get_player().Modes) do
+        if _ == self.mode then
+            return mode
+        end
+    end
+end
+
 function Display:flash()
     if self.eff_flash then self.eff_flash.__remove = true end
 
-    self.eff_flash = self.affect:apply_effect("ghost", { speed = 0.2, max_sequence = 4 })
+    self.eff_flash = self.affect:apply_effect("ghost",
+        { speed = 0.2, max_sequence = self.mode ~= self.game:get_player().Modes.extreme and 4 or nil })
 
     self.eff_flash:set_final_action(function()
-        self.eff_flash = nil
+        if self.mode ~= self.game:get_player().Modes.extreme then
+            self.eff_flash = nil
+        end
     end)
 end
 
@@ -130,7 +145,7 @@ function Display:my_draw()
     love.graphics.setColor(self.__colors[mode])
     love.graphics.circle("fill", self.x, self.y, self.radius - 2)
 
-    if self.eff_flash then
+    if self.eff_flash and not self.eff_flash.__remove then
         love.graphics.setColor(self.affect.color)
         love.graphics.circle("fill", self.x, self.y, self.radius - 2)
     end
@@ -149,12 +164,30 @@ function Display:my_draw()
         self.arrow:draw(self.x, self.y + 4)
         self.arrow:draw(self.x, self.y - 12 + 4)
     end)
+
+    local font = Pack.Font.current
+    font:push()
+    font:set_font_size(6)
+    font:set_line_space(2)
+    local s = self:get_mode_string():upper():gsub("_", " ")
+    local py = self.y + self.radius - 10
+    local pw = x + self.radius * 2
+
+    font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s\nMODE", s), x - 1, py, pw - 1, "center")
+
+    font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s\nMODE", s), x, py + 1, pw, "center")
+
+    font:printx(string.format("<color, 0, 0, 0, 1> <bold> %s\nMODE", s), x + 1, py + 1, pw + 1, "center")
+
+    font:printx(string.format("<color, 1, 1, 1, 1> <bold> %s\nMODE", s), x, py,
+        pw, "center")
+    font:pop()
+
 end
 
 function Display:draw()
     --self:my_draw()
     Affectable.draw(self, self.my_draw)
-
 end
 
 return Display
