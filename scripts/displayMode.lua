@@ -156,6 +156,7 @@ function Display:my_draw()
 
     local player = self.game:get_player()
     local modes = player.Modes
+
     self.affect:draw(function()
         self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
         self.arrow:draw(self.x + 1, self.y + 4 + 1)
@@ -184,8 +185,17 @@ function Display:my_draw()
 
     font:printx(string.format("<color, 0, 0, 0, 1> <bold> %s\nMODE", s), x + 1, py + 1, pw + 1, "center")
 
-    font:printx(string.format("<color, 1, 1, 1, 1> <bold> %s\nMODE", s), x, py,
-        pw, "center")
+    if self.mode == modes.normal then
+        font:printx(
+            string.format("<color, 0.8, 0.8, 0.8, 1> <bold> %s\nMODE", s),
+            x, py,
+            pw, "center")
+    else
+        font:printx(
+            string.format("<color, 1, 1, 1, 1> <bold> %s\nMODE", s),
+            x, py,
+            pw, "center")
+    end
     font:pop()
 
 end
