@@ -119,9 +119,15 @@ local function move_default(self, dt)
         body.allowed_air_dacc = true
     end
 
-    if body.ground then
-        self.dash_count = 0
-        self.jump_count = 0
+    if body.speed_y > 0 and self.jump_count == 0
+        and not self.wall_jump_ready
+    then
+        self.jump_count = 1
+    else
+        if body.ground then
+            self.dash_count = 0
+            self.jump_count = 0
+        end
     end
 end
 

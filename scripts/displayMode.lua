@@ -70,7 +70,7 @@ function Display:finish()
 end
 
 ---@param mode Game.Player.Modes|nil
-function Display:set_mode(mode)
+function Display:set_mode(mode, use_flash)
     local player = self.game:get_player()
     mode = mode or player.mode
 
@@ -95,7 +95,7 @@ function Display:set_mode(mode)
 
     self.mode = mode
 
-    self:flash()
+    local r = use_flash and self:flash()
 
     return true
 end
@@ -126,7 +126,7 @@ function Display:update(dt)
     self.arrow:update(dt)
     self.affect:update(dt)
 
-    self:set_mode()
+    self:set_mode(nil, true)
 end
 
 ---@param self Game.GUI.DisplayMode

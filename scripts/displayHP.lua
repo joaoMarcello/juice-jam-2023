@@ -29,8 +29,8 @@ function Display:__constructor__(game, args)
     self.game = game
     local l, t, r, b = game.camera:get_viewport_in_world_coord()
 
-    self.x = 32 * 3
-    self.y = 32
+    self.x = Utils:round(32 * 2.3)
+    self.y = Utils:round(32 * 0.9)
     self.w = Utils:round(32 * 4)
     self.h = 16
 
