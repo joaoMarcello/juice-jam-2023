@@ -4,6 +4,7 @@ local Physics = Pack.Physics
 
 local Player = require "/scripts/player"
 local Timer = require "/scripts/timer"
+local DisplayHP = require "/scripts/displayHP"
 
 ---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
@@ -27,6 +28,9 @@ local components_gui
 
 ---@type Game.GUI.Timer
 local timer
+
+---@type Game.GUI.DisplayHP
+local displayHP
 
 local sort_update = function(a, b) return a.update_order < b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
@@ -80,15 +84,20 @@ Game:implements({
             local x, y, w, h = unpack(r)
             Physics:newBody(world, x, y, w, h, "static")
         end
+
     end,
 
     init = function()
         timer = Timer:new(Game)
+        displayHP = DisplayHP:new(Game, {})
+        displayHP:load()
+
         components = {}
         components_gui = {}
 
         Game:game_add_component(player)
         table.insert(components_gui, timer)
+        table.insert(components_gui, displayHP)
     end,
 
     keypressed = function(key)

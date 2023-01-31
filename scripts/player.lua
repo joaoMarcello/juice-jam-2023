@@ -211,7 +211,7 @@ function Player:__constructor__(Game, args)
     self.wall = nil
 
     -- ========   ATRIBUTES  ===============================
-    self.attr_hp = 2
+    self.attr_hp = 4
     self.attr_hp_max = 6
     self.attr_def = 1
     self.attr_def_max = 3
@@ -220,9 +220,9 @@ function Player:__constructor__(Game, args)
 
     self.attr_pill_hp = 5
     self.attr_pill_hp_max = 10
-    self.attr_pill_atk = 3
+    self.attr_pill_atk = 5
     self.attr_pill_atk_max = 5
-    self.attr_pill_def = 3
+    self.attr_pill_def = 5
     self.attr_pill_def_max = 5
     self.attr_pill_time = 10
     self.attr_pill_time_max = 15
@@ -268,7 +268,7 @@ function Player:kill()
 end
 
 function Player:is_dead()
-    return self.state == States.dead
+    return self.state == States.dead or self.attr_hp <= 0
 end
 
 function Player:finish_state(next_state)
@@ -346,7 +346,7 @@ function Player:set_state(state)
         body.type = Pack.Physics.BodyTypes.ghost
         body:jump(32 * 3, -1)
         body:on_event("start_falling", function()
-            body.mass = body.mass * 0.5
+            body.mass = body.mass * 0.8
         end)
     else
         self.current_movement = move_default
