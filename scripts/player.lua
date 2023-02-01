@@ -658,7 +658,8 @@ function Player:key_pressed(key)
 
         elseif pressed(self, 'jump', key)
             and self.jump_count < self.jump_max
-            and (self.mode == Modes.jump or self.mode == Modes.jump_ex)
+            and (self.mode == Modes.jump or self.mode == Modes.jump_ex
+                or self.mode == Modes.extreme)
         then
             self:jump()
             self:set_state(States.default)
