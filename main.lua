@@ -12,6 +12,7 @@ love.mouse.setVisible(false)
 ---@field update function
 ---@field draw function
 ---@field keypressed function
+---@field prev_state GameState
 
 --==================================================================
 
@@ -21,16 +22,18 @@ SCREEN_HEIGHT = 32 * 13
 --==================================================================
 
 ---@type GameState
-local scene --= require("scripts.gameState.menu_principal")
+local scene
 
 ---@param new_state GameState
-function Change_gamestate(new_state, run_finish, run_load)
+function Change_gamestate(new_state, run_finish, run_load, save_prev)
     local r = scene and run_finish and scene:finish()
     r = run_load and new_state:load()
     new_state:init()
+    new_state.prev_state = save_prev and scene or nil
     scene = new_state
     collectgarbage()
     scene:fadein(nil, nil, nil)
+
 end
 
 function love.load()
