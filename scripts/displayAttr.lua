@@ -24,13 +24,13 @@ function Display:load()
     local r = img and img:setFilter("linear", "linear")
 
     img2 = img2 or love.graphics.newImage('/data/aseprite/attribute_white.png')
-    local r = img2 and img2:setFilter("linear", "linear")
+    r = img2 and img2:setFilter("linear", "linear")
 end
 
 function Display:finish()
     local r = img and img:release()
     img = nil
-    local r = img2 and img2:release()
+    r = img2 and img2:release()
     img2 = nil
 end
 
@@ -64,6 +64,7 @@ function Display:__constructor__(game, args)
     }
 
     self.key = 'attr_' .. self.track
+    self.key_max = self.key .. "_max"
 
     if self.track == "atk" then
         self.icon:set_color(self.__color[self.key])
@@ -74,23 +75,30 @@ function Display:__constructor__(game, args)
     self.last_attr = self.game:get_player()[self.key]
 end
 
+function Display:flash(duration, speed)
+    self.eff_flash = self.icon_eff:apply_effect("ghost",
+        { speed = speed or 0.17, duration = duration })
+end
+
 function Display:update(dt)
     self.icon:update(dt)
     self.icon_eff:update(dt)
 
     local player = self.game:get_player()
+    local player_attr = player[self.key]
+    local max = player[self.key_max]
 
-    if self.last_attr ~= player[self.key]
-        and (not self.eff_flash or self.eff_flash.__remove)
+    if self.last_attr ~= player_attr
+    -- and (not self.eff_flash or self.eff_flash.__remove)
     then
         if self.eff_flash then self.eff_flash.__remove = true end
 
-        if player[self.key] > self.last_attr then
-            self.eff_flash = self.icon_eff:apply_effect("ghost",
-                { speed = 0.17, duration = 0.17 * 3 })
+        if player_attr > self.last_attr then
+            local is_max = player_attr >= max
+            self:flash(not is_max and (0.17 * 3), is_max and 0.3)
         end
 
-        self.last_attr = player[self.key]
+        self.last_attr = player_attr
     end
 end
 

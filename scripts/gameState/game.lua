@@ -107,6 +107,21 @@ Game:implements({
             mode_type = Player.Modes.jump
         }))
 
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = 32 * 18,
+            mode_type = Player.Modes.jump_ex
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = 32 * 24,
+            mode_type = Player.Modes.dash_ex
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = 32 * 26,
+            mode_type = Player.Modes.extreme
+        }))
+
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
         table.insert(components_gui, displayPill)

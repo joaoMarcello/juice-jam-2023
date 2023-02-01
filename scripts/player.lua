@@ -312,22 +312,28 @@ function Player:set_mode(mode)
     if mode == Modes.jump then
         self.jump_max = 2
         self.dash_max = 0
+        self.dash_count = 0
 
     elseif mode == Modes.jump_ex then
         self.jump_max = 3
         self.dash_max = 0
+        self.dash_count = 0
 
     elseif mode == Modes.dash then
         self.dash_max = 1
         self.jump_max = 1
+        self.jump_count = 0
 
     elseif mode == Modes.dash_ex then
         self.dash_max = 2
         self.jump_max = 1
+        self.jump_count = 0
 
     elseif mode == Modes.extreme then
         self.dash_max = 2
         self.jump_max = 3
+        self.attr_atk = self.attr_atk_max
+        self.attr_def = 0
         local value = self.attr_hp - 1
         value = value <= 0 and 1 or value
         self:set_attribute("hp", "sub", value)
