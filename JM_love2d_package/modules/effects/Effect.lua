@@ -251,7 +251,9 @@ function Effect:restaure_object()
         self.__object:set_color(self.__obj_initial_color)
     end
 
-    if Effect.__id == Effect.TYPE.flickering then
+    if Effect.__id == Effect.TYPE.flickering
+        or Effect.__id == Effect.TYPE.popout
+    then
         self.__object:set_visible(true)
     end
 

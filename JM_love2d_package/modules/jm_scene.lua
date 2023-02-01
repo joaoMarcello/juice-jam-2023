@@ -462,6 +462,7 @@ function Scene:implements(param)
 
             if self.time_pause <= 0 then
                 self.time_pause = nil
+                self.pause_action = nil
             else
                 local r = self.pause_action and self.pause_action(dt)
                 return

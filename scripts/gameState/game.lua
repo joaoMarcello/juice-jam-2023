@@ -102,6 +102,10 @@ Game:implements({
 
         Game:game_add_component(player)
         Game:game_add_component(ModeChanger:new(Game, world, {}))
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = 32 * 2,
+            mode_type = Player.Modes.jump
+        }))
 
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
