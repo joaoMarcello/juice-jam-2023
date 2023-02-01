@@ -7,6 +7,7 @@ local Timer = require "scripts.timer"
 local DisplayHP = require "scripts.displayHP"
 local ModeChanger = require "scripts.ModeChanger"
 local Reseter = require "scripts.reseter"
+local Spike = require "scripts.spike"
 
 ---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
@@ -84,6 +85,7 @@ Game:implements({
         DisplayHP:load()
         ModeChanger:load()
         Reseter:load()
+        Spike:load()
 
         player = Player:new(Game, world, {})
 
@@ -97,7 +99,6 @@ Game:implements({
     init = function()
         timer = Timer:new(Game)
         displayHP = DisplayHP:new(Game, {})
-        displayHP:load()
 
         components = {}
         components_gui = {}
@@ -138,6 +139,11 @@ Game:implements({
             x = 32 * 16,
             y = 32 * 10,
             mode = Reseter.Types.dash
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            y = 32 * 11,
+            on_ceil = true
         }))
 
         table.insert(components_gui, timer)

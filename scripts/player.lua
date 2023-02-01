@@ -1,7 +1,7 @@
 ---@type BodyComponent
-local bodyGC = require "/scripts/bodyComponent"
+local bodyGC = require "scripts.bodyComponent"
 
-local Pill = require "/scripts/pill"
+local Pill = require "scripts.pill"
 
 local Utils = _G.Pack.Utils
 

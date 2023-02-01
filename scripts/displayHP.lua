@@ -1,8 +1,8 @@
 local Affectable = Pack.Affectable
 local Utils = Pack.Utils
-local DisplayMode = require "/scripts/displayMode"
-local DisplayAttr = require "/scripts/displayAttr"
-local DisplayPill = require "/scripts/displayPill"
+local DisplayMode = require "scripts.displayMode"
+local DisplayAttr = require "scripts.displayAttr"
+local DisplayPill = require "scripts.displayPill"
 
 ---@param self Game.GUI.DisplayHP
 local function width(self, hp)

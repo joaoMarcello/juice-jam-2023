@@ -1,6 +1,6 @@
 local Utils = Pack.Utils
 local Affectable = Pack.Affectable
-local GC = require "/scripts/bodyComponent"
+local GC = require "scripts.bodyComponent"
 
 ---@type love.Image|nil
 local img

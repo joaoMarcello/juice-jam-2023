@@ -1,6 +1,6 @@
 local Affectable = Pack.Affectable
 local Utils = Pack.Utils
-local GC = require "/scripts/bodyComponent"
+local GC = require "scripts.bodyComponent"
 
 ---@enum Game.Component.Reset.Types
 local Types = {

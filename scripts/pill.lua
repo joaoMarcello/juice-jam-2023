@@ -1,5 +1,5 @@
 ---@type BodyComponent
-local bodyGC = require "/scripts/bodyComponent"
+local bodyGC = require "scripts.bodyComponent"
 
 local Utils = Pack.Utils
 
