@@ -71,7 +71,7 @@ function Changer:__constructor__(game, args)
         or self.mode_type == modes.jump_ex
     then
         self.icon:apply_effect("flash", { speed = 0.3,
-            color = Utils:get_rgba(1, 1, 0, 1),
+            color = { 1, 1, 0, 1 },
             max = 0.5
         })
     end
