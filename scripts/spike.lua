@@ -70,6 +70,18 @@ end
 
 function Spike:update(dt)
     self.spike:update(dt)
+
+    local player = self.game:get_player()
+    local x, y, w, h = self.body:rect()
+    if self.on_ceil then h = h + 5 end
+
+    if player.body:check_collision(x, y, w, h)
+        and ((self.on_ceil and player.body.speed_y <= 0)
+            or (not self.on_ceil and player.body.speed_y > 0))
+        and not player:is_dead()
+    then
+        player:kill()
+    end
 end
 
 function Spike:draw()

@@ -142,7 +142,8 @@ Game:implements({
         }))
 
         Game:game_add_component(Spike:new(Game, world, {
-            y = 32 * 11,
+            y = 32 * 8,
+            x = 32 * 5,
             on_ceil = true
         }))
 

@@ -285,10 +285,6 @@ function Player:set_attribute(attr, mode, value)
         then
             if attr ~= "hp" then
                 self:kill()
-                self.game:pause(0.5, function(dt)
-                    self.Game:game_get_displayHP():update(dt)
-                    self.game.camera:update(dt)
-                end)
             end
             return false
         end
@@ -470,8 +466,6 @@ function Player:set_state(state)
             self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
             self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
             self.Game.camera.shake_rad_y = math.pi
-        else
-            self.game:pause(0.5)
         end
 
         body.speed_x = 0
@@ -482,6 +476,12 @@ function Player:set_state(state)
         body:on_event("start_falling", function()
             body.mass = body.mass * 0.8
         end)
+
+        self.game:pause(0.5, function(dt)
+            self.Game:game_get_displayHP():update(dt)
+            self.game.camera:update(dt)
+        end)
+
     else
         self.current_movement = move_default
     end
