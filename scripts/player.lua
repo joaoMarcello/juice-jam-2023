@@ -442,6 +442,8 @@ function Player:set_state(state)
             self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
             self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
             self.Game.camera.shake_rad_y = math.pi
+        else
+            self.game:pause(0.5)
         end
 
         body.speed_x = 0
@@ -543,13 +545,13 @@ end
 function Player:key_pressed(key)
     local body = self.body
 
-    if key == 'p' then
-        self:set_mode(Modes.dash)
-    elseif key == 'i' then
-        self:set_mode(Modes.extreme)
-    elseif key == 'u' then
-        self:set_mode(Modes.jump)
-    end
+    -- if key == 'p' then
+    --     self:set_mode(Modes.dash)
+    -- elseif key == 'i' then
+    --     self:set_mode(Modes.extreme)
+    -- elseif key == 'u' then
+    --     self:set_mode(Modes.jump)
+    -- end
 
     if self.state == States.default then
 
@@ -625,6 +627,13 @@ function Player:key_pressed(key)
                 self:set_state(States.dash)
 
             end
+
+        elseif pressed(self, 'jump', key)
+            and self.jump_count < self.jump_max
+            and (self.mode == Modes.jump or self.mode == Modes.jump_ex)
+        then
+            self:jump()
+            self:set_state(States.default)
         end
 
     end

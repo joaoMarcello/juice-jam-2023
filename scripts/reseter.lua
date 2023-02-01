@@ -24,7 +24,7 @@ function Reset:new(game, world, args)
     args.w = 32
     args.h = 32
     args.type = "dynamic"
-    args.mode = args.mode or Types.dash
+    args.mode = args.mode or Types.jump
 
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
@@ -42,7 +42,7 @@ function Reset:__constructor__(game, args)
     }
 
     self.icon = Pack.Anima:new({ img = img or '' })
-    self.icon:apply_effect("pulse", { speed = 0.5, range = 0.07 })
+    self.icon:apply_effect("pulse", { speed = 0.6, range = 0.07 })
 
     self.ox = self.w / 2
     self.oy = self.h / 2
@@ -76,18 +76,22 @@ function Reset:update(dt)
     self.icon:update(dt)
 
     local player = self.game:get_player()
+    local Modes = player.Modes
 
     if self.time == 0.0 then
         if self.body:check_collision(player.body:rect()) then
             self.icon:set_color(self.used_color)
             self.time = self.time_reset
+
+            if self.mode == Types.dash then
+                player.dash_count = 0
+            end
         else
             self.icon:set_color2(self.__colors[self.mode])
         end
 
     else
         self.time = Utils:clamp(self.time - dt, 0, self.time_reset)
-        -- if self.time <= 0 then self.time = 0.0 end
     end
 end
 

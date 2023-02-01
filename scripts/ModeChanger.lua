@@ -130,12 +130,13 @@ function Changer:update(dt)
 
     if self.time_respawn > 0 then
         self.time_respawn = self.time_respawn - dt
-        if self.time_respawn <= 0
-        -- and player.mode ~= self.mode_type
-        then
-            self.time_respawn = 0.0
-            self:init()
-        end
+    end
+
+    if self.time_respawn < 0
+        and player.mode ~= self.mode_type
+    then
+        self.time_respawn = 0.0
+        self:init()
     end
 
 

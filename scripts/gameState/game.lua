@@ -131,7 +131,13 @@ Game:implements({
 
         Game:game_add_component(Reseter:new(Game, world, {
             x = 32 * 5,
-            y = 32 * 10
+            y = 32 * 6
+        }))
+
+        Game:game_add_component(Reseter:new(Game, world, {
+            x = 32 * 16,
+            y = 32 * 10,
+            mode = Reseter.Types.dash
         }))
 
         table.insert(components_gui, timer)
