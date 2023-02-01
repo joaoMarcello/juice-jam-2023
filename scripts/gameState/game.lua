@@ -82,6 +82,7 @@ Game:implements({
 
         Player:load()
         DisplayHP:load()
+        ModeChanger:load()
 
         player = Player:new(Game, world, {})
 
@@ -120,6 +121,11 @@ Game:implements({
         Game:game_add_component(ModeChanger:new(Game, world, {
             x = 32 * 26,
             mode_type = Player.Modes.extreme
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = 32 * 30,
+            mode_type = Player.Modes.normal
         }))
 
         table.insert(components_gui, timer)

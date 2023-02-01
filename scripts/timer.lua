@@ -35,7 +35,7 @@ end
 ---@param Game GameState.Game
 function Timer:__constructor__(Game, args)
     self.game = Game
-    self.time = args.init_time or 300
+    self.time = args.init_time or 51
     self.time_init = self.time
     self.speed = 0.5
     self.acumulator = 0.0
@@ -68,7 +68,9 @@ function Timer:on_evt(name, action, args)
 end
 
 function Timer:pulse(cycles, reset)
-    if self.time == 0 then return end
+    if self.time <= 0 then return end
+
+    self.time_capture = self.time
 
     if self.actives_eff['pulse'] then
         if reset then
@@ -97,6 +99,18 @@ end
 function Timer:decrement(value, reset_cycle)
     value = -math.abs(value)
     self:increment(value, reset_cycle)
+    self.time = Utils:clamp(self.time, 0, math.huge)
+    if self.time == 0 then self:kill_player() end
+end
+
+function Timer:kill_player()
+    dispatch_event(self, "timeEnd")
+
+    if self.actives_eff["pulse"] then
+        self.actives_eff["pulse"].__remove = true
+    end
+
+    self.game:get_player():kill()
 end
 
 function Timer:update(dt)
@@ -111,13 +125,7 @@ function Timer:update(dt)
         self.time = Utils:clamp(self.time - 1, 0, math.huge)
 
         if self.time == 0 then
-            dispatch_event(self, "timeEnd")
-
-            if self.actives_eff["pulse"] then
-                self.actives_eff["pulse"].__remove = true
-            end
-
-            self.game:get_player():kill()
+            self:kill_player()
         else
             dispatch_event(self, "timeDown")
         end
@@ -130,13 +138,6 @@ function Timer:update(dt)
         and not self.actives_eff["pulse"]
         and self.time ~= self.time_init
     then
-        local cycles = 5
-        if self.time > risk_time then
-            cycles = 5
-            if self.time > self.time_warning then
-                self.time_capture = self.time
-            end
-        end
 
         if self.time == self.time_warning then
             dispatch_event(self, "redTimeWarning")
@@ -144,12 +145,13 @@ function Timer:update(dt)
             dispatch_event(self, "timeWarning")
         end
 
-        self:pulse(cycles)
+        self:pulse(self.time > risk_time and 5 or 2)
+        if self.time <= risk_time then self.time_capture = nil end
     end
 
-    if self.time_capture and self.time_capture > risk_time then
-        self.time_capture = nil
-    end
+    -- if self.time_capture and self.time_capture > risk_time then
+    --     --self.time_capture = nil
+    -- end
 end
 
 function Timer:draw_number(color, offset)

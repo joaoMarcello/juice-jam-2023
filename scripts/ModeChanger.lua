@@ -2,6 +2,12 @@ local Utils = Pack.Utils
 local Affectable = Pack.Affectable
 local GC = require "/scripts/bodyComponent"
 
+---@type love.Image|nil
+local img
+
+---@type love.Image|nil
+local img_arrow
+
 ---@enum Game.Component.ModeChanger.Modes
 local Modes = {
     fixed = 1,
@@ -53,21 +59,38 @@ function Changer:__constructor__(game, args)
 
     self:set_mode(args.mode)
 
-    self:pulse()
-
     self.ox = self.w / 2
     self.oy = self.h / 2
 
     self.time_respawn = 0.0
+
+    self.icon = Pack.Anima:new({ img = img or '' })
+    self.icon:set_color(self.__colors[self.mode_type])
+    self.icon:apply_effect("pulse", { speed = 0.6, range = 0.07 })
+    if self.mode_type == modes.dash_ex
+        or self.mode_type == modes.jump_ex
+    then
+        self.icon:apply_effect("flash", { speed = 0.3,
+            color = Utils:get_rgba(1, 1, 0, 1),
+            max = 0.5
+        })
+    end
+
+    self.arrow = Pack.Anima:new { img = img_arrow or '' }
+    self.arrow:apply_effect("pulse", { speed = 0.6, range = 0.07 })
+    self.arrow:set_color2(nil, nil, nil, 0.6)
 end
 
 function Changer:load()
+    img = img or love.graphics.newImage('/data/aseprite/mode_changer.png')
+    img:setFilter("linear", "linear")
 
+    img_arrow = img_arrow or love.graphics.newImage('/data/aseprite/mode_changer_arrow.png')
+    img_arrow:setFilter("nearest", "nearest")
 end
 
 function Changer:init()
     self.time_respawn = 0.0
-    self.eff_pulse = nil
 
     if self.eff_popout then
         self.eff_popout:restaure_object()
@@ -80,20 +103,12 @@ function Changer:init()
     local popin = self:apply_effect("popin", { speed = 0.3, duration = 0.3 })
     popin:set_final_action(function()
         popin.__remove = true
-        self:pulse()
     end)
 end
 
 function Changer:finish()
-
-end
-
-function Changer:pulse()
-    if self.eff_pulse then
-        self.eff_pulse:restaure_object()
-        self.eff_pulse.__remove = true
-    end
-    self.eff_pulse = self:apply_effect("pulse", { speed = 0.6, range = 0.07 })
+    local r = img and img:release()
+    img = nil
 end
 
 function Changer:set_mode(mode)
@@ -108,6 +123,8 @@ end
 
 function Changer:update(dt)
     Affectable.update(self, dt)
+    self.icon:update(dt)
+    self.arrow:update(dt)
 
     local player = self.game:get_player()
 
@@ -126,8 +143,6 @@ function Changer:update(dt)
         and self.mode_type ~= player.mode
         and self.time_respawn == 0.0
     then
-        if self.eff_pulse then self.eff_pulse.__remove = true end
-
         if self.eff_popout then self.eff_popout.__remove = true end
         self.eff_popout = self:apply_effect("popout", { speed = 0.3 })
 
@@ -144,12 +159,13 @@ function Changer:update(dt)
 end
 
 function Changer:my_draw()
-    love.graphics.setColor(self.__colors[self.mode_type])
-    love.graphics.rectangle("fill", self.body:rect())
+    self.icon:draw(self.x + self.ox, self.y + self.oy)
+    self.arrow:draw(self.x + self.ox, self.y + self.oy)
 end
 
 function Changer:draw()
     Affectable.draw(self, self.my_draw)
+    love.graphics.setShader()
 end
 
 return Changer

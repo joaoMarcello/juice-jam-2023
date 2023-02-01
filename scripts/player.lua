@@ -270,6 +270,7 @@ end
 ---@param mode "add"|"sub"
 ---@param value number
 function Player:set_attribute(attr, mode, value)
+    if self:is_dead() then return false end
     if not attr or self.state == States.dead then return false end
 
     local key = "attr_" .. attr

@@ -171,12 +171,16 @@ function Display:my_draw()
     local modes = player.Modes
 
     self.affect:draw(function()
-        self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
+        if self.mode == modes.normal then
+            self.arrow:set_color2(0.2, 0.2, 0.2, 0)
+        else
+            self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
+        end
         self.arrow:draw(self.x + 1, self.y + 4 + 1)
         self.arrow:draw(self.x + 1, self.y - 12 + 4 + 1)
 
         if self.mode == modes.normal then
-            self.arrow:set_color2(0.5, 0.5, 0.5, 1)
+            self.arrow:set_color2(0.5, 0.5, 0.5, 0)
         else
             self.arrow:set_color2(1, 1, 1, 1)
         end
