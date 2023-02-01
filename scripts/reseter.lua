@@ -47,7 +47,7 @@ function Reset:__constructor__(game, args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
-    self.time_reset = 1.0
+    self.time_reset = 1.3
     self.time = 0.0
 
     self.body.allowed_gravity = false
@@ -72,6 +72,21 @@ function Reset:finish()
     img = nil
 end
 
+function Reset:is_compatible_with_player()
+    local player = self.game:get_player()
+    local Modes = player.Modes
+
+    if player.mode == Modes.extreme then return true end
+
+    if self.mode == Types.jump then
+        return player.mode == Modes.jump or player.mode == Modes.jump_ex
+    elseif self.mode == Types.dash then
+        return player.mode == Modes.dash or player.mode == Modes.dash_ex
+    else
+        return false
+    end
+end
+
 function Reset:update(dt)
     self.icon:update(dt)
 
@@ -79,15 +94,33 @@ function Reset:update(dt)
     local Modes = player.Modes
 
     if self.time == 0.0 then
-        if self.body:check_collision(player.body:rect()) then
+        local is_compatible = self:is_compatible_with_player()
+
+        if self.body:check_collision(player.body:rect())
+            and is_compatible
+        then
             self.icon:set_color(self.used_color)
             self.time = self.time_reset
 
             if self.mode == Types.dash then
                 player.dash_count = 0
+
+            elseif self.mode == Types.jump then
+                player.body.speed_x = player.body.speed_x * 0.3
             end
+
+            if player.body.speed_y > 0 then
+                player.body.speed_y = player.body.speed_y * 0.3
+            end
+
+            -- self.game:pause(0.08)
+
         else
-            self.icon:set_color2(self.__colors[self.mode])
+            if not is_compatible then
+                self.icon:set_color(self.used_color)
+            else
+                self.icon:set_color2(self.__colors[self.mode])
+            end
         end
 
     else

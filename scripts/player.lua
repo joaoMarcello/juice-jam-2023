@@ -280,10 +280,26 @@ function Player:set_attribute(attr, mode, value)
     local max = self["attr_" .. attr .. "_max"]
 
     if mode == "add" then
+        if self.mode == Modes.extreme
+            and (attr == "def" or attr == "hp" or attr == "atk")
+        then
+            if attr ~= "hp" then
+                self:kill()
+                self.game:pause(0.5, function(dt)
+                    self.game.camera:update(dt)
+                end)
+            end
+            return false
+        end
+
         self[key] = Utils:clamp(field + value, 0, max)
         debbug['gain'] = "+ " .. value .. ' ' .. key
         debbug['lost'] = ''
     else
+        if attr == "atk" and self.mode == Modes.extreme then
+            return false
+        end
+
         value = math.abs(value)
         self[key] = Utils:clamp(field - value, 0, max)
         debbug['lost'] = "- " .. value .. ' ' .. key
@@ -293,6 +309,7 @@ function Player:set_attribute(attr, mode, value)
         end
 
         if attr == "hp" then
+
             self.Game:pause(((self:is_dead() or value > 1) and 0.55) or 0.3,
                 function(dt)
                     self.Game:game_get_displayHP():update(dt)
@@ -309,7 +326,9 @@ function Player:set_mode(mode)
     mode = mode or Modes.normal
     if self.mode == mode then return false end
 
+    local last_mode = self.mode
     self.mode = mode
+
     if mode == Modes.jump then
         self.jump_max = 2
         self.dash_max = 0
@@ -342,6 +361,11 @@ function Player:set_mode(mode)
     else
         self.dash_max = 0
         self.jump_max = 1
+    end
+
+    if last_mode == Modes.extreme then
+        self.attr_atk = 0
+        self.attr_def = 0
     end
 
     return true
@@ -423,6 +447,9 @@ function Player:set_state(state)
 
 
     elseif state == States.dead then
+
+        self.attr_hp = 0
+
         self.current_movement =
         ---@param self Game.Player
         function(self, dt)
