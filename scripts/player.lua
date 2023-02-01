@@ -187,7 +187,14 @@ Player.States = States
 
 ---@return Game.Player
 function Player:new(Game, world, args)
+    args = args or {}
     args.type = "dynamic"
+    args.x = args.x or (32 * 3)
+    args.y = args.y or (32 * 4)
+    args.w = 28
+    args.h = 58
+    args.y = args.bottom and (args.bottom - self.h) or args.y
+
     local obj = bodyGC:new(Game, world, args)
     setmetatable(obj, self)
 

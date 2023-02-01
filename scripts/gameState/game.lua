@@ -5,7 +5,7 @@ local Physics = Pack.Physics
 local Player = require "/scripts/player"
 local Timer = require "/scripts/timer"
 local DisplayHP = require "/scripts/displayHP"
-
+local ModeChanger = require "scripts.ModeChanger"
 
 
 ---@class GameState.Game: JM.Scene
@@ -83,12 +83,7 @@ Game:implements({
         Player:load()
         DisplayHP:load()
 
-        player = Player:new(Game, world, {
-            x = 32 * 3,
-            y = 32 * 4,
-            w = 28,
-            h = 58
-        })
+        player = Player:new(Game, world, {})
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
@@ -106,6 +101,8 @@ Game:implements({
         components_gui = {}
 
         Game:game_add_component(player)
+        Game:game_add_component(ModeChanger:new(Game, world, {}))
+
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
         table.insert(components_gui, displayPill)
