@@ -438,9 +438,11 @@ function Player:set_state(state)
             end
         end
 
-        self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
-        self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
-        self.Game.camera.shake_rad_y = math.pi
+        if self.game:game_get_timer().time > 0 then
+            self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
+            self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
+            self.Game.camera.shake_rad_y = math.pi
+        end
 
         body.speed_x = 0
         body.speed_y = 0

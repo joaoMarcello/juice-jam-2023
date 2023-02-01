@@ -159,6 +159,14 @@ function Utils:get_rgba(r, g, b, a)
     return color
 end
 
+function Utils:get_rgba2(r, g, b, a)
+    r = r and r / 255 or 1.0
+    g = g and g / 255 or 1.0
+    b = b and b / 255 or 1.0
+    a = a and a / 255 or 1.0
+    return self:get_rgba(r, g, b, a)
+end
+
 ---@param color JM.Color
 function Utils:unpack_color(color)
     return color[1], color[2], color[3], color[4]

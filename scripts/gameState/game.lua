@@ -2,11 +2,11 @@ local Pack = _G.Pack
 local Font = Pack.Font
 local Physics = Pack.Physics
 
-local Player = require "/scripts/player"
-local Timer = require "/scripts/timer"
-local DisplayHP = require "/scripts/displayHP"
+local Player = require "scripts.player"
+local Timer = require "scripts.timer"
+local DisplayHP = require "scripts.displayHP"
 local ModeChanger = require "scripts.ModeChanger"
-
+local Reseter = require "scripts.reseter"
 
 ---@class GameState.Game: JM.Scene
 local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
@@ -83,6 +83,7 @@ Game:implements({
         Player:load()
         DisplayHP:load()
         ModeChanger:load()
+        Reseter:load()
 
         player = Player:new(Game, world, {})
 
@@ -126,6 +127,11 @@ Game:implements({
         Game:game_add_component(ModeChanger:new(Game, world, {
             x = 32 * 30,
             mode_type = Player.Modes.normal
+        }))
+
+        Game:game_add_component(Reseter:new(Game, world, {
+            x = 32 * 5,
+            y = 32 * 10
         }))
 
         table.insert(components_gui, timer)

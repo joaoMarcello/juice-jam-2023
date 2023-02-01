@@ -11,6 +11,7 @@ function GC:new(game, args)
     return obj
 end
 
+---@param game GameState.Game
 function GC:__constructor__(game, args)
     self.game = game
 

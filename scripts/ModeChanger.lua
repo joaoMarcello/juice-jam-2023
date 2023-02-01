@@ -142,6 +142,7 @@ function Changer:update(dt)
     if self.body:check_collision(player.body:rect())
         and self.mode_type ~= player.mode
         and self.time_respawn == 0.0
+        and not player:is_dead()
     then
         if self.eff_popout then self.eff_popout.__remove = true end
         self.eff_popout = self:apply_effect("popout", { speed = 0.3 })
