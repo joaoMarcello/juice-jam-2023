@@ -37,7 +37,7 @@ local displayHP
 ---@type Game.GUI.DisplayPill
 local displayPill
 
-local sort_update = function(a, b) return a.update_order < b.update_order end
+local sort_update = function(a, b) return a.update_order > b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
 --=========================================================================
 
@@ -128,7 +128,7 @@ Game:implements({
             local r = components_gui[i].update and components_gui[i]:update(dt)
         end
 
-        -- table.sort(components, )
+        table.sort(components, sort_update)
         for i = #components, 1, -1 do
             ---@type GameComponent
             local gc = components[i]

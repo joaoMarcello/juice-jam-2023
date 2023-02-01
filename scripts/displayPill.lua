@@ -31,6 +31,44 @@ function Display:__constructor__(game, args)
         "attr_pill_hp",
         "attr_pill_time"
     }
+    local player = game:get_player()
+
+    self.keyboard = {
+        player.key_pill_atk[1]:upper(),
+        player.key_pill_def[1]:upper(),
+        player.key_pill_hp[1]:upper(),
+        player.key_pill_time[1]:upper()
+    }
+
+    self.icons = {
+        {
+            draw = function(self, x, y, w, h)
+                love.graphics.setColor(0.7, 0.2, 0.2, 1)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+        },
+
+        {
+            draw = function(self, x, y, w, h)
+                love.graphics.setColor(0.2, 0.2, 0.7, 1)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+        },
+
+        {
+            draw = function(self, x, y, w, h)
+                love.graphics.setColor(0.2, 0.7, 0.2, 1)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+        },
+
+        {
+            draw = function(self, x, y, w, h)
+                love.graphics.setColor(0.8, 0.8, 0.2, 1)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+        }
+    }
 end
 
 function Display:load()
@@ -64,19 +102,26 @@ function Display:my_draw()
     love.graphics.rectangle("fill", self:rect())
 
     font:push()
-    font:set_font_size(8)
     for i = 1, 4 do
+        font:set_font_size(8)
+
         local px = self.x + (self.space * i)
             + 28 * (i - 1)
         local py = self.y + self.space_y
 
-        love.graphics.setColor(1, 0, 0, 1)
-        love.graphics.rectangle("fill", px, py, 28, 28)
+        -- love.graphics.setColor(1, 0, 0, 1)
+        -- love.graphics.rectangle("fill", px, py, 28, 28)
+        self.icons[i]:draw(px, py, 28, 28)
 
         local value = self.game:get_player()[self.attr[i]]
 
         font:print(string.format("<color, 0, 0, 0><bold>%d", value), px + 2, py + 1)
         font:print(string.format("<color, 1, 1, 1><bold>%d", value), px + 1, py)
+
+        font:set_font_size(6)
+        local key = self.keyboard[i]
+        font:printx(string.format("<bold> <color, 0, 0, 0>%s", key), px, py + 28 - 1, px + 29, "center")
+        font:printx(string.format("<bold> <color, 1, 1, 0.5>%s", key), px, py + 28 - 2, px + 28, "center")
     end
     font:pop()
 end

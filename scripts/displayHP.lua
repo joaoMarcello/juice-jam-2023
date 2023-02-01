@@ -8,7 +8,7 @@ local DisplayPill = require "/scripts/displayPill"
 local function width(self, hp)
     local player = self.game:get_player()
     local hp = hp or player.attr_hp
-    hp = math.ceil(hp)
+    -- hp = math.ceil(hp)
     local hp_max = player.attr_hp_max
 
     return self.w * (hp / hp_max)
@@ -167,7 +167,9 @@ function Display:update(dt)
         })
 
         self.last_width = width(self, self.player_last_hp)
+
         self.player_last_hp = player.attr_hp
+
         self:apply_effect("earthquake", {
             duration = lost <= 1 and 0.3 or 0.5,
             random = true,

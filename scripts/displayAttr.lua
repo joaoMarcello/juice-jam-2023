@@ -85,10 +85,12 @@ function Display:update(dt)
     then
         if self.eff_flash then self.eff_flash.__remove = true end
 
-        self.last_attr = player[self.key]
+        if player[self.key] > self.last_attr then
+            self.eff_flash = self.icon_eff:apply_effect("ghost",
+                { speed = 0.17, duration = 0.17 * 3 })
+        end
 
-        self.eff_flash = self.icon_eff:apply_effect("ghost",
-            { speed = 0.17, duration = 0.17 * 3 })
+        self.last_attr = player[self.key]
     end
 end
 

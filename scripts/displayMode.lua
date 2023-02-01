@@ -132,6 +132,18 @@ end
 
 ---@param self Game.GUI.DisplayMode
 local function draw_arrow(self)
+    local player = self.game:get_player()
+    local modes = player.Modes
+
+    self.arrow:set_color2(0.2, 0.2, 0.2, 0.7)
+    self.arrow:draw(self.x + 1, self.y + 4 + 1)
+    self.arrow:draw(self.x + 1, self.y - 12 + 4 + 1)
+
+    if self.mode == modes.normal then
+        self.arrow:set_color2(0.5, 0.5, 0.5, 1)
+    else
+        self.arrow:set_color2(1, 1, 1, 1)
+    end
     self.arrow:draw(self.x, self.y + 4)
     self.arrow:draw(self.x, self.y - 12 + 4)
 end

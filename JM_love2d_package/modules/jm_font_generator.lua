@@ -335,7 +335,7 @@ function Font:load_characters(path, format, glyphs, quads_pos)
             end
         end
         img = love.graphics.newImage(data)
-        img:setFilter("linear", "nearest")
+        img:setFilter("linear", "linear")
         data:release()
     end
 
