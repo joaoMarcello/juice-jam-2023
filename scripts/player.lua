@@ -284,7 +284,7 @@ function Player:set_attribute(attr, mode, value)
             and (attr == "def" or attr == "hp" or attr == "atk")
         then
             if attr ~= "hp" then
-                self:kill()
+                self:kill(true)
             end
             return false
         end
@@ -372,7 +372,9 @@ function Player:load()
     Pill:load()
 end
 
-function Player:kill()
+local stop_vibrate = false
+function Player:kill(no_vibration)
+    stop_vibrate = no_vibration or false
     self:set_state(States.dead)
 end
 
@@ -462,7 +464,7 @@ function Player:set_state(state)
             end
         end
 
-        if self.game:game_get_timer().time > 0 then
+        if self.game:game_get_timer().time > 0 and not stop_vibrate then
             self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
             self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
             self.Game.camera.shake_rad_y = math.pi

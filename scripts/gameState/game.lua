@@ -144,7 +144,7 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             y = 32 * 8,
             x = 32 * 5,
-            on_ceil = true
+            on_ceil = false
         }))
 
         table.insert(components_gui, timer)
