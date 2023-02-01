@@ -237,7 +237,7 @@ function Player:__constructor__(Game, args)
     self.wall = nil
 
     -- ========   ATRIBUTES  ===============================
-    self.attr_hp = 4
+    self.attr_hp = 3
     self.attr_hp_max = 6
     self.attr_def = 1
     self.attr_def_max = 3

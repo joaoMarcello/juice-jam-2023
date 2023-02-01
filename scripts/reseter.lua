@@ -115,9 +115,6 @@ function Reset:update(dt)
             if player.body.speed_y > 0 then
                 player.body.speed_y = player.body.speed_y * 0.3
             end
-
-            -- self.game:pause(0.08)
-
         else
             if not is_compatible then
                 self.icon:set_color(self.used_color)

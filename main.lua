@@ -3,6 +3,7 @@ Pack = require "JM_love2d_package.init"
 
 math.randomseed(os.time())
 love.graphics.setBackgroundColor(0, 0, 0, 1)
+love.mouse.setVisible(false)
 
 ---@class GameState: JM.Scene
 ---@field load function
@@ -23,9 +24,9 @@ SCREEN_HEIGHT = 32 * 13
 local scene --= require("scripts.gameState.menu_principal")
 
 ---@param new_state GameState
-function Change_gamestate(new_state, unload)
-    local r = scene and unload and scene:finish()
-    new_state:load()
+function Change_gamestate(new_state, run_finish, run_load)
+    local r = scene and run_finish and scene:finish()
+    r = run_load and new_state:load()
     new_state:init()
     scene = new_state
     collectgarbage()
@@ -61,6 +62,7 @@ function love.update(dt)
         or (love.keyboard.isDown("lalt") and love.keyboard.isDown('f4'))
         or (love.keyboard.isDown("ralt") and love.keyboard.isDown('f4'))
     then
+        scene:finish()
         collectgarbage("collect")
         love.event.quit()
     end

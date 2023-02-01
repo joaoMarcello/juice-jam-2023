@@ -59,7 +59,7 @@ function Button:__constructor__(args)
                 end,
 
                 function()
-                    Change_gamestate(require "scripts.gameState.game")
+                    Change_gamestate(require "scripts.gameState.game", nil, true)
                 end)
 
             self.eff_flash:set_final_action(function()

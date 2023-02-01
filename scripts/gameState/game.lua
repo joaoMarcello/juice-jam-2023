@@ -79,14 +79,6 @@ Game:implements({
             { 32 * 10, 32 * 7, 32 * 5, 32 }
         }
 
-        world = Physics:newWorld()
-        player = Player:new(Game, world, {})
-
-        for _, r in ipairs(rects) do
-            local x, y, w, h = unpack(r)
-            Physics:newBody(world, x, y, w, h, "static")
-        end
-
         Player:load()
         DisplayHP:load()
         ModeChanger:load()
@@ -95,6 +87,14 @@ Game:implements({
     end,
 
     init = function()
+        world = Physics:newWorld()
+        player = Player:new(Game, world, {})
+
+        for _, r in ipairs(rects) do
+            local x, y, w, h = unpack(r)
+            Physics:newBody(world, x, y, w, h, "static")
+        end
+
         timer = Timer:new(Game)
         displayHP = DisplayHP:new(Game, {})
 
