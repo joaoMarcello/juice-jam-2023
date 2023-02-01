@@ -1,6 +1,6 @@
 local Phys = _G.Pack.Physics
 local Affectable = Pack.Affectable
-local GC = require "/scripts/component"
+local GC = require "scripts.component"
 
 -- ---@class BodyComponent: JM.Template.Affectable
 -- local Component = setmetatable({}, Affectable)

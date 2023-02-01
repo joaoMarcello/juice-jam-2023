@@ -315,6 +315,22 @@ function Scene:pause(time, action)
     self.pause_action = action or nil
 end
 
+---@param duration number|nil
+---@param color table|nil
+---@param delay number|nil
+---@param action function|nil
+---@param endAction function|nil
+function Scene:fadeout(duration, color, delay, action, endAction)
+    if self.fadeout_time then return end
+
+    self.fadeout_time = 0.0
+    self.fadeout_delay = delay or 0.5
+    self.fadeout_duration = duration or 1.0
+    self.fadeout_action = action or nil
+    self.fadeout_end_action = endAction or nil
+    self.fadeout_color = color or { 0, 0, 0 }
+end
+
 ---@param skip integer
 ---@param duration number|nil
 ---@param on_skip_action function|nil
@@ -375,7 +391,7 @@ local function generic(callback)
     result =
     ---@param scene JM.Scene
     (function(scene, ...)
-        if scene.time_pause then
+        if scene.time_pause or scene.fadeout_time then
             return
         end
 
@@ -466,6 +482,23 @@ function Scene:implements(param)
             else
                 local r = self.pause_action and self.pause_action(dt)
                 return
+            end
+        end
+
+        if self.fadeout_time then
+            if self.fadeout_delay > 0 then
+                self.fadeout_delay = self.fadeout_delay - dt
+            else
+                self.fadeout_time = self.fadeout_time + dt
+            end
+
+            if self.fadeout_time <= self.fadeout_duration + 0.5
+            then
+                local r = self.fadeout_action and self.fadeout_action(dt)
+                return
+            else
+                self.fadeout_time = nil
+                local r = self.fadeout_end_action and self.fadeout_end_action()
             end
         end
 
@@ -618,8 +651,16 @@ function Scene:implements(param)
 
         temp = self.draw_foreground and self.draw_foreground()
 
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.rectangle("line", self.x, self.y, self.w - self.x, self.h - self.y)
+        if self.fadeout_time then
+            local r, g, b = unpack(self.fadeout_color)
+            local alpha = self.fadeout_time / self.fadeout_duration
+            set_color_draw(r, g, b, alpha)
+
+            love.graphics.rectangle("fill", 0, 0, 1366, 768)
+        end
+
+        -- love.graphics.setColor(1, 1, 1, 1)
+        -- love.graphics.rectangle("line", self.x, self.y, self.w - self.x, self.h - self.y)
     end
 
     self.mousepressed = function(self, x, y, button, istouch, presses)

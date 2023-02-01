@@ -10,7 +10,7 @@ local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
 
 ---@class GameState.Game: JM.Scene, GameState
-local Game = Pack.Scene:new(nil, nil, nil, nil, 32 * 20, 32 * 13)
+local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
 Game.camera:toggle_debug()
 Game.camera:toggle_grid()
 Game.camera:toggle_world_bounds()

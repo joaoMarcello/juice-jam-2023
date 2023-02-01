@@ -12,12 +12,19 @@ love.graphics.setBackgroundColor(0, 0, 0, 1)
 ---@field draw function
 ---@field keypressed function
 
+--==================================================================
+
+SCREEN_WIDTH = 32 * 20
+SCREEN_HEIGHT = 32 * 13
+
+--==================================================================
+
 ---@type GameState
-local scene = require("scripts.gameState.game")
+local scene --= require("scripts.gameState.menu_principal")
 
 ---@param new_state GameState
 function Change_gamestate(new_state)
-    scene:finish()
+    local r = scene and scene:finish()
     new_state:load()
     new_state:init()
     scene = new_state
@@ -25,16 +32,11 @@ function Change_gamestate(new_state)
 end
 
 function love.load()
-    scene:load()
-    scene:init()
+    Change_gamestate(require 'scripts.gameState.menu_principal')
 end
 
 function love.keypressed(key)
     scene:keypressed(key)
-
-    if key == "5" then
-        collectgarbage()
-    end
 end
 
 function love.keyreleased(key)
@@ -54,7 +56,10 @@ local km = nil
 function love.update(dt)
     km = collectgarbage("count") / 1024.0
 
-    if love.keyboard.isDown("q") or love.keyboard.isDown("escape") then
+    if love.keyboard.isDown("escape")
+        or (love.keyboard.isDown("lalt") and love.keyboard.isDown('f4'))
+        or (love.keyboard.isDown("ralt") and love.keyboard.isDown('f4'))
+    then
         collectgarbage("collect")
         love.event.quit()
     end
@@ -72,5 +77,4 @@ function love.draw()
     love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 5, 50)
     local maj, min, rev, code = love.getVersion()
     love.graphics.print(string.format("Version:\n\t%d.%d.%d", maj, min, rev), 5, 75)
-    -- love.graphics.print("\n" .. code, 10, 90)
 end

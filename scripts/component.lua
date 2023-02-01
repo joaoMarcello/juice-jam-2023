@@ -11,7 +11,7 @@ function GC:new(game, args)
     return obj
 end
 
----@param game GameState.Game
+---@param game GameState.Game|GameState.MenuPrincipal
 function GC:__constructor__(game, args)
     self.game = game
 
@@ -39,6 +39,18 @@ end
 function GC:set_update_order(value)
     value = math.abs(value)
     self.update_order = value + math.random()
+end
+
+function GC:load()
+
+end
+
+function GC:init()
+
+end
+
+function GC:finish()
+
 end
 
 function GC:update(dt)

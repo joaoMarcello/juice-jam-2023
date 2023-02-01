@@ -79,7 +79,7 @@ setmetatable(Component, Affectable)
 Component.__index = Component
 
 ---@param args {x:number, y:number, w:number, h:number}|nil
----@return JM.GUI.Component
+---@return table
 function Component:new(args)
     args = args or {}
 
@@ -221,9 +221,9 @@ function Component:update(dt)
 
     self:__custom_update__(dt)
 
-    if self.mode == MODES.mouse then
-        mode_mouse_update(self, dt)
-    end
+    -- if self.mode == MODES.mouse then
+    --     mode_mouse_update(self, dt)
+    -- end
 
     return
 end
