@@ -185,6 +185,7 @@ function Display:update(dt)
         self.last_width = width(self)
         self.player_last_hp = player.attr_hp
         self.vanish:set_color(self.color_vanish_normal)
+
         if self.eff_flash then
             self.eff_flash.__remove = true
             self.eff_flash = nil
@@ -216,7 +217,7 @@ function Display:my_draw()
     love.graphics.setColor(self.color_nule)
     love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
 
-    if not player:is_dead() then
+    if not player:is_dead() or true then
         self.vanish:draw()
     end
 

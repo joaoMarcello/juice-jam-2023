@@ -286,6 +286,7 @@ function Player:set_attribute(attr, mode, value)
             if attr ~= "hp" then
                 self:kill()
                 self.game:pause(0.5, function(dt)
+                    self.Game:game_get_displayHP():update(dt)
                     self.game.camera:update(dt)
                 end)
             end
