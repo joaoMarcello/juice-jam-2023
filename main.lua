@@ -23,16 +23,17 @@ SCREEN_HEIGHT = 32 * 13
 local scene --= require("scripts.gameState.menu_principal")
 
 ---@param new_state GameState
-function Change_gamestate(new_state)
-    local r = scene and scene:finish()
+function Change_gamestate(new_state, unload)
+    local r = scene and unload and scene:finish()
     new_state:load()
     new_state:init()
     scene = new_state
     collectgarbage()
+    scene:fadein(nil, nil, nil)
 end
 
 function love.load()
-    Change_gamestate(require 'scripts.gameState.menu_principal')
+    Change_gamestate(require 'scripts.gameState.menu_principal', true)
 end
 
 function love.keypressed(key)

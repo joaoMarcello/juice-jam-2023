@@ -93,6 +93,8 @@ function Reset:update(dt)
     local player = self.game:get_player()
     local Modes = player.Modes
 
+    if player:is_dead() then return end
+
     if self.time == 0.0 then
         local is_compatible = self:is_compatible_with_player()
 
@@ -107,6 +109,7 @@ function Reset:update(dt)
 
             elseif self.mode == Types.jump then
                 player.body.speed_x = player.body.speed_x * 0.3
+                player.jump_count = player.jump_count - 1
             end
 
             if player.body.speed_y > 0 then

@@ -323,12 +323,39 @@ end
 function Scene:fadeout(duration, color, delay, action, endAction)
     if self.fadeout_time then return end
 
+    self.fadein_time = nil
     self.fadeout_time = 0.0
     self.fadeout_delay = delay or 0.5
     self.fadeout_duration = duration or 1.0
     self.fadeout_action = action or nil
     self.fadeout_end_action = endAction or nil
     self.fadeout_color = color or { 0, 0, 0 }
+end
+
+---@param duration number|nil
+---@param color table|nil
+---@param delay number|nil
+---@param action function|nil
+---@param endAction function|nil
+function Scene:fadein(duration, color, delay, action, endAction)
+    if self.fadein_time then return end
+
+    self.fadeout_time = nil
+    self.fadein_time = 0.0
+    self.fadein_delay = delay or 0
+    self.fadein_duration = duration or 0.3
+    self.fadein_action = action or nil
+    self.fadein_end_action = endAction or nil
+    self.fadein_color = color or { 0, 0, 0 }
+end
+
+---@param self JM.Scene
+local function fadein_out_draw(self, color, time, duration, fadein)
+    local r, g, b = unpack(color)
+    local alpha = time / duration
+    set_color_draw(r, g, b, fadein and (1.0 - alpha) or alpha)
+
+    love.graphics.rectangle("fill", 0, 0, self.dispositive_w, self.dispositive_h)
 end
 
 ---@param skip integer
@@ -502,6 +529,22 @@ function Scene:implements(param)
             end
         end
 
+        if self.fadein_time then
+            if self.fadein_delay > 0 then
+                self.fadein_delay = self.fadein_delay - dt
+            else
+                self.fadein_time = self.fadein_time + dt
+            end
+
+            if self.fadein_time <= self.fadein_duration + 0.5
+            then
+                local r = self.fadein_action and self.fadein_action(dt)
+            else
+                self.fadein_time = nil
+                local r = self.fadein_end_action and self.fadein_end_action()
+            end
+        end
+
         self.__skip = frame_skip_update(self)
         if self.__skip then return end
 
@@ -652,11 +695,12 @@ function Scene:implements(param)
         temp = self.draw_foreground and self.draw_foreground()
 
         if self.fadeout_time then
-            local r, g, b = unpack(self.fadeout_color)
-            local alpha = self.fadeout_time / self.fadeout_duration
-            set_color_draw(r, g, b, alpha)
-
-            love.graphics.rectangle("fill", 0, 0, 1366, 768)
+            fadein_out_draw(self, self.fadeout_color, self.fadeout_time, self.fadeout_duration)
+        elseif self.fadein_time then
+            fadein_out_draw(self, self.fadein_color,
+                self.fadein_time,
+                self.fadein_duration,
+                true)
         end
 
         -- love.graphics.setColor(1, 1, 1, 1)

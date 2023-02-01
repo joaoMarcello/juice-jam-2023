@@ -51,7 +51,7 @@ function Button:__constructor__(args)
         if not self.pressed and (key == "space" or key == "return") then
             self.pressed = true
 
-            self.eff_flash = self:apply_effect("flash", { duration = 1.0 })
+            self.eff_flash = self:apply_effect("flash", { speed = 0.3 })
 
             self.game:fadeout(1, nil, nil,
                 function(dt)

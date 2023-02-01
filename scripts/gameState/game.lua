@@ -80,13 +80,6 @@ Game:implements({
         }
 
         world = Physics:newWorld()
-
-        Player:load()
-        DisplayHP:load()
-        ModeChanger:load()
-        Reseter:load()
-        Spike:load()
-
         player = Player:new(Game, world, {})
 
         for _, r in ipairs(rects) do
@@ -94,11 +87,18 @@ Game:implements({
             Physics:newBody(world, x, y, w, h, "static")
         end
 
+        Player:load()
+        DisplayHP:load()
+        ModeChanger:load()
+        Reseter:load()
+        Spike:load()
     end,
 
     init = function()
         timer = Timer:new(Game)
         displayHP = DisplayHP:new(Game, {})
+
+
 
         components = {}
         components_gui = {}
@@ -143,7 +143,7 @@ Game:implements({
 
         Game:game_add_component(Spike:new(Game, world, {
             y = 32 * 8,
-            x = 32 * 5,
+            x = 32 * 7,
             on_ceil = false
         }))
 
@@ -183,6 +183,19 @@ Game:implements({
         end
 
         Game.camera:follow(player:get_cx(), player:get_cy(), "player")
+
+        if player:is_dead() and player.body.speed_y == 0
+            and not Game.fadeout_time
+        then
+            Game:fadeout(nil, nil, nil,
+                function(dt)
+
+                end,
+
+                function()
+                    Change_gamestate(Game)
+                end)
+        end
     end,
 
     layers = {
