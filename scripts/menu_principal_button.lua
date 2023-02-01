@@ -51,7 +51,10 @@ function Button:__constructor__(args)
         if not self.pressed and (key == "space" or key == "return") then
             self.pressed = true
 
-            self.eff_flash = self:apply_effect("flash", { speed = 0.3 })
+            self.eff_flash = self:apply_effect("flash", {
+                speed = 0.3,
+                -- color = { 0.2, 0.2, 0.2, 1 }
+            })
 
             self.game:fadeout(1, nil, nil,
                 function(dt)
@@ -62,17 +65,13 @@ function Button:__constructor__(args)
                     Change_gamestate(require "scripts.gameState.game", nil, true)
                 end)
 
-            self.eff_flash:set_final_action(function()
-                --Change_gamestate(require "scripts.gameState.game")
-            end)
-
             if self.eff_pulse then
                 self.eff_pulse.__speed = self.eff_pulse.__speed / 2.0
             end
 
-            self.game:pause(0.6, function(dt)
-                self:update(dt)
-            end)
+            -- self.game:pause(0.6, function(dt)
+            --     self:update(dt)
+            -- end)
         end
     end)
 

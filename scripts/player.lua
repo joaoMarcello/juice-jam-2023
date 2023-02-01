@@ -575,14 +575,6 @@ end
 function Player:key_pressed(key)
     local body = self.body
 
-    -- if key == 'p' then
-    --     self:set_mode(Modes.dash)
-    -- elseif key == 'i' then
-    --     self:set_mode(Modes.extreme)
-    -- elseif key == 'u' then
-    --     self:set_mode(Modes.jump)
-    -- end
-
     if self.state == States.default then
 
         if pressed(self, 'jump', key) then
@@ -668,6 +660,18 @@ function Player:key_pressed(key)
         end
 
     end
+end
+
+function Player:key_released(key)
+    local body = self.body
+    if self.state == States.default then
+        if pressed(self, 'jump', key) then
+            if self.body.speed_y < 0 then
+                self.body.speed_y = self.body.speed_y * 0.6
+            end
+        end
+    end
+
 end
 
 function Player:set_debbug(index, value)

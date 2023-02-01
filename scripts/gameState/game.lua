@@ -14,6 +14,7 @@ local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
 Game.camera:toggle_debug()
 Game.camera:toggle_grid()
 Game.camera:toggle_world_bounds()
+Game.camera.border_color = { 0, 0, 0, 0 }
 --=========================================================================
 ---@type Game.Player
 local player
@@ -160,6 +161,10 @@ Game:implements({
         end
 
         player:key_pressed(key)
+    end,
+
+    keyreleased = function(key)
+        player:key_released(key)
     end,
 
     update = function(dt)
