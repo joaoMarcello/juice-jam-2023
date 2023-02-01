@@ -85,14 +85,11 @@ end
 
 function Button:__custom_draw__()
     love.graphics.setColor(1, 1, 0)
-    -- love.graphics.push()
-    -- love.graphics.shear(-0.1, 0)
     love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
-    -- love.graphics.pop()
 
     self.print_obj:draw(self.x, self.y + self.h / 2 - self.text_h / 2, "center")
 
-    Font:print(self.pressed, self.x, self.y)
+    -- Font:print(self.pressed, self.x, self.y)
 end
 
 return Button
