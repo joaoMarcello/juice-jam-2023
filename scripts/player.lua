@@ -166,11 +166,78 @@ local function dash_destroy_enemy(self)
         for i = 1, col.n do
             ---@type JM.Physics.Body
             local col_body = col.items[i]
+            ---@type Game.Enemy|nil
             local enemy = col_body:get_holder()
 
             if enemy then
+                enemy:receive_damage(self.attr_atk, self)
 
+                if not enemy:is_dead() then
+                    body.speed_x = body.speed_x * (-1)
+                    self:set_state(States.default)
+                end
             end
+        end
+    end
+end
+
+---@param self Game.Player
+local function dash_collide_wall(self)
+    if self.attr_atk > 0 then
+        local body = self.body
+        local pound = self.pound_collider
+        local width = self.dash_width
+        local height = self.dash_height
+        local px = body.speed_x < 0 and (body.x - width) or (body:right())
+        local py = body.y + body.h / 2 - height / 2
+        pound:refresh(px, py, width, height)
+
+        local filter =
+        ---@param item JM.Physics.Body
+        function(obj, item)
+            local types = _G.Pack.Physics.BodyTypes
+            return item.type == types.static or item.type == types.kinematic
+        end
+
+        local col = body:check(body.x - 2, nil, filter)
+        col = col.n <= 0 and body:check(body.x + 2, nil, filter) or col
+
+        if col.n > 0 then
+            local x = col.most_left.x
+            local y = col.most_up.y
+            local r = col.most_right:right()
+            local b = col.most_bottom:bottom()
+            local w = r - x
+            local h = b - y
+
+            local pound = self.pound_collider
+            pound:refresh(x - 32, y - 32, w + 64, h + 32)
+            local col2 = pound:check(nil, nil,
+                ---@param item JM.Physics.Body
+                function(obj, item)
+                    return item.id:match("enemy") and item.id:match("active")
+                end)
+
+            if col2.n > 0 then
+                for i = 1, col2.n do
+                    ---@type Game.Enemy
+                    local enemy = col2.items[i]:get_holder()
+
+                    enemy:receive_damage(self.attr_atk, nil)
+                end
+
+                self.game:pause(0.3, function(dt)
+                    self.game.camera:update(dt)
+                end)
+            end
+
+            self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
+            self.Game.camera:shake_in_y(0.2, 3, nil, 0.15)
+            self.Game.camera.shake_rad_y = math.pi
+            self:set_state(States.default)
+            body.speed_x = -32 * 5
+            body:jump(32 * 0.5, -1)
+            body.allowed_air_dacc = false
         end
     end
 end
@@ -180,6 +247,7 @@ local function pound_destroy_enemy(self, only_on_target)
     local body = self.body
     local pound = self.pound_collider
     local mult = self.attr_atk / self.attr_atk_max
+    mult = mult == 0 and 1 or mult
     local width = self.pound_width * mult
     local height = self.pound_height * mult
 
@@ -255,6 +323,8 @@ local function dashing(self, dt)
             body:apply_force(self.acc * self.dash_direction)
         end
 
+        dash_destroy_enemy(self)
+        -- dash_collide_wall(self)
     else
         if body.h ~= self.h then
             self:restaure_height()
@@ -349,7 +419,7 @@ function Player:__constructor__(Game, args)
     self.attr_pill_time_max = 15
     --=======================================================
 
-    self.dash_width = self.w * 0.5
+    self.dash_width = self.w
     self.dash_height = self.h
 
     self.pound_width = self.w * 6.5
@@ -629,6 +699,7 @@ function Player:set_state(state)
 
         body:on_event("axis_x_collision", function()
             self.dash_time = self.dash_duration + 1
+            dash_collide_wall(self)
         end)
 
         body:on_event("ground_touch", function()
