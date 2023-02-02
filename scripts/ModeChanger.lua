@@ -79,6 +79,12 @@ function Changer:__constructor__(game, args)
     self.arrow = Pack.Anima:new { img = img_arrow or '' }
     self.arrow:apply_effect("pulse", { speed = 0.6, range = 0.07 })
     self.arrow:set_color2(nil, nil, nil, 0.6)
+    if self.mode_type == modes.dash or self.mode_type == modes.dash_ex then
+        self.arrow:set_rotation(math.pi / 2)
+    elseif self.mode_type == modes.extreme then
+        self.arrow:apply_effect("clockWise", { speed = 1.3 })
+    end
+
 end
 
 function Changer:load()

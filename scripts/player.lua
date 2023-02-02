@@ -594,6 +594,16 @@ function Player:key_pressed(key)
         if pressed(self, 'jump', key) then
             if not self.wall_jump_ready and self.jump_count < self.jump_max then
                 self:jump()
+                if self.mode == Modes.jump
+                    or self.mode == Modes.jump_ex
+                    or self.mode == Modes.extreme
+                then
+                    if pressing(self, 'right') and body.speed_x < 0 then
+                        body.speed_x = -(body.speed_x * 1.1)
+                    elseif pressing(self, 'left') and body.speed_x > 0 then
+                        body.speed_x = body.speed_x * 1.1
+                    end
+                end
 
             elseif self.wall_jump_ready and self.wall then
                 self:jump()

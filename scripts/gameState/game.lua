@@ -5,7 +5,7 @@ local Physics = Pack.Physics
 local Player = require "scripts.player"
 local Timer = require "scripts.timer"
 local DisplayHP = require "scripts.displayHP"
-local ModeChanger = require "scripts.ModeChanger"
+local ModeChanger = require "scripts.modeChanger"
 local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
 

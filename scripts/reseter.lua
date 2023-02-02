@@ -112,7 +112,9 @@ function Reset:update(dt)
                 player.jump_count = player.jump_count - 1
             end
 
-            if player.body.speed_y > 0 then
+            if player.body.speed_y > 0
+                and player.body.y < self.body.y
+            then
                 player.body.speed_y = player.body.speed_y * 0.3
             end
         else

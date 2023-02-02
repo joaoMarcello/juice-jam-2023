@@ -65,9 +65,9 @@ end
 
 function Boo:draw()
     Enemy.draw(self, self.my_draw)
-    _G.Pack.Font:print('' ..
-        self.y .. '\n' .. self:get_state_string() .. '\n' .. (self.out_of_bounds and 'OUT' or 'in field'), 32 * 25,
-        32 * 3)
+    -- _G.Pack.Font:print('' ..
+    --     self.y .. '\n' .. self:get_state_string() .. '\n' .. (self.out_of_bounds and 'OUT' or 'in field'), 32 * 25,
+    --     32 * 3)
 end
 
 return Boo
