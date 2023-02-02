@@ -157,7 +157,7 @@ function Enemy:update(dt, camera)
 
     if self.state == States.active and not self.out_of_bounds then
         local x, y, w, h = body:rect()
-        local len = 32 * 3
+        local len = 32 * 8
         local twice = len * 2
         x = x - len
         y = y - len
@@ -165,6 +165,7 @@ function Enemy:update(dt, camera)
         h = h + twice
         if not camera:rect_is_on_view(x, y, w, h) then
             self.out_of_bounds = true
+            self.body.__remove = true
         end
     end
 
@@ -178,6 +179,7 @@ function Enemy:update(dt, camera)
         body.speed_x = 32 * 3
 
         if self.allow_respawn then
+
             if not camera:rect_is_on_view(body.x - 16, body.y - 16, body.w + 32, body.h + 32)
                 or not self.is_visible
             then
@@ -185,12 +187,9 @@ function Enemy:update(dt, camera)
                 self.body.is_enabled = false
                 self:respawn()
             end
+
             if not self.is_visible then
-                self.body.acc_y = 0
-                self.body.allowed_gravity = false
-                self.body.acc_x = 0
-                self.body.speed_y = 0
-                self.body.speed_x = 0
+                self.body.is_enabled = false
             end
         end
     end
@@ -209,7 +208,7 @@ function Enemy:draw(custom_draw)
         self.x + self.w + 3,
         self.y - 16)
 
-    font:print(self:get_state_string(), self.x, self.y - 22)
+    font:print(self.out_of_bounds and 'out_of_bounds' or self:get_state_string(), self.x, self.y - 22)
 end
 
 return Enemy

@@ -31,6 +31,11 @@ function Boo:__constructor__(args)
     self.ox = self.w / 2
     self.oy = self.h / 2
     self.args = args
+
+    self.speed = 32 * 2.5
+    self.body:on_event("axis_x_collision", function()
+        self.speed = self.speed * (-1)
+    end)
 end
 
 -- function Boo:respawn()
@@ -48,7 +53,9 @@ function Boo:update(dt, camera)
         self:kill()
     end
 
-
+    local body = self.body
+    -- body:apply_force(self.acc)
+    body.speed_x = -self.speed
 end
 
 function Boo:my_draw()
@@ -58,7 +65,9 @@ end
 
 function Boo:draw()
     Enemy.draw(self, self.my_draw)
-    _G.Pack.Font:print('' .. self.y .. '\n' .. self:get_state_string(), 32 * 10, 32 * 3)
+    _G.Pack.Font:print('' ..
+        self.y .. '\n' .. self:get_state_string() .. '\n' .. (self.out_of_bounds and 'OUT' or 'in field'), 32 * 25,
+        32 * 3)
 end
 
 return Boo
