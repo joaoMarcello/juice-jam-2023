@@ -49,6 +49,7 @@ local sort_draw = function(a, b) return a.draw_order < b.draw_order end
 ---@param gc GameComponent
 function Game:game_add_component(gc)
     table.insert(components, gc)
+    return gc
 end
 
 function Game:game_remove_component(index)
@@ -57,7 +58,7 @@ function Game:game_remove_component(index)
     if body then
         body.__remove = true
     end
-    table.remove(components, index)
+    return table.remove(components, index)
 end
 
 function Game:game_get_timer()
@@ -112,8 +113,6 @@ Game:implements({
         timer = Timer:new(Game)
         displayHP = DisplayHP:new(Game, {})
 
-
-
         components = {}
         components_gui = {}
 
@@ -163,7 +162,7 @@ Game:implements({
 
         Game:game_add_component(PeekaBoo:new(Game, world, {
             -- type = "dynamic",
-            x = 32 * 6
+            x = 32 * 26
         }))
 
         -- Game:game_add_component(Enemy:new(Game, world, {

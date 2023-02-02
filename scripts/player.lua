@@ -265,8 +265,6 @@ function Player:__constructor__(Game, args)
 
     self.ox = self.w / 2
     self.oy = self.h / 2
-
-    self:apply_effect("flickering")
 end
 
 ---@param eff_type JM.Effect.id_string

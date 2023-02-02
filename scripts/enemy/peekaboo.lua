@@ -23,12 +23,30 @@ end
 
 function Boo:__constructor__(args)
     self:apply_effect("pulse", { speed = 0.6 })
+    self:apply_effect("float", { range = 4 })
+    self.x = args.x
+    self.y = args.y
+    self.w = args.w
+    self.h = args.h
     self.ox = self.w / 2
     self.oy = self.h / 2
+    self.args = args
 end
 
+-- function Boo:respawn()
+--     self.__remove = true
+--     self.game:game_add_component(Boo:new(self.game, self.world, self.args))
+-- end
+
 function Boo:update(dt, camera)
-    Enemy.update(self, dt, camera)
+    camera = self.game.camera
+    local is_active = Enemy.update(self, dt, camera)
+
+    if not is_active then return end
+
+    if love.keyboard.isDown('t') then
+        self:kill()
+    end
 end
 
 function Boo:my_draw()
@@ -38,6 +56,7 @@ end
 
 function Boo:draw()
     Enemy.draw(self, self.my_draw)
+    _G.Pack.Font:print('' .. self.y .. '\n' .. self:get_state_string(), 32 * 10, 32 * 3)
 end
 
 return Boo
