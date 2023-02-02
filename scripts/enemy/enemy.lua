@@ -145,7 +145,7 @@ function Enemy:set_state(state)
 
         if r == States.active then
             self.body.is_enabled = true
-            self.is_visible = true
+            self:set_visible(true)
             dispatch_event(self, Events.activated)
             self.body.id = "enemy_active"
         end

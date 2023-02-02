@@ -1,5 +1,4 @@
 local Enemy = require "scripts.enemy.enemy"
-local Affectable = Pack.Affectable
 
 ---@class Game.Enemy.PeekaBoo: Game.Enemy
 local Boo = setmetatable({}, Enemy)
@@ -24,6 +23,7 @@ end
 function Boo:__constructor__(args)
     self:apply_effect("pulse", { speed = 0.6 })
     self:apply_effect("float", { range = 4 })
+
     self.x = args.x
     self.y = args.y
     self.w = args.w
@@ -33,23 +33,23 @@ function Boo:__constructor__(args)
     self.args = args
 
     self.acc = 32 * 4
-    self.body:on_event("axis_x_collision", function()
-        self.acc = self.acc * (-1)
-        self.body.speed_x = self.body.max_speed_x * self.acc / self.acc
+    self.body:on_event("wall_right_touch", function()
+        self.acc = -self.acc
+        self.body.speed_x = self.body.max_speed_x
+    end)
+
+    self.body:on_event("wall_left_touch", function()
+        self.acc = -self.acc
+        self.body.speed_x = -self.body.max_speed_x
     end)
 
     self:on_event("damaged", function()
-        self.body:jump(32*0.5, -1)
+        self.body:jump(32 * 0.5, -1)
         self.body.speed_x = 0
     end)
 
     self.body.max_speed_x = 32 * 2
 end
-
--- function Boo:respawn()
---     self.__remove = true
---     self.game:game_add_component(Boo:new(self.game, self.world, self.args))
--- end
 
 function Boo:update(dt, camera)
     camera = self.game.camera

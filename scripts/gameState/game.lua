@@ -11,6 +11,7 @@ local Spike = require "scripts.spike"
 
 local Enemy = require "scripts.enemy.enemy"
 local PeekaBoo = require "scripts.enemy.peekaboo"
+local MiddleBoo = require "scripts.enemy.middleBoo"
 
 ---@class GameState.Game: JM.Scene, GameState
 local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -90,6 +91,7 @@ Game:implements({
         Reseter:load()
         Spike:load()
         PeekaBoo:load()
+        MiddleBoo:load()
     end,
 
     finish = function()
@@ -99,6 +101,7 @@ Game:implements({
         Reseter:finish()
         Spike:finish()
         PeekaBoo:finish()
+        MiddleBoo:finish()
     end,
 
     init = function()
@@ -161,8 +164,11 @@ Game:implements({
         }))
 
         Game:game_add_component(PeekaBoo:new(Game, world, {
-            -- type = "dynamic",
             x = 32 * 26
+        }))
+
+        Game:game_add_component(MiddleBoo:new(Game, world, {
+            x = 32 * 10
         }))
 
 
