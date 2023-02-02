@@ -55,7 +55,7 @@ function Changer:__constructor__(game, args)
         [modes.extreme] = Utils:get_rgba(212 / 255, 111 / 255, 68 / 255, 1),
     }
 
-    self.draw_order = -1
+    self:set_draw_order(0)
 
     self:set_mode(args.mode)
 

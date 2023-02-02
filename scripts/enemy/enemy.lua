@@ -12,9 +12,12 @@ local States = {
 local Events = {
     activated = 1,
     killed = 2,
-    damaged = 3
+    damaged = 3,
+    notDamaged = 4,
+    pushPlayer = 5,
+    damagePlayer = 6
 }
----@alias Game.Enemy.EventNames "activated"|"killed"
+---@alias Game.Enemy.EventNames "activated"|"killed"|"damaged"|"notDamaged"|"pushPlayer"|"damagePlayer"
 
 ---@param self Game.Enemy
 local function get_state_string(self)
@@ -54,7 +57,7 @@ function Enemy:__constructor__(args)
     self.attr_hp_max = args.hp_max or 5
 
     self.attr_atk = args.atk or 2
-    self.attr_def = args.def or 1
+    self.attr_def = args.def or 0
 
     self.ox = self.w / 2
     self.oy = self.h / 2
@@ -100,6 +103,7 @@ function Enemy:receive_damage(atk, player)
 
     local value = atk - self.attr_def
     value = value == 0 and 0.5 or value
+    value = atk == 0 and 0 or value
 
     if value > 0 then
         self.attr_hp = Utils:clamp(self.attr_hp - value, 0, self.attr_hp_max)
@@ -110,6 +114,7 @@ function Enemy:receive_damage(atk, player)
             dispatch_event(self, Events.damaged)
         end
     elseif player then
+        dispatch_event(self, Events.notDamaged)
         local body = self.body
         local player_bd = player.body
 
@@ -226,9 +231,17 @@ function Enemy:update(dt, camera)
 
         if self.is_trying_kill_player and not player:is_dead()
             and self.invicible_time == 0
-            and player_bd:check_collision(body.x, body.y - 1, body.w, body.h + 2)
+            and player_bd:check_collision(body.x + 5, body.y - 1, body.w - 5, body.h + 2)
         then
-            player:receive_damage(self.attr_atk, self)
+            local player_hp = player.attr_hp
+            local result = player:receive_damage(self.attr_atk, self)
+            if result then
+                if player_hp == player.attr_hp then
+                    dispatch_event(self, Events.pushPlayer)
+                else
+                    dispatch_event(self, Events.damagePlayer)
+                end
+            end
         end
     end
 
@@ -249,16 +262,12 @@ function Enemy:update(dt, camera)
         if self.allow_respawn then
 
             if not camera:rect_is_on_view(body.x - 16, body.y - 16, body.w + 32, body.h + 32)
-                or not self.is_visible
+                or not self.body.is_enabled
             then
                 self:set_visible(false)
                 self.body.is_enabled = false
                 self.body.id = "enemy"
                 self:respawn()
-            end
-
-            if not self.is_visible then
-                self.body.is_enabled = false
             end
         end
     end

@@ -13,7 +13,7 @@ local Types = {
 local img
 
 ---@class Game.Component.Reseter: BodyComponent
-local Reset = {}
+local Reset = setmetatable({}, GC)
 Reset.__index = Reset
 Reset.Types = Types
 
@@ -51,7 +51,7 @@ function Reset:__constructor__(game, args)
     self.time = 0.0
 
     self.body.allowed_gravity = false
-    self.draw_order = -1
+    self:set_draw_order(0)
 
     self.mode = args.mode
     self.used_color = self.mode == Types.jump and self.__colors['jump_used'] or

@@ -174,7 +174,7 @@ local function pound_destroy_enemy(self, only_on_target)
 
             if enemy then
                 if only_on_target and enemy:check_collision(
-                    body.x, body.y, body.w, body.h + 10
+                    body.x - 20, body.y, body.w + 40, body.h + 20
                 )
                     or not only_on_target
                 then
@@ -299,7 +299,8 @@ function Player:__constructor__(Game, args)
     self.invicible_time = 0.0
     self.invicible_duration = 1.3
 
-    self.update_order = 10
+    self:set_update_order(10)
+    self:set_draw_order(10)
 
     -- ========   ATRIBUTES  ===============================
     self.attr_hp = 3
@@ -378,6 +379,7 @@ function Player:receive_damage(atk, enemy)
         else
             body.speed_y = body.speed_y * 0.3
         end
+
         if direction < 0 then
             body.speed_x = body.speed_x - enemy_bd.speed_x
             body:refresh(enemy_bd.x - body.w - 1)
@@ -401,6 +403,8 @@ function Player:receive_damage(atk, enemy)
                 body:resolve_collisions_x(col)
             end
         end
+
+        return true
     end
 end
 
@@ -623,14 +627,14 @@ function Player:set_state(state)
         end
 
         if self.game:game_get_timer().time > 0 and not stop_vibrate then
-            self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
-            self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
-            self.Game.camera.shake_rad_y = math.pi
+            -- self.Game.camera:shake_in_x(0.3, 2, nil, 0.1)
+            -- self.Game.camera:shake_in_y(0.3, 5, nil, 0.15)
+            -- self.Game.camera.shake_rad_y = math.pi
         end
 
         body.speed_x = 0
         body.speed_y = 0
-        body.mass = body.world.default_mass * 0.5
+        body.mass = body.world.default_mass * 0.9
         body.type = Pack.Physics.BodyTypes.ghost
         body:jump(32 * 3, -1)
         body:on_event("start_falling", function()

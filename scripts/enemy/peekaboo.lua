@@ -38,6 +38,11 @@ function Boo:__constructor__(args)
         self.body.speed_x = self.body.max_speed_x * self.acc / self.acc
     end)
 
+    self:on_event("damaged", function()
+        self.body:jump(32*0.5, -1)
+        self.body.speed_x = 0
+    end)
+
     self.body.max_speed_x = 32 * 2
 end
 

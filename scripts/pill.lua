@@ -109,7 +109,9 @@ function Pill:__constructor__(Game, player, args)
 
     self.follow_player = true
 
-    self.jump_time = 0.0
+    self.time_jump = 0.0
+    self.time_vanish = 0.0
+    self.time_life = 4.0
 
     self.body:on_event("start_falling", function()
         self.body.mass = self.body.world.default_mass * 0.8
@@ -265,9 +267,9 @@ function Pill:update(dt)
     if self.follow_player then
         self.body.speed_x = self.player.body.speed_x
     else
-        self.jump_time = self.jump_time + dt
-        if self.jump_time >= 3.5 then
-            self.jump_time = 1.5 * math.random()
+        self.time_jump = self.time_jump + dt
+        if self.time_jump >= 3.5 then
+            self.time_jump = 1.5 * math.random()
             if body.speed_y == 0 then
                 body:jump(32 / 2, -1)
             end
