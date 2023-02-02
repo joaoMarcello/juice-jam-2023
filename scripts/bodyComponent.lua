@@ -13,7 +13,7 @@ local Component = JM_Utils:create_class(Affectable, GC)
 ---@param world JM.Physics.World
 ---@param args table
 function Component:new(game, world, args)
-    local obj = GC:new(game, args) --Affectable:new()
+    local obj = GC:new(game, args)
 
     setmetatable(obj, self)
     Affectable.__constructor__(obj)
@@ -22,8 +22,8 @@ function Component:new(game, world, args)
 end
 
 function Component:__constructor__(world, args)
-    args.x = args.x or 0
-    args.y = args.y or 0
+    args.x = args.x or (32 * 2)
+    args.y = args.y or (32 * 3)
     args.w = args.w or 32
     args.h = args.h or 32
 

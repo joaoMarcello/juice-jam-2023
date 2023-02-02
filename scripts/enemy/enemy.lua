@@ -12,9 +12,14 @@ local Enemy = setmetatable({}, GC)
 Enemy.__index = Enemy
 Enemy.States = States
 
+---@param game GameState.Game
+---@param world JM.Physics.World
+---@param args table
+---@return table
 function Enemy:new(game, world, args)
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
+
     Enemy.__constructor__(obj, game, args)
     return obj
 end
@@ -26,7 +31,7 @@ function Enemy:__constructor__(game, args)
 
     self.args = args
 
-    self.state = States.unactive
+    self.state = States.active
 
     self.allow_respawn = true
 end
@@ -63,7 +68,7 @@ end
 
 ---@param dt number
 ---@param camera JM.Camera.Camera
----@return boolean enemy_is_active
+-- ---@return boolean enemy_is_active
 function Enemy:update(dt, camera)
     local body = self.body
 
@@ -83,7 +88,7 @@ function Enemy:update(dt, camera)
         end
     end
 
-    return self.state == States.active
+    -- return self.state == States.active
 end
 
 local font = _G.Pack.Font

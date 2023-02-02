@@ -9,6 +9,9 @@ local ModeChanger = require "scripts.ModeChanger"
 local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
 
+local Enemy = require "scripts.enemy.enemy"
+local PeekaBoo = require "scripts.enemy.peekaboo"
+
 ---@class GameState.Game: JM.Scene, GameState
 local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
 Game.camera:toggle_debug()
@@ -85,6 +88,16 @@ Game:implements({
         ModeChanger:load()
         Reseter:load()
         Spike:load()
+        PeekaBoo:load()
+    end,
+
+    finish = function()
+        Player:finish()
+        DisplayHP:finish()
+        ModeChanger:finish()
+        Reseter:finish()
+        Spike:finish()
+        PeekaBoo:finish()
     end,
 
     init = function()
@@ -146,6 +159,16 @@ Game:implements({
             y = 32 * 8,
             x = 32 * 7,
             on_ceil = false
+        }))
+
+        Game:game_add_component(PeekaBoo:new(Game, world, {
+            -- type = "dynamic",
+            -- x = 32 * 2
+        }))
+
+        Game:game_add_component(Enemy:new(Game, world, {
+            type = "dynamic",
+            x = 32 * 8
         }))
 
         table.insert(components_gui, timer)

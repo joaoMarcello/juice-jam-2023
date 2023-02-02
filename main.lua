@@ -40,7 +40,7 @@ function RESTART(state)
 end
 
 function love.load()
-    Change_gamestate(require 'scripts.gameState.menu_principal', true)
+    Change_gamestate(require 'scripts.gameState.game', true)
 end
 
 function love.keypressed(key)
