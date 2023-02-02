@@ -67,6 +67,7 @@ end
 ---@return JM.Effect
 function Component:apply_effect(eff_type, eff_args)
     if not self.eff_actives then self.eff_actives = {} end
+
     if self.eff_actives[eff_type] then
         self.eff_actives[eff_type].__remove = true
     end

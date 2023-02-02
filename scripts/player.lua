@@ -192,12 +192,14 @@ local function dash_collide_wall(self)
         local py = body.y + body.h / 2 - height / 2
         pound:refresh(px, py, width, height)
 
+
         local filter =
         ---@param item JM.Physics.Body
         function(obj, item)
             local types = _G.Pack.Physics.BodyTypes
             return item.type == types.static or item.type == types.kinematic
         end
+
 
         local col = body:check(body.x - 2, nil, filter)
         col = col.n <= 0 and body:check(body.x + 2, nil, filter) or col
@@ -212,6 +214,9 @@ local function dash_collide_wall(self)
 
             local pound = self.pound_collider
             pound:refresh(x - 32, y - 32, w + 64, h + 32)
+
+            local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
+
             local col2 = pound:check(nil, nil,
                 ---@param item JM.Physics.Body
                 function(obj, item)
@@ -229,14 +234,17 @@ local function dash_collide_wall(self)
                 self.game:pause(0.3, function(dt)
                     self.game.camera:update(dt)
                 end)
+
+                self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
+                self.Game.camera:shake_in_y(0.2, 3, nil, 0.15)
+                self.Game.camera.shake_rad_y = math.pi
+
+
             end
 
-            self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
-            self.Game.camera:shake_in_y(0.2, 3, nil, 0.15)
-            self.Game.camera.shake_rad_y = math.pi
             self:set_state(States.default)
-            body.speed_x = -32 * 5
             body:jump(32 * 0.5, -1)
+            body.speed_x = (32 * 5) * (-dash_direction)
             body.allowed_air_dacc = false
         end
     end
@@ -748,6 +756,9 @@ function Player:set_state(state)
             self.Game:game_get_displayHP():update(dt)
             self.game.camera:update(dt)
         end)
+
+        local r = self.eff_actives and self.eff_actives['flickering']
+        if r then self.eff_actives['flickering'].__remove = true end
 
     else
         self.current_movement = move_default

@@ -12,6 +12,7 @@ local Spike = require "scripts.spike"
 local Enemy = require "scripts.enemy.enemy"
 local PeekaBoo = require "scripts.enemy.peekaboo"
 local MiddleBoo = require "scripts.enemy.middleBoo"
+local WeightBoo = require "scripts.enemy.weightBoo"
 
 ---@class GameState.Game: JM.Scene, GameState
 local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -92,6 +93,7 @@ Game:implements({
         Spike:load()
         PeekaBoo:load()
         MiddleBoo:load()
+        WeightBoo:load()
     end,
 
     finish = function()
@@ -102,6 +104,7 @@ Game:implements({
         Spike:finish()
         PeekaBoo:finish()
         MiddleBoo:finish()
+        WeightBoo:finish()
     end,
 
     init = function()
@@ -169,6 +172,10 @@ Game:implements({
 
         Game:game_add_component(MiddleBoo:new(Game, world, {
             x = 32 * 10
+        }))
+
+        Game:game_add_component(WeightBoo:new(Game, world, {
+            x = 32 * 20
         }))
 
 
