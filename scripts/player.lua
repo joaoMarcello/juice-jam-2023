@@ -117,6 +117,17 @@ local function move_default(self, dt)
 
     if body.speed_y > 0 then
         body.allowed_air_dacc = true
+        local col = body:check(nil, body.y + 1,
+            ---@param item JM.Physics.Body
+            function(obj, item)
+                return item.id:match("enemy") and item.is_enabled
+            end)
+
+        if col.n > 0 then
+            if col.items[1].id:match("active") then
+                body:jump(32 * 1.1, -1)
+            end
+        end
     end
 
     if body.speed_y > 0 and self.jump_count == 0
@@ -129,6 +140,7 @@ local function move_default(self, dt)
         if body.ground then
             self.dash_count = 0
             self.jump_count = 0
+            body.allowed_air_dacc = true
         end
     end
 end
@@ -236,6 +248,9 @@ function Player:__constructor__(Game, args)
     self.wall_jump_ready = false
     self.wall = nil
 
+    self.invicible_time = 0.0
+    self.invicible_duration = 1.3
+
     -- ========   ATRIBUTES  ===============================
     self.attr_hp = 3
     self.attr_hp_max = 6
@@ -265,6 +280,11 @@ function Player:__constructor__(Game, args)
 
     self.ox = self.w / 2
     self.oy = self.h / 2
+
+    self:apply_effect("flickering", {
+        speed = 0.1,
+        duration = self.invicible_duration
+    })
 end
 
 function Player:load()
@@ -277,6 +297,71 @@ end
 
 function Player:finish()
     Pill:finish()
+end
+
+---@param atk number
+---@param enemy Game.Enemy|nil
+function Player:receive_damage(atk, enemy)
+    if self.invicible_time > 0 then
+        if enemy then
+            -- local enemy_bd = enemy.body
+            -- if enemy_bd:right() > self.body:right() then
+            --     enemy.body:refresh(self.body:right())
+            -- end
+        end
+        return false
+    end
+
+    local value = atk - self.attr_def
+    value = value == 0 and 0.5 or value
+
+    if value > 0 then
+        self:set_attribute("hp", "sub", value)
+
+        self.invicible_time = self.invicible_duration
+
+        self:apply_effect("flickering", {
+            speed = 0.1,
+            duration = self.invicible_duration
+        })
+        return true
+    elseif enemy then
+        local enemy_bd = enemy.body
+        local body = self.body
+
+        local direction = (body.x + body.w / 2) < (enemy_bd.x + enemy_bd.w / 2) and -1 or 1
+        body.speed_x = 32 * 2 * direction
+        body.allowed_air_dacc = false
+
+        if body.speed_y >= 0 then
+            body:jump(32 * 1.5, -1)
+        else
+            body.speed_y = body.speed_y * 0.3
+        end
+        if direction < 0 then
+            body.speed_x = body.speed_x - enemy_bd.speed_x
+            body:refresh(enemy_bd.x - body.w - 1)
+            local col = body:check(body.x - 1, nil,
+                ---@param item JM.Physics.Body
+                function(obj, item)
+                    return item.type == Pack.Physics.BodyTypes.static
+                end)
+            if col.n > 0 then
+                body:resolve_collisions_x(col)
+            end
+        else
+            body.speed_x = body.speed_x + enemy_bd.speed_x
+            body:refresh(enemy_bd:right() + 1)
+            local col = body:check(body.x + 1, nil,
+                ---@param item JM.Physics.Body
+                function(obj, item)
+                    return item.type == Pack.Physics.BodyTypes.static
+                end)
+            if col.n > 0 then
+                body:resolve_collisions_x(col)
+            end
+        end
+    end
 end
 
 ---@param eff_type JM.Effect.id_string
@@ -718,6 +803,13 @@ function Player:update(dt)
     bodyGC.update(self, dt)
 
     self.current_movement(self, dt)
+
+    if self.invicible_time > 0 then
+        self.invicible_time = Utils:clamp(
+            self.invicible_time - dt,
+            0, self.invicible_duration
+        )
+    end
 
     self.x, self.y = Utils:round(body.x), Utils:round(body.y)
 end

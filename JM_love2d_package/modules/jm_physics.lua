@@ -194,6 +194,7 @@ do
     function Body:__constructor__(x, y, w, h, type_, world, id)
 
         self.type = type_
+        ---@type string
         self.id = id or ""
         self.world = world
 

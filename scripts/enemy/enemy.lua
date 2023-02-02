@@ -62,6 +62,10 @@ function Enemy:__constructor__(args)
 
     self.allow_respawn = true
     self.out_of_bounds = false
+
+    self.is_trying_kill_player = true
+
+    self.body.id = "enemy"
 end
 
 ---@param name Game.Enemy.EventNames
@@ -102,6 +106,7 @@ function Enemy:set_state(state)
             self.body.is_enabled = true
             self.is_visible = true
             dispatch_event(self, Events.activated)
+            self.body.id = "enemy_active"
         end
 
         return true
@@ -139,6 +144,13 @@ function Enemy:inutilize_body()
     self.body.speed_x = 0
 end
 
+--- Only collide id is active and enemy is out of bounds
+function Enemy:check_collision(x, y, w, h)
+    if self.state == States.active and not self.out_of_bounds then
+        return self.body:check_collision(x, y, w, h)
+    end
+end
+
 ---@param dt number
 ---@param camera JM.Camera.Camera|nil
 ---@return boolean enemy_is_active
@@ -168,6 +180,13 @@ function Enemy:update(dt, camera)
         if not camera:rect_is_on_view(x, y, w, h) then
             self.out_of_bounds = true
             self.body.__remove = true
+            self.body.id = "enemy"
+        end
+
+        if self.is_trying_kill_player and not player:is_dead()
+            and player_bd:check_collision(body.x, body.y - 1, body.w, body.h + 2)
+        then
+            player:receive_damage(self.attr_atk, self)
         end
     end
 
@@ -187,6 +206,7 @@ function Enemy:update(dt, camera)
             then
                 self:set_visible(false)
                 self.body.is_enabled = false
+                self.body.id = "enemy"
                 self:respawn()
             end
 

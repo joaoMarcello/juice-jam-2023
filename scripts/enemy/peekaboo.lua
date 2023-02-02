@@ -32,10 +32,13 @@ function Boo:__constructor__(args)
     self.oy = self.h / 2
     self.args = args
 
-    self.speed = 32 * 2.5
+    self.acc = 32 * 4
     self.body:on_event("axis_x_collision", function()
-        self.speed = self.speed * (-1)
+        self.acc = self.acc * (-1)
+        self.body.speed_x = self.body.max_speed_x * self.acc / self.acc
     end)
+
+    self.body.max_speed_x = 32 * 2
 end
 
 -- function Boo:respawn()
@@ -54,8 +57,8 @@ function Boo:update(dt, camera)
     end
 
     local body = self.body
-    -- body:apply_force(self.acc)
-    body.speed_x = -self.speed
+    -- body.speed_x = -self.speed
+    self.body:apply_force(-self.acc)
 end
 
 function Boo:my_draw()
