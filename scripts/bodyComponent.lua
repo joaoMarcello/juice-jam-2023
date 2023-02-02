@@ -56,7 +56,10 @@ function Component:update(dt)
     Affectable.update(self, dt)
 end
 
-function Component:draw()
+function Component:draw(custom_draw)
+    if custom_draw then
+        Affectable.draw(self, custom_draw)
+    end
     return false
 end
 

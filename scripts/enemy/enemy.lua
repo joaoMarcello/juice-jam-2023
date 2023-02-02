@@ -20,14 +20,17 @@ function Enemy:new(game, world, args)
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
 
-    Enemy.__constructor__(obj, game, args)
+    Enemy.__constructor__(obj, args)
     return obj
 end
 
-function Enemy:__constructor__(game, args)
+function Enemy:__constructor__(args)
     self.attr_hp = args.hp or 3
     self.attr_atk = args.atk or 2
     self.attr_def = args.def or 1
+
+    self.ox = self.w / 2
+    self.oy = self.h / 2
 
     self.args = args
 
@@ -37,7 +40,7 @@ function Enemy:__constructor__(game, args)
 end
 
 function Enemy:respawn()
-    self:__constructor__(self.game, self.args)
+    self:__constructor__(self.args)
 end
 
 ---@param state "active"|"dead"|"unactive"
@@ -68,8 +71,11 @@ end
 
 ---@param dt number
 ---@param camera JM.Camera.Camera
--- ---@return boolean enemy_is_active
+---@return boolean enemy_is_active
 function Enemy:update(dt, camera)
+
+    GC.update(self, dt)
+
     local body = self.body
 
     if camera and self.state == States.unactive
@@ -88,11 +94,14 @@ function Enemy:update(dt, camera)
         end
     end
 
-    -- return self.state == States.active
+    self.x, self.y = body.x, body.y
+    return self.state == States.active
 end
 
 local font = _G.Pack.Font
-function Enemy:draw()
+function Enemy:draw(custom_draw)
+    GC.draw(self, custom_draw)
+
     font:print('<color, 0,1,0>' .. self.attr_hp .. '\n<color>' .. self.attr_atk .. '\n<color, 0, 0, 1>' .. self.attr_def
         ,
         self.x + self.w + 3,
