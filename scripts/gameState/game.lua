@@ -158,12 +158,12 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             y = 32 * 8,
             x = 32 * 7,
-            on_ceil = false
+            on_ceil = true
         }))
 
         Game:game_add_component(PeekaBoo:new(Game, world, {
             -- type = "dynamic",
-            x = 32 * 8
+            x = 32 * 6
         }))
 
         -- Game:game_add_component(Enemy:new(Game, world, {

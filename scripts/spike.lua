@@ -26,17 +26,18 @@ function Spike:new(game, world, args)
     if not args.on_ceil then
         args.y = args.bottom and (args.bottom - args.h) or args.y
     end
-    args.type = "static"
+    args.type = "ghost"
 
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
 
-    Spike.__constructor__(obj, game, args)
+    Spike.__constructor__(obj, game, world, args)
     return obj
 end
 
 ---@param game GameState.Game
-function Spike:__constructor__(game, args)
+---@param world JM.Physics.World
+function Spike:__constructor__(game, world, args)
     self.type = Types.ground
     self.len = args.len
     self.x = args.x
@@ -45,9 +46,18 @@ function Spike:__constructor__(game, args)
     self.h = args.h
     self.on_ceil = args.on_ceil
 
+    self.body.allowed_gravity = false
+
     self.spike = Pack.Anima:new({ img = img or '' })
     self.spike:set_flip_y(self.on_ceil)
     self.draw_order = -1
+
+    local Phys = _G.Pack.Physics
+    if not self.on_ceil then
+        Phys:newBody(world, self.x + 3, self.y + self.h - 10, self.w - 3, 9, "static")
+    else
+        Phys:newBody(world, self.x + 3, self.y, self.w - 3, 9, "static")
+    end
 end
 
 function Spike:load()
@@ -80,7 +90,7 @@ function Spike:update(dt)
         y = y - 5
     end
 
-    if player.body:check_collision(x, y, w, h)
+    if player.body:check_collision(x + 7, y, w - 7, h)
         and ((self.on_ceil and player.body.speed_y <= 0)
             or (not self.on_ceil and player.body.speed_y >= 0))
         and not player:is_dead()

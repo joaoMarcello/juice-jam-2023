@@ -262,6 +262,22 @@ function Player:__constructor__(Game, args)
     self.mode = nil
 
     self:set_mode(Modes.normal)
+
+    self.ox = self.w / 2
+    self.oy = self.h / 2
+
+    self:apply_effect("flickering")
+end
+
+---@param eff_type JM.Effect.id_string
+---@param eff_args any
+---@return JM.Effect|nil
+function Player:apply_effect(eff_type, eff_args)
+    if not self.eff_actives then self.eff_actives = {} end
+    if self.eff_actives[eff_type] then return self.eff_actives[eff_type] end
+
+    self.eff_actives[eff_type] = bodyGC.apply_effect(self, eff_type, eff_args)
+    return self.eff_actives[eff_type]
 end
 
 ---@alias Game.Component.Player.Attributes "hp"|"def"|"atk"|"pill_hp"|"pill_atk"|"pill_def"|"pill_time"
@@ -681,12 +697,14 @@ end
 function Player:update(dt)
     local body = self.body
 
+    bodyGC.update(self, dt)
+
     self.current_movement(self, dt)
 
     self.x, self.y = Utils:round(body.x), Utils:round(body.y)
 end
 
-function Player:draw()
+function Player:my_draw()
     love.graphics.setColor(121 / 255, 58 / 255, 128 / 255, 1)
     love.graphics.rectangle("fill", self.body:rect())
 
@@ -714,6 +732,10 @@ function Player:draw()
     end
 
     -- Font:print(self.draw_order, self.x - 100, self.y)
+end
+
+function Player:draw()
+    bodyGC.draw(self, self.my_draw)
 end
 
 return Player

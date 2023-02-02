@@ -1253,7 +1253,7 @@ function Phys:newWorld(args)
 end
 
 ---@param world JM.Physics.World
----@param type_ "dynamic"|"kinematic"|"static"
+---@param type_ "dynamic"|"kinematic"|"static"|"ghost"
 ---@return JM.Physics.Body
 function Phys:newBody(world, x, y, w, h, type_)
 
