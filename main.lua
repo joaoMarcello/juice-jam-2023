@@ -25,15 +25,18 @@ SCREEN_HEIGHT = 32 * 13
 local scene
 
 ---@param new_state GameState
-function Change_gamestate(new_state, run_finish, run_load, save_prev)
-    local r = scene and run_finish and scene:finish()
-    r = run_load and new_state:load()
+function Change_gamestate(new_state, skip_finish, skip_load, save_prev, skip_collect)
+    local r = scene and not skip_finish and scene:finish()
+    r = not skip_load and new_state:load()
     new_state:init()
     new_state.prev_state = save_prev and scene or nil
     scene = new_state
-    collectgarbage()
+    r = not skip_collect and collectgarbage()
     scene:fadein(nil, nil, nil)
+end
 
+function RESTART(state)
+    Change_gamestate(state, true, true, false, false)
 end
 
 function love.load()

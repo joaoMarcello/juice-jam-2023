@@ -198,7 +198,7 @@ Game:implements({
                 end,
 
                 function()
-                    Change_gamestate(Game)
+                    RESTART(Game)
                 end)
         end
     end,

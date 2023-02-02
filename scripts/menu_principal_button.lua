@@ -62,7 +62,7 @@ function Button:__constructor__(args)
                 end,
 
                 function()
-                    Change_gamestate(require "scripts.gameState.game", nil, true)
+                    Change_gamestate(require "scripts.gameState.game")
                 end)
 
             if self.eff_pulse then
