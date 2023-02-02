@@ -32,6 +32,22 @@ function Boo:__constructor__(args)
     self.oy = self.h / 2
 
     self:apply_effect("jelly", { speed = 0.6 })
+
+    self.acc = 32 * 3
+    self.body.max_speed_x = 32 * 4
+    self.body.dacc_x = self.world.meter * 8
+
+    self.body:on_event("wall_right_touch", function()
+        self.body.speed_x = -self.body.max_speed_x * 0.5
+    end)
+
+    self.body:on_event("wall_left_touch", function()
+        self.body.speed_x = self.body.max_speed_x * 0.5
+    end)
+
+    self.body:on_event("speed_x_change_direction", function()
+        self.body.speed_x = self.body:direction_x() * self.body.max_speed_x
+    end)
 end
 
 function Boo:load()
@@ -47,6 +63,8 @@ function Boo:update(dt, camera)
     if not is_active then return end
 
     local body = self.body
+    local direction = self.game:get_player().x < body.x and -1 or 1
+    body:apply_force(self.acc * direction)
 end
 
 function Boo:my_draw()

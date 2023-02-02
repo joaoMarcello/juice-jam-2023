@@ -34,6 +34,7 @@ function Component:__constructor__(world, args)
 
     self.args = args
 
+    ---@type JM.Physics.World
     self.world = world
 
     self.is_enable = true
