@@ -12,7 +12,7 @@ love.mouse.setVisible(false)
 ---@field update function
 ---@field draw function
 ---@field keypressed function
----@field prev_state GameState
+---@field prev_state GameState|nil
 
 --==================================================================
 
@@ -30,8 +30,8 @@ function CHANGE_GAME_STATE(new_state, skip_finish, skip_load, save_prev, skip_co
     r = not skip_load and new_state:load()
     new_state:init()
     new_state.prev_state = save_prev and scene or nil
-    scene = new_state
     r = not skip_collect and collectgarbage()
+    scene = new_state
     scene:fadein(nil, nil, nil)
 end
 
@@ -44,11 +44,11 @@ function love.load()
 end
 
 function love.keypressed(key)
-    scene:keypressed(key)
+    local r = scene and scene:keypressed(key)
 end
 
 function love.keyreleased(key)
-    scene:keyreleased(key)
+    local r = scene and scene:keyreleased(key)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)

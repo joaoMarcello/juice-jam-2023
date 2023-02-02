@@ -73,6 +73,10 @@ function Pill:load()
 end
 
 function Pill:finish()
+    local r = img[TypePill.atk] and img[TypePill.atk]:release()
+    img[TypePill.atk] = nil
+
+    img = {}
     -- img = {}
 end
 

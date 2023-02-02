@@ -267,6 +267,18 @@ function Player:__constructor__(Game, args)
     self.oy = self.h / 2
 end
 
+function Player:load()
+    Pill:load()
+end
+
+function Player:init()
+
+end
+
+function Player:finish()
+    Pill:finish()
+end
+
 ---@param eff_type JM.Effect.id_string
 ---@param eff_args any
 ---@return JM.Effect|nil
@@ -380,10 +392,6 @@ function Player:set_mode(mode)
     end
 
     return true
-end
-
-function Player:load()
-    Pill:load()
 end
 
 local stop_vibrate = false
