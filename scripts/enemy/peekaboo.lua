@@ -47,6 +47,8 @@ function Boo:update(dt, camera)
     if love.keyboard.isDown('t') then
         self:kill()
     end
+
+
 end
 
 function Boo:my_draw()

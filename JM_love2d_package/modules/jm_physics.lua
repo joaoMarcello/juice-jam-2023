@@ -210,6 +210,8 @@ do
         self.max_speed_x = nil
         self.max_speed_y = nil
 
+        self.is_enabled = true
+
         self.acc_x = 0.0
         self.acc_y = 0.0
         self.acc_y = (self.type ~= BodyTypes.dynamic and 0) or self.acc_y
@@ -458,6 +460,8 @@ do
             ---@type JM.Physics.Body|JM.Physics.Slope
             local item = item
 
+            if not self.is_enabled then break end
+
             -- local cond_y = (diff_y ~= 0
             --     and (self:right() > item.x and self.x < item:right()))
 
@@ -465,6 +469,8 @@ do
             --     and (bottom >= item.y and top <= item:bottom()))
 
             if item ~= self and not item.__remove and not item.is_stucked
+
+                and item.is_enabled
 
                 and item.type ~= BodyTypes.ghost
 
@@ -1211,7 +1217,7 @@ do
                 obj = nil
             end
 
-            if obj then
+            if obj and obj.is_enabled then
                 obj:update(dt)
             end
 
