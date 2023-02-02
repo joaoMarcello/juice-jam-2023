@@ -165,10 +165,6 @@ Game:implements({
             x = 32 * 26
         }))
 
-        -- Game:game_add_component(Enemy:new(Game, world, {
-        --     type = "dynamic",
-        --     x = 32 * 8
-        -- }))
 
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)

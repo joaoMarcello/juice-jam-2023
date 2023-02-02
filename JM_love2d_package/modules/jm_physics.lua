@@ -252,6 +252,16 @@ do
         self:extra_collisor_filter(default_filter)
     end
 
+    ---@param holder table|nil
+    function Body:set_holder(holder)
+        self.holder = holder
+    end
+
+    ---@return table|nil
+    function Body:get_holder()
+        return self.holder
+    end
+
     ---@alias JM.Physics.Event {type:JM.Physics.BodyEventOptions, action:function, args:any}
 
     ---@alias JM.Physics.EventNames "ground_touch"|"ceil_touch"|"wall_left_touch"|"wall_right_touch"|"axis_x_collision"|"axis_y_collision"|"start_falling"|"speed_y_change_direction"|"speed_x_change_direction"|"leaving_ground"|"leaving_ceil"|"leaving_y_axis_body"|"leaving_wall_left"|"leaving_wall_right"|"leaving_x_axis_body"

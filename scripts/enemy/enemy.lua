@@ -1,4 +1,5 @@
 local GC = require "scripts.bodyComponent"
+local Utils = Pack.Utils
 
 ---@enum Game.Enemy.States
 local States = {
@@ -10,7 +11,8 @@ local States = {
 ---@enum Game.Enemy.Events
 local Events = {
     activated = 1,
-    killed = 2
+    killed = 2,
+    damaged = 3
 }
 ---@alias Game.Enemy.EventNames "activated"|"killed"
 
@@ -49,6 +51,8 @@ end
 
 function Enemy:__constructor__(args)
     self.attr_hp = args.hp or 3
+    self.attr_hp_max = args.hp_max or 5
+
     self.attr_atk = args.atk or 2
     self.attr_def = args.def or 1
 
@@ -64,6 +68,9 @@ function Enemy:__constructor__(args)
     self.out_of_bounds = false
 
     self.is_trying_kill_player = true
+
+    self.invicible_time = 0.0
+    self.invicible_duration = 0.15
 
     self.body.id = "enemy"
 end
@@ -82,6 +89,35 @@ function Enemy:on_event(name, action, args)
         action = action,
         args = args
     }
+end
+
+---@param atk number
+---@param player Game.Player|nil
+function Enemy:receive_damage(atk, player)
+    if self.invicible_time > 0 then
+        return false
+    end
+
+    local value = atk - self.attr_def
+    value = value == 0 and 0.5 or value
+
+    if value > 0 then
+        self.attr_hp = Utils:clamp(self.attr_hp - value, 0, self.attr_hp_max)
+        if self.attr_hp <= 0 then
+            self:kill()
+        else
+            self.invicible_time = self.invicible_duration
+            dispatch_event(self, Events.damaged)
+        end
+    elseif player then
+        local body = self.body
+        local player_bd = player.body
+
+        if player_bd:check_collision(body.x, body.y, body.w, body.h) then
+            player_bd.speed_x = -player_bd.speed_x * 1.2
+            player_bd:jump(32, -1)
+        end
+    end
 end
 
 function Enemy:get_state_string()
@@ -132,6 +168,7 @@ function Enemy:kill()
         body.speed_x = 32 * 3 * direction
         body:jump(32 * 1.2, -1)
         body.mass = body.mass * 1.2
+        dispatch_event(self, Events.killed)
         return true
     end
 end
@@ -149,6 +186,10 @@ function Enemy:check_collision(x, y, w, h)
     if self.state == States.active and not self.out_of_bounds then
         return self.body:check_collision(x, y, w, h)
     end
+end
+
+function Enemy:is_dead()
+    return self.States == States.dead or self.attr_hp <= 0
 end
 
 ---@param dt number
@@ -184,15 +225,21 @@ function Enemy:update(dt, camera)
         end
 
         if self.is_trying_kill_player and not player:is_dead()
+            and self.invicible_time == 0
             and player_bd:check_collision(body.x, body.y - 1, body.w, body.h + 2)
         then
             player:receive_damage(self.attr_atk, self)
         end
     end
 
+    if self.invicible_time > 0.0 then
+        self.invicible_time = Utils:clamp(self.invicible_time - dt, 0, self.invicible_duration)
+    end
+
     if self.out_of_bounds then
         self:set_visible(false)
-        self:inutilize_body()
+        -- self:inutilize_body()
+        self.body.is_enabled = false
         self:respawn()
     end
 

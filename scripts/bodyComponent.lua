@@ -41,6 +41,8 @@ function Component:__constructor__(world, args)
 
     self.body = Phys:newBody(world, args.x, args.y, args.w, args.h, args.type or "static")
 
+    self.body:set_holder(self)
+
     if self.body.type ~= Pack.Physics.BodyTypes.static then
         self.max_speed = args.max_speed or (64 * 5)
         self.acc = args.acc or (64 * 4)

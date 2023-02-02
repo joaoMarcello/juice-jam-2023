@@ -117,6 +117,7 @@ local function move_default(self, dt)
 
     if body.speed_y > 0 then
         body.allowed_air_dacc = true
+
         local col = body:check(nil, body.y + 1,
             ---@param item JM.Physics.Body
             function(obj, item)
@@ -146,10 +147,58 @@ local function move_default(self, dt)
 end
 
 ---@param self Game.Player
+local function pound_destroy_enemy(self, only_on_target)
+    local body = self.body
+    local pound = self.pound_collider
+    local mult = self.attr_atk / self.attr_atk_max
+    local width = self.pound_width * mult
+    local height = self.pound_height * mult
+
+    pound:refresh(
+        body.x + body.w / 2 - width / 2,
+        body.y + body.h - height + 10,
+        width,
+        height
+    )
+
+    local col = pound:check(nil, nil,
+        ---@param item JM.Physics.Body
+        function(obj, item)
+            return item.id:match("enemy") and item.id:match("active")
+        end)
+
+    if col.n > 0 then
+        for i = 1, col.n do
+            ---@type Game.Enemy
+            local enemy = col.items[i]:get_holder()
+
+            if enemy then
+                if only_on_target and enemy:check_collision(
+                    body.x, body.y, body.w, body.h + 10
+                )
+                    or not only_on_target
+                then
+                    enemy:receive_damage(self.attr_atk, self)
+
+                    if only_on_target and not enemy:is_dead() then
+                        self:set_state(States.default)
+                        self.body:jump(32 * (1 + self.attr_atk / self.attr_atk_max), -1)
+                        body:refresh(nil, enemy.body.y - body.h)
+                    end
+                end
+            end
+        end
+    end
+end
+
+---@param self Game.Player
 local function ground_pound(self, dt)
     local body = self.body
     body.speed_x = 0
     body.mass = body.world.default_mass * 1.4
+
+    pound_destroy_enemy(self, true)
+
     return false
 end
 
@@ -231,7 +280,6 @@ function Player:__constructor__(Game, args)
     self.key_pill_hp = { 'd' }
     self.key_pill_time = { 'v' }
 
-
     self.body.max_speed_x = self.max_speed
     self.body.allowed_air_dacc = true
 
@@ -251,6 +299,8 @@ function Player:__constructor__(Game, args)
     self.invicible_time = 0.0
     self.invicible_duration = 1.3
 
+    self.update_order = 10
+
     -- ========   ATRIBUTES  ===============================
     self.attr_hp = 3
     self.attr_hp_max = 6
@@ -269,6 +319,12 @@ function Player:__constructor__(Game, args)
     self.attr_pill_time_max = 15
     --=======================================================
 
+    self.pound_width = self.w * 6.5
+    self.pound_height = self.h * 2
+    self.pound_collider = Pack.Physics:newBody(self.world, self.x, self.y + 64, self.pound_width, self.pound_height,
+        "ghost")
+    self.pound_collider.allowed_gravity = false
+
     self.current_movement = move_default
     ---@type Game.Player.States
     self.state = States.default
@@ -280,11 +336,6 @@ function Player:__constructor__(Game, args)
 
     self.ox = self.w / 2
     self.oy = self.h / 2
-
-    self:apply_effect("flickering", {
-        speed = 0.1,
-        duration = self.invicible_duration
-    })
 end
 
 function Player:load()
@@ -303,12 +354,6 @@ end
 ---@param enemy Game.Enemy|nil
 function Player:receive_damage(atk, enemy)
     if self.invicible_time > 0 then
-        if enemy then
-            -- local enemy_bd = enemy.body
-            -- if enemy_bd:right() > self.body:right() then
-            --     enemy.body:refresh(self.body:right())
-            -- end
-        end
         return false
     end
 
@@ -317,14 +362,9 @@ function Player:receive_damage(atk, enemy)
 
     if value > 0 then
         self:set_attribute("hp", "sub", value)
-
         self.invicible_time = self.invicible_duration
-
-        self:apply_effect("flickering", {
-            speed = 0.1,
-            duration = self.invicible_duration
-        })
         return true
+
     elseif enemy then
         local enemy_bd = enemy.body
         local body = self.body
@@ -369,7 +409,9 @@ end
 ---@return JM.Effect|nil
 function Player:apply_effect(eff_type, eff_args)
     if not self.eff_actives then self.eff_actives = {} end
-    if self.eff_actives[eff_type] then return self.eff_actives[eff_type] end
+    if self.eff_actives[eff_type] then
+        self.eff_actives[eff_type].__remove = true
+    end
 
     self.eff_actives[eff_type] = bodyGC.apply_effect(self, eff_type, eff_args)
     return self.eff_actives[eff_type]
@@ -417,12 +459,18 @@ function Player:set_attribute(attr, mode, value)
         end
 
         if attr == "hp" then
-
             self.Game:pause(((self:is_dead() or value > 1) and 0.55) or 0.3,
                 function(dt)
                     self.Game:game_get_displayHP():update(dt)
                     self.Game.camera:update(dt)
                 end)
+
+            if not self:is_dead() then
+                self:apply_effect("flickering", {
+                    speed = 0.07,
+                    duration = self.invicible_duration
+                })
+            end -- END ATTR is HP
         end
     end
 
@@ -519,6 +567,7 @@ function Player:set_state(state)
 
         body:on_event("ground_touch", function()
             self.Game.camera:shake_in_y(0.1, 3, 0.2, 0.1)
+            pound_destroy_enemy(self)
             self:set_state(States.default)
         end)
 
