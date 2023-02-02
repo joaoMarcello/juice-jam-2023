@@ -33,7 +33,7 @@ function Boo:__constructor__(args)
 
     self:apply_effect("jelly", { speed = 0.6 })
 
-    self.acc = 32 * 3
+    self.acc = 32 * 6
     self.body.max_speed_x = 32 * 4
     self.body.dacc_x = self.world.meter * 8
 
@@ -45,8 +45,9 @@ function Boo:__constructor__(args)
         self.body.speed_x = self.body.max_speed_x * 0.5
     end)
 
-    self.body:on_event("speed_x_change_direction", function()
-        self.body.speed_x = self.body:direction_x() * self.body.max_speed_x
+    self:on_event("damaged", function()
+        self.body:jump(16, -1)
+        self.body.speed_x = -self.body.speed_x
     end)
 end
 

@@ -44,7 +44,7 @@ function Boo:__constructor__(args)
     end)
 
     self:on_event("damaged", function()
-        self.body:jump(32 * 0.5, -1)
+        self.body:jump(16, -1)
         self.body.speed_x = 0
     end)
 
