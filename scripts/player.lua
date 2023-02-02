@@ -462,6 +462,8 @@ function Player:set_state(state)
     elseif state == States.dead then
 
         self.attr_hp = 0
+        self.attr_atk = 0
+        self.attr_def = 0
 
         self.current_movement =
         ---@param self Game.Player

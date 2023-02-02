@@ -25,7 +25,7 @@ SCREEN_HEIGHT = 32 * 13
 local scene
 
 ---@param new_state GameState
-function Change_gamestate(new_state, skip_finish, skip_load, save_prev, skip_collect)
+function CHANGE_GAME_STATE(new_state, skip_finish, skip_load, save_prev, skip_collect)
     local r = scene and not skip_finish and scene:finish()
     r = not skip_load and new_state:load()
     new_state:init()
@@ -36,11 +36,11 @@ function Change_gamestate(new_state, skip_finish, skip_load, save_prev, skip_col
 end
 
 function RESTART(state)
-    Change_gamestate(state, true, true, false, false)
+    CHANGE_GAME_STATE(state, true, true, false, false)
 end
 
 function love.load()
-    Change_gamestate(require 'scripts.gameState.game', true)
+    CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', true)
 end
 
 function love.keypressed(key)

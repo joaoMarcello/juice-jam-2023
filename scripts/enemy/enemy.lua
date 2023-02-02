@@ -148,6 +148,8 @@ function Enemy:update(dt, camera)
     GC.update(self, dt)
 
     local body = self.body
+    local player = self.game:get_player()
+    local player_bd = player.body
 
     if camera and self.state == States.unactive
         and camera:rect_is_on_view(body.x - 16, body.y - 16, body.w + 32, body.h + 32)

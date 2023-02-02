@@ -56,13 +56,13 @@ function Button:__constructor__(args)
                 -- color = { 0.2, 0.2, 0.2, 1 }
             })
 
-            self.game:fadeout(1, nil, nil,
+            self.game:fadeout(1, nil, 1,
                 function(dt)
                     self:update(dt)
                 end,
 
                 function()
-                    Change_gamestate(require "scripts.gameState.game")
+                    CHANGE_GAME_STATE(require "scripts.gameState.game")
                 end)
 
             if self.eff_pulse then

@@ -215,9 +215,7 @@ Game:implements({
             and not Game.fadeout_time
         then
             Game:fadeout(nil, nil, nil,
-                function(dt)
-
-                end,
+                nil,
 
                 function()
                     RESTART(Game)
