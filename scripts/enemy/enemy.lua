@@ -68,6 +68,8 @@ function Enemy:__constructor__(args)
     self.body.is_enabled = false
 
     self.allow_respawn = true
+    self.is_projectile = false
+
     self.out_of_bounds = false
 
     self.is_trying_kill_player = true
@@ -97,6 +99,11 @@ end
 ---@param atk number
 ---@param player Game.Player|nil
 function Enemy:receive_damage(atk, player)
+    if self.is_projectile then
+        self:kill()
+        return
+    end
+
     if self.invicible_time > 0 then
         return false
     end
@@ -235,12 +242,17 @@ function Enemy:update(dt, camera)
         then
             local player_hp = player.attr_hp
             local result = player:receive_damage(self.attr_atk, self)
+
             if result then
                 if player_hp == player.attr_hp then
                     dispatch_event(self, Events.pushPlayer)
                 else
                     dispatch_event(self, Events.damagePlayer)
                 end
+
+                -- if self.is_projectile then
+                --     self:kill()
+                -- end
             end
         end
     end

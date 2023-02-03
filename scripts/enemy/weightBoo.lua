@@ -34,11 +34,20 @@ function Boo:__constructor__(args)
 
     self:apply_effect("jelly", { speed = 0.6 })
 
+    self.jump_time_max = 3.0
+    self.jump_time = self.jump_time_max
+
     self.acc = 32 * 6
     self.body.max_speed_x = 32 * 4
     self.body.dacc_x = self.world.meter * 8
     self.body.mass = self.body.mass * 1.4
 
+    self.body:on_event("ground_touch", function()
+        local camera = self.game.camera
+        if camera:rect_is_on_view(self.body:rect()) then
+            camera:shake_in_y(0.3, 2, nil, 0.1)
+        end
+    end)
     self:on_event("damaged", function()
         self.body:jump(16, -1)
         local direction = self.game:get_player().body.x < self.body.x and 1 or -1
@@ -69,6 +78,15 @@ function Boo:update(dt, camera)
     if not is_active then return end
 
     local body = self.body
+    camera = self.game.camera
+
+    self.jump_time = self.jump_time - dt
+    if self.jump_time <= 0 then
+        self.jump_time = self.jump_time_max
+        if body.speed_y == 0 then
+            body:jump(32, -1)
+        end
+    end
     -- local direction = self.game:get_player().x < body.x and -1 or 1
     -- body:apply_force(self.acc * direction)
 end

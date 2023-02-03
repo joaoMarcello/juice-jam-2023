@@ -121,13 +121,14 @@ local function move_default(self, dt)
         local col = body:check(nil, body.y + 1,
             ---@param item JM.Physics.Body
             function(obj, item)
-                return item.id:match("enemy") and item.is_enabled
+                ---@type Game.Enemy|nil
+                local enemy = item.id:match("enemy") and item:get_holder()
+
+                return enemy and not enemy.is_projectile and enemy:is_active()
             end)
 
-        if col.n > 0 then
-            if col.items[1].id:match("active") then
-                body:jump(32 * 1.1, -1)
-            end
+        if col and col.n > 0 then
+            body:jump(32 * 1.1, -1)
         end
     end
 
@@ -159,7 +160,9 @@ local function dash_destroy_enemy(self)
     local col = pound:check(nil, nil,
         ---@param item JM.Physics.Body
         function(obj, item)
-            return item.id:match("enemy") and item.id:match("active")
+            ---@type Game.Enemy|nil
+            local enemy = item.id:match("enemy") and item:get_holder()
+            return enemy and enemy:is_active() and not enemy.is_projectile
         end)
 
     if col.n > 0 then
@@ -183,47 +186,49 @@ end
 
 ---@param self Game.Player
 local function dash_collide_wall(self)
-    if self.attr_atk > 0 then
-        local body = self.body
+    local body = self.body
+    local pound = self.pound_collider
+    local width = self.dash_width
+    local height = self.dash_height
+    local px = body.speed_x < 0 and (body.x - width) or (body:right())
+    local py = body.y + body.h / 2 - height / 2
+    pound:refresh(px, py, width, height)
+
+
+    local filter =
+    ---@param item JM.Physics.Body
+    function(obj, item)
+        local types = _G.Pack.Physics.BodyTypes
+        return item.type == types.static or item.type == types.kinematic
+    end
+
+
+    local col = body:check(body.x - 2, nil, filter)
+    col = col.n <= 0 and body:check(body.x + 2, nil, filter) or col
+
+    if col.n > 0 then
+        local x = col.most_left.x
+        local y = col.most_up.y
+        local r = col.most_right:right()
+        local b = col.most_bottom:bottom()
+        local w = r - x
+        local h = b - y
+
         local pound = self.pound_collider
-        local width = self.dash_width
-        local height = self.dash_height
-        local px = body.speed_x < 0 and (body.x - width) or (body:right())
-        local py = body.y + body.h / 2 - height / 2
-        pound:refresh(px, py, width, height)
+        pound:refresh(x - 32, y - 32, w + 64, h + 32)
 
+        local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
 
-        local filter =
-        ---@param item JM.Physics.Body
-        function(obj, item)
-            local types = _G.Pack.Physics.BodyTypes
-            return item.type == types.static or item.type == types.kinematic
-        end
-
-
-        local col = body:check(body.x - 2, nil, filter)
-        col = col.n <= 0 and body:check(body.x + 2, nil, filter) or col
-
-        if col.n > 0 then
-            local x = col.most_left.x
-            local y = col.most_up.y
-            local r = col.most_right:right()
-            local b = col.most_bottom:bottom()
-            local w = r - x
-            local h = b - y
-
-            local pound = self.pound_collider
-            pound:refresh(x - 32, y - 32, w + 64, h + 32)
-
-            local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
-
+        if self.attr_atk > 0 then
             local col2 = pound:check(nil, nil,
                 ---@param item JM.Physics.Body
                 function(obj, item)
-                    return item.id:match("enemy") and item.id:match("active")
+                    ---@type Game.Enemy|nil
+                    local enemy = item.id:match("enemy") and item:get_holder()
+                    return enemy and enemy:is_active() and not enemy.is_projectile
                 end)
 
-            if col2.n > 0 then
+            if self.attr_atk > 0 and col2.n > 0 then
                 for i = 1, col2.n do
                     ---@type Game.Enemy
                     local enemy = col2.items[i]:get_holder()
@@ -238,15 +243,13 @@ local function dash_collide_wall(self)
                 self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
                 self.Game.camera:shake_in_y(0.2, 3, nil, 0.15)
                 self.Game.camera.shake_rad_y = math.pi
-
-
             end
-
-            self:set_state(States.default)
-            body:jump(32 * 0.5, -1)
-            body.speed_x = (32 * 5) * (-dash_direction)
-            body.allowed_air_dacc = false
         end
+
+        self:set_state(States.default)
+        body:jump(32 * 0.5, -1)
+        body.speed_x = (32 * 5) * (-dash_direction)
+        body.allowed_air_dacc = false
     end
 end
 
@@ -269,7 +272,9 @@ local function pound_destroy_enemy(self, only_on_target)
     local col = pound:check(nil, nil,
         ---@param item JM.Physics.Body
         function(obj, item)
-            return item.id:match("enemy") and item.id:match("active")
+            ---@type Game.Enemy|nil
+            local enemy = item.id:match("enemy") and item:get_holder()
+            return enemy and not enemy.is_projectile and enemy:is_active()
         end)
 
     if col.n > 0 then
