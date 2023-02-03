@@ -13,17 +13,19 @@ Advice.__index = Advice
 -- Width = 12 * 32 = 384
 --Height = 32*5 = 160
 
-function Advice:new(game, text)
+function Advice:new(game, text, extra_update)
     text = text or
         "um dois tres testando. um dois tres\n estou com fome\nestou cansado\n eu quero dormir\neu quero vencer."
     local obj = setmetatable({}, self)
-    Advice.__constructor__(obj, game, text)
+    Advice.__constructor__(obj, game, text, extra_update)
     return obj
 end
 
 ---@param game GameState.Game
-function Advice:__constructor__(game, text)
+function Advice:__constructor__(game, text, extra_update)
     self.game = game
+    self.extra_update = extra_update
+
     self.textbox = TextBox:new(text, Pack.Font.current, 32 * 4, 32 * 3, 32 * 10)
 
     self.is_locked = true
@@ -83,6 +85,7 @@ end
 function Advice:update(dt)
     self.icon:update(dt)
     self.arrow:update(dt)
+    local r = self.extra_update and self.extra_update(dt)
 
     if self.is_locked then return end
 

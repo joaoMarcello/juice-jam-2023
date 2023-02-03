@@ -90,9 +90,9 @@ function Game:game_is_not_advicing()
     return not advice
 end
 
-function Game:game_add_advice(text)
+function Game:game_add_advice(text, extra_update)
     if text then
-        advice = Advice:new(Game, text)
+        advice = Advice:new(Game, text, extra_update)
     else
         advice = nil
     end
@@ -215,7 +215,7 @@ Game:implements({
         }))
 
         Game:game_add_component(AdviceBox:new(Game, world, {
-            x = 32 * 16
+            x = 32 * 3
         }))
 
         -- advice = Advice:new()
@@ -323,14 +323,12 @@ Game:implements({
                 local height = bottom - top - Game.camera.y
 
                 for i = 1, #components_gui do
+                    if advice then
+                        break
+                    end
                     local r = components_gui[i].draw
                         and components_gui[i]:draw()
                 end
-
-                local font = Font.current
-                -- font:print("HP: " .. player.attr_hp .. "\nDEF: " .. player.attr_def .. "\nATK: " .. player.attr_atk,
-                --     left - Game.camera.x + 45,
-                --     top + height * 0.3 - Game.camera.y)
 
                 -- Showing the Time End message
                 if timer:get_time() <= 0 then

@@ -66,24 +66,26 @@ function Box:update(dt)
     local body = player.body
     local x, y, w, h = self.body:rect()
 
-    if body:check_collision(x, y, w, h + 5)
+    if body:check_collision(x, y, w, h + 7)
         and not player:is_dead() and self.game:game_is_not_advicing()
-        and body.speed_y < 0
+        and body.speed_y <= 0
     then
-        self.game:game_add_advice(self.text)
-        body.speed_y = 0
+        self.game:game_add_advice(self.text, function(dt)
+            GC.update(self, dt)
+        end)
+        body.speed_y = 0.1
         self:apply_effect("earthquake", {
             range_y = 5,
-            speed = 0.3,
+            speed = 0.2,
             duration_y = 0.4,
-            rad_y = 0,
+            rad_y = math.pi,
             range_x = 0,
             duration = 1
         })
 
-        self.game:pause(0.4, function(dt)
-            GC.update(self, dt)
-        end)
+        -- self.game:pause(0.2, function(dt)
+        --     GC.update(self, dt)
+        -- end)
     end
 end
 
