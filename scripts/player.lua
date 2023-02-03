@@ -234,7 +234,6 @@ local function dash_collide_wall(self)
         local pound = self.pound_collider
         pound:refresh(x, y, w, h)
 
-        -- local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
 
         if self.attr_atk > 0 then
             local col2 = pound:check(nil, nil,

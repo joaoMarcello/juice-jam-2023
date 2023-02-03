@@ -78,6 +78,8 @@ function Enemy:__constructor__(args)
     self.invicible_duration = 0.15
 
     self.body.id = "enemy"
+
+    self:set_draw_order(5)
 end
 
 ---@param name Game.Enemy.EventNames
