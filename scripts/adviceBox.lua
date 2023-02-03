@@ -27,7 +27,13 @@ function Box:__constructor__(args)
 no esconderijo
 do altíssimo
 à sombra do onipotente
-descansará]]
+descansará. 
+
+
+
+Diz ao Senhor meu refúgio
+e meu baluarte,
+Deus meu em quem confio]]
 
     self.body.allowed_gravity = false
 
@@ -73,7 +79,10 @@ function Box:update(dt)
         self.game:game_add_advice(self.text, function(dt)
             GC.update(self, dt)
         end)
+
         body.speed_y = 0.1
+        body.speed_x = body.speed_x * 0.2
+
         self:apply_effect("earthquake", {
             range_y = 5,
             speed = 0.2,
