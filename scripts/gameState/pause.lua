@@ -16,6 +16,13 @@ State:implements {
     load = function()
         -- State.camera.scale = State.camera.scale / 2
         -- State.camera.desired_scale = 1
+        local camera = State.prev_state.camera
+
+        -- State.camera.x = 32 * 3 --camera:x_world_to_screen(-State.prev_state.camera.x)
+
+        -- State.camera.y = State.prev_state.camera.y
+
+        State.prev_state.camera.desired_scale = 1
     end,
 
     init = function()
@@ -48,7 +55,11 @@ State:implements {
         {
             draw = function(self, camera)
                 if State.prev_state then
+                    love.graphics.push()
+                    love.graphics.translate(
+                        (State.prev_state.camera.x) / State.camera.desired_scale - State.offset_x, 0)
                     State.prev_state:draw(camera)
+                    love.graphics.pop()
                 end
             end
         }

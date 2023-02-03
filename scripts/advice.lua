@@ -70,9 +70,19 @@ function Advice:finish()
 end
 
 function Advice:key_pressed(key)
-    if self.is_locked or self.time_delay > 0 then return end
+    if self.is_locked then return end
+
+    if self.time_delay > 0 then
+        return
+    end
 
     if key == "space" or key == "return" then
+        if self.textbox.waiting and self.textbox.waiting < 1
+        then
+            self.textbox.waiting = 10
+            return
+        end
+
         local r = self.textbox:go_to_next_screen()
 
         if not r and self.textbox:screen_is_finished() then

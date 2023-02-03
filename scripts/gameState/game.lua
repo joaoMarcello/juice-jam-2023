@@ -238,7 +238,7 @@ Game:implements({
         end
 
         if key == "return" then
-            -- CHANGE_GAME_STATE(require 'scripts.gameState.advice', true, false, true, true, true)
+            CHANGE_GAME_STATE(require 'scripts.gameState.pause', true, false, true, true, true)
         else
             player:key_pressed(key)
         end

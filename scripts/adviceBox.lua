@@ -9,7 +9,8 @@ local color = {
     ["pink"] = { 212 / 255, 108 / 255, 129 / 255 }
 }
 local text = {
-    ["mode_jump_ex"] = format([[If you touch the  <effect=spooky><color, %.2f, %.2f, %.2f> flashing pink box</color no-space></effect>,
+    ["mode_jump_ex"] = format([[<bold>Tip</bold no-space>:
+    If you touch the  <effect=spooky><color, %.2f, %.2f, %.2f> flashing pink box</color no-space></effect>,
 your mode will change to <bold>JUMP EX</bold no-space>.
 
 
