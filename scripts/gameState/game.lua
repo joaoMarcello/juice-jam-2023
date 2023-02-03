@@ -237,7 +237,7 @@ Game:implements({
             Game.camera:toggle_world_bounds()
         end
 
-        if key == "return" then
+        if key == "return" and not player:is_dead() then
             CHANGE_GAME_STATE(require 'scripts.gameState.pause', true, false, true, true, true)
         else
             player:key_pressed(key)

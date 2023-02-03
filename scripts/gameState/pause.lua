@@ -57,7 +57,7 @@ State:implements {
                 if State.prev_state then
                     love.graphics.push()
                     love.graphics.translate(
-                        (State.prev_state.camera.x) / State.camera.desired_scale - State.offset_x, 0)
+                        (State.prev_state.camera.x - State.offset_x), 0)
                     State.prev_state:draw(camera)
                     love.graphics.pop()
                 end
