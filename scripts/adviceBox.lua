@@ -5,13 +5,16 @@ local img
 
 local format = string.format
 
+local color = {
+    ["pink"] = { 212 / 255, 108 / 255, 129 / 255 }
+}
 local text = {
-    ["mode_jump_ex"] = format([[If you touch the flashing <color, %.2f, %.2f, %.2f> pink box</color no-space>,
-your mode will change to <bold><color>JUMP EX</color></bold no-space>.
+    ["mode_jump_ex"] = format([[If you touch the  <effect=spooky><color, %.2f, %.2f, %.2f> flashing pink box</color no-space></effect>,
+your mode will change to <bold>JUMP EX</bold no-space>.
 
 
-In JUMP EX mode, you can do
-<color>two jumps</color> in air!]], 0, 0, 1)
+In JUMP EX mode, you can
+do <color>two jumps</color> in air!]], unpack(color['pink']))
 }
 ---@class Game.Component.AdviceBox: BodyComponent
 local Box = setmetatable({}, GC)
