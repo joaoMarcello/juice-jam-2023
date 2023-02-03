@@ -195,7 +195,7 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             y = 32 * 8,
             x = 32 * 7,
-            position = "wallRight"
+            position = "wallLeft"
         }))
 
         Game:game_add_component(PeekaBoo:new(Game, world, {

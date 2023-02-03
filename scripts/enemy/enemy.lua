@@ -183,6 +183,7 @@ function Enemy:kill()
         body:jump(32 * 1.2, -1)
         body.mass = body.mass * 1.2
         dispatch_event(self, Events.killed)
+        self:set_draw_order(20)
         return true
     end
 end

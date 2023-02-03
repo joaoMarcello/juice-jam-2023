@@ -14,8 +14,7 @@ Advice.__index = Advice
 --Height = 32*5 = 160
 
 function Advice:new(game, text, extra_update)
-    text = text or
-        "um dois tres testando. um dois tres\n estou com fome\nestou cansado\n eu quero dormir\neu quero vencer."
+
     local obj = setmetatable({}, self)
     Advice.__constructor__(obj, game, text, extra_update)
     return obj
@@ -26,7 +25,7 @@ function Advice:__constructor__(game, text, extra_update)
     self.game = game
     self.extra_update = extra_update
 
-    self.textbox = TextBox:new(text, Pack.Font.current, 32 * 4, 32 * 3, 32 * 10)
+    self.textbox = TextBox:new(text, Pack.Font:get_font("komika text 2"), 32 * 4, 32 * 3, 32 * 10)
 
     self.is_locked = true
 
@@ -73,7 +72,7 @@ end
 function Advice:key_pressed(key)
     if self.is_locked or self.time_delay > 0 then return end
 
-    if key == "space" then
+    if key == "space" or key == "return" then
         local r = self.textbox:go_to_next_screen()
 
         if not r and self.textbox:screen_is_finished() then

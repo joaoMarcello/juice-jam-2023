@@ -3,9 +3,21 @@ local GC = require "scripts.bodyComponent"
 ---@type love.Image|nil
 local img
 
+local format = string.format
+
+local text = {
+    ["mode_jump_ex"] = format([[If you touch the flashing <color, %.2f, %.2f, %.2f> pink box</color no-space>,
+your mode will change to <bold><color>JUMP EX</color></bold no-space>.
+
+
+In JUMP EX mode, you can do
+<color>two jumps</color> in air!]], 0, 0, 1)
+}
 ---@class Game.Component.AdviceBox: BodyComponent
 local Box = setmetatable({}, GC)
 Box.__index = Box
+
+Box.Texts = text
 
 function Box:new(game, world, args)
     args = args or {}
@@ -22,18 +34,7 @@ function Box:new(game, world, args)
 end
 
 function Box:__constructor__(args)
-    self.text = args.text or
-        [[Aquele que habita
-no esconderijo
-do altíssimo
-à sombra do onipotente
-descansará. 
-
-
-
-Diz ao Senhor meu refúgio
-e meu baluarte,
-Deus meu em quem confio]]
+    self.text = args.text or text["mode_jump_ex"]
 
     self.body.allowed_gravity = false
 
@@ -64,6 +65,23 @@ function Box:finish()
     img = nil
 end
 
+function Box:dispatch_advice()
+    if self.game:game_is_not_advicing() then
+        self.game:game_add_advice(self.text, function(dt)
+            GC.update(self, dt)
+        end)
+
+        self:apply_effect("earthquake", {
+            range_y = 5,
+            speed = 0.2,
+            duration_y = 0.4,
+            rad_y = math.pi,
+            range_x = 0,
+            duration = 0.3
+        })
+    end
+end
+
 function Box:update(dt)
     GC.update(self, dt)
     self.box:update(dt)
@@ -74,27 +92,13 @@ function Box:update(dt)
 
     if body:check_collision(x, y, w, h + 7)
         and not player:is_dead() and self.game:game_is_not_advicing()
-        and body.speed_y <= 0
+        and body.speed_y <= 0 and player.state ~= player.States.dash
     then
-        self.game:game_add_advice(self.text, function(dt)
-            GC.update(self, dt)
-        end)
+
+        self:dispatch_advice()
 
         body.speed_y = 0.1
         body.speed_x = body.speed_x * 0.2
-
-        self:apply_effect("earthquake", {
-            range_y = 5,
-            speed = 0.2,
-            duration_y = 0.4,
-            rad_y = math.pi,
-            range_x = 0,
-            duration = 1
-        })
-
-        -- self.game:pause(0.2, function(dt)
-        --     GC.update(self, dt)
-        -- end)
     end
 end
 
@@ -105,7 +109,7 @@ function Box:my_draw()
 
     Font:push()
     Font:set_font_size(16)
-    Font:printf(self.text_box, self.x, self.y + 8, "center", self.x + self.w)
+    Font:printx(self.text_box, self.x, self.y + 8, self.x + self.w, "center")
     Font:pop()
 end
 
