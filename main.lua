@@ -51,7 +51,7 @@ function UNPAUSE(state)
 end
 
 function love.load()
-    CHANGE_GAME_STATE(require 'scripts.gameState.game', true)
+    CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', true)
 end
 
 function love.keypressed(key)
