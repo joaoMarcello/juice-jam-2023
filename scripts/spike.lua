@@ -3,7 +3,9 @@ local GC = require "scripts.bodyComponent"
 ---@enum Game.Component.Spike.Type
 local Types = {
     ground = 1,
-    ceil = 2
+    ceil = 2,
+    wallRight = 3,
+    wallLeft = 4
 }
 
 ---@type love.Image|nil
@@ -20,11 +22,18 @@ function Spike:new(game, world, args)
     args.x = args.x or (32 * 3)
     args.y = args.y or (32 * 3)
     args.len = args.len or 4
-    args.w = args.len * 32
+    args.w = 32
     args.h = 20
     args.bottom = args.bottom or (args.y + 32)
-    if not args.on_ceil then
+    args.position = args.position or "ground"
+
+    if args.position == "ceil" then
+        args.w = args.len * 32
         args.y = args.bottom and (args.bottom - args.h) or args.y
+    elseif args.position == "ground" then
+        args.w = args.len * 32
+    elseif args.position == "wallRight" or args.position == "wallLeft" then
+        args.h = 32 * args.len
     end
     args.type = "ghost"
 
@@ -44,19 +53,28 @@ function Spike:__constructor__(game, world, args)
     self.y = args.y
     self.w = args.w
     self.h = args.h
-    self.on_ceil = args.on_ceil
+
+    ---@type Game.Component.Spike.Type
+    self.position = Types[args.position] or Types["ground"]
 
     self.body.allowed_gravity = false
 
     self.spike = Pack.Anima:new({ img = img or '' })
-    self.spike:set_flip_y(self.on_ceil)
-    self.draw_order = -1
+    self.spike:set_flip_y(self:is_on_ceil())
+    self:set_draw_order(0)
 
     local Phys = _G.Pack.Physics
-    if not self.on_ceil then
+    if self:is_on_ground() then
         Phys:newBody(world, self.x + 3, self.y + self.h - 10, self.w - 3, 9, "static")
-    else
+    elseif self:is_on_ceil() then
         Phys:newBody(world, self.x + 3, self.y, self.w - 3, 9, "static")
+
+    elseif self:is_on_wall_right() then
+        Phys:newBody(world, self.body:right() - 9, self.y, 9, self.h, "static")
+        self.spike:set_rotation(math.pi * 1.5)
+    else
+        Phys:newBody(world, self.x, self.y, 9, self.h, "static")
+        self.spike:set_rotation(math.pi / 2)
     end
 end
 
@@ -78,21 +96,55 @@ function Spike:rect()
     return self.x, self.y, self.w, self.h
 end
 
+function Spike:is_on_ceil()
+    return self.position == Types.ceil
+end
+
+function Spike:is_on_ground()
+    return self.position == Types.ground
+end
+
+function Spike:is_on_wall_right()
+    return self.position == Types.wallRight
+end
+
+function Spike:is_on_wall_left()
+    return self.position == Types.wallLeft
+end
+
 function Spike:update(dt)
     self.spike:update(dt)
 
     local player = self.game:get_player()
     local x, y, w, h = self.body:rect()
 
-    if self.on_ceil then
+    if self:is_on_ceil() then
         h = h + 5
-    else
+    elseif self:is_on_ground() then
         y = y - 5
+    elseif self:is_on_wall_left() then
+        x = x + 5
+        w = w - 10
+        y = y + 5
+        h = h - 10
+    else
+        x = x + 5
+        w = w - 10
+        y = y + 5
+        h = h - 10
     end
 
     if player.body:check_collision(x + 7, y, w - 7, h)
-        and ((self.on_ceil and player.body.speed_y <= 0)
-            or (not self.on_ceil and player.body.speed_y >= 0))
+        and ((self:is_on_ceil() and player.body.speed_y <= 0)
+            or (self:is_on_ground() and player.body.speed_y >= 0))
+        and not player:is_dead()
+    then
+        player:kill(true)
+    end
+
+    if player.body:check_collision(x, y, w, h)
+        and ((self:is_on_wall_left() and player.body.speed_x <= 0)
+            or (self:is_on_wall_right() and player.body.speed_y >= 0))
         and not player:is_dead()
     then
         player:kill(true)
@@ -100,9 +152,17 @@ function Spike:update(dt)
 end
 
 function Spike:draw()
-    for i = 1, self.len do
-        local x = self.x + 32 * (i - 1)
-        self.spike:draw_rec(x, self.y, 32, self.h)
+    if self:is_on_wall_right() or self:is_on_wall_left() then
+        for i = 1, self.len do
+            local y = self.y + 32 * (i - 1)
+            self.spike:draw_rec(self.x, y, 32, 32)
+        end
+
+    else
+        for i = 1, self.len do
+            local x = self.x + 32 * (i - 1)
+            self.spike:draw_rec(x, self.y, 32, self.h)
+        end
     end
 end
 

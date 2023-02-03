@@ -1,7 +1,10 @@
 local Pack = _G.Pack
 local Font = Pack.Font
 local Physics = Pack.Physics
+
 local TileMap = require "JM_love2d_package.modules.tile.tile_map"
+
+local Advice = require "scripts.advice"
 
 local Player = require "scripts.player"
 local Timer = require "scripts.timer"
@@ -9,6 +12,7 @@ local DisplayHP = require "scripts.displayHP"
 local ModeChanger = require "scripts.modeChanger"
 local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
+local AdviceBox = require "scripts.adviceBox"
 
 local PeekaBoo = require "scripts.enemy.peekaboo"
 local MiddleBoo = require "scripts.enemy.middleBoo"
@@ -48,6 +52,9 @@ local displayPill
 ---@type JM.TileMap
 local map
 
+---@type Game.Component.Advice|nil
+local advice
+
 local sort_update = function(a, b) return a.update_order > b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
 --=========================================================================
@@ -79,6 +86,18 @@ function Game:game_get_displayHP()
     return displayHP
 end
 
+function Game:game_is_not_advicing()
+    return not advice
+end
+
+function Game:game_add_advice(text)
+    if text then
+        advice = Advice:new(Game, text)
+    else
+        advice = nil
+    end
+end
+
 --=========================================================================
 
 Game:implements({
@@ -100,6 +119,9 @@ Game:implements({
         WeightBoo:load()
         Bullet:load()
 
+        Advice:load()
+        AdviceBox:load()
+
         map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
 
@@ -113,6 +135,8 @@ Game:implements({
         MiddleBoo:finish()
         WeightBoo:finish()
         Bullet:finish()
+
+        Advice:finish()
     end,
 
     init = function()
@@ -171,7 +195,7 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             y = 32 * 8,
             x = 32 * 7,
-            on_ceil = true
+            position = "wallRight"
         }))
 
         Game:game_add_component(PeekaBoo:new(Game, world, {
@@ -190,6 +214,11 @@ Game:implements({
             x = 32 * 8
         }))
 
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = 32 * 16
+        }))
+
+        -- advice = Advice:new()
 
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
@@ -197,13 +226,23 @@ Game:implements({
     end,
 
     keypressed = function(key)
+        if advice then
+            advice:key_pressed(key)
+            return
+        end
+
         if key == "o" then
             Game.camera:toggle_grid()
             Game.camera:toggle_debug()
             Game.camera:toggle_world_bounds()
         end
 
-        player:key_pressed(key)
+        if key == "return" then
+            -- CHANGE_GAME_STATE(require 'scripts.gameState.advice', true, false, true, true, true)
+        else
+            player:key_pressed(key)
+        end
+
     end,
 
     keyreleased = function(key)
@@ -211,7 +250,13 @@ Game:implements({
     end,
 
     update = function(dt)
+        if advice then
+            advice:update(dt)
+            return
+        end
+
         world:update(dt)
+
 
         for i = 1, #components_gui do
             local r = components_gui[i].update and components_gui[i]:update(dt)
@@ -310,6 +355,8 @@ Game:implements({
 
                     Font.current:pop()
                 end
+
+                if advice then advice:draw() end
             end
         }
         --================================================================

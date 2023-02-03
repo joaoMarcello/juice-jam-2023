@@ -264,6 +264,8 @@ local function dash_collide_wall(self)
                 body:jump(32 * 0.5, -1)
                 body.speed_x = (32 * 5) * (-dash_direction)
                 body.allowed_air_dacc = false
+
+                self.dash_count = self.dash_count - 1
             end -- END Collide with Enemy
         end
     end
@@ -280,7 +282,7 @@ local function pound_destroy_enemy(self, only_on_target)
 
     pound:refresh(
         body.x + body.w / 2 - width / 2,
-        body.y + body.h - height + 10,
+        body.y + body.h - height + body.speed_y * (1 / 60),
         width,
         height
     )
@@ -300,7 +302,7 @@ local function pound_destroy_enemy(self, only_on_target)
 
             if enemy then
                 if only_on_target and enemy:check_collision(
-                    body.x - 20, body.y, body.w + 40, body.h + 20
+                    body.x - 20, body.y, body.w + 40, body.h + 10
                 )
                     or not only_on_target
                 then

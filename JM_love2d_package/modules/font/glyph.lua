@@ -72,11 +72,11 @@ function Glyph:__constructor__(img, args)
         self.offset_y = nil
     end
 
-    if self.x and self.w then
-        self.right = args.right or (self.x + self.w)
-        self.offset_x = args.right and (self.x + self.w - self.right) or 0
-        self.w = self.w - self.offset_x
-    end
+    -- if self.x and self.w then
+    --     self.right = args.right or (self.x + self.w)
+    --     self.offset_x = args.right and (self.x + self.w - self.right) or 0
+    --     self.w = self.w - self.offset_x
+    -- end
 
     ---@type JM.Anima
     self.__anima = args.anima

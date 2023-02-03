@@ -88,7 +88,7 @@ function TextBox:__constructor__(args, w)
             or max_width
     end
 
-    self.align = "right"
+    self.align = "center"
     self.text_align = Align.center
     self.x = self.sentence.x
     self.y = self.sentence.y
@@ -98,13 +98,13 @@ function TextBox:__constructor__(args, w)
 
     self.cur_glyph = 0
     self.time_glyph = 0.0
-    self.max_time_glyph = 0.4
+    self.max_time_glyph = 0.05
     self.extra_time = 0.0
 
     self.time_pause = 0.0
 
     self.simulate_speak = false
-    self.update_mode = UpdateMode.by_word
+    self.update_mode = UpdateMode.by_screen
 
     self.font = self.sentence.__font
     self.font_config = self.font:__get_configuration()
@@ -232,6 +232,7 @@ end
 function TextBox:go_to_next_screen()
     if self:screen_is_finished() and self.cur_screen < self.amount_screens then
         self.cur_screen = self.cur_screen + 1
+        self.waiting = false
         self:refresh()
         dispatch_event(self, Event.changeScreen)
         return true
@@ -242,6 +243,7 @@ end
 function TextBox:restart()
     self.cur_screen = 1
     self.used_tags = nil
+    self.waiting = false
     self:refresh()
 end
 
@@ -264,6 +266,9 @@ function TextBox:set_finish(value)
 end
 
 function TextBox:screen_is_finished()
+    if self.update_mode == UpdateMode.by_screen then
+        return self.__finish and self.waiting and self.waiting >= 0.9
+    end
     return self.__finish
 end
 
@@ -307,7 +312,16 @@ function TextBox:update(dt)
         end
     end
 
-    if love.keyboard.isDown("a") then self:skip_screen() end
+    -- if love.keyboard.isDown("a") or  then self:skip_screen() end
+
+    if self.update_mode == UpdateMode.by_screen and not self.waiting then
+        self.waiting = 0.0
+        self:skip_screen()
+    end
+
+    if self.waiting then
+        self.waiting = self.waiting + dt
+    end
 
     self.time_glyph = self.time_glyph + dt
 
@@ -420,14 +434,14 @@ function TextBox:__draw()
     self.font:pop()
     --==========================================================
 
-    Font:print(self.__finish and "<color>true" or "<color, 1, 1, 1>false", self.x, self.y - 20)
+    -- Font:print(self.__finish and "<color>true" or "<color, 1, 1, 1>false", self.x, self.y - 20)
 
     -- Font:print(tostring(self.sentence.tags[1]["effect"]), self.x, self.y + self.h + 10)
 
-    if self:screen_is_finished() then
-        Font:print("--a--", self.x + self.w + 5,
-            self.y + self.h + 10)
-    end
+    -- if self:screen_is_finished() then
+    --     Font:print("--a--", self.x + self.w + 5,
+    --         self.y + self.h + 10)
+    -- end
 end
 
 function TextBox:draw()
