@@ -207,6 +207,10 @@ local function dash_collide_wall(self)
     col = col.n <= 0 and body:check(body.x + 2, nil, filter) or col
 
     if col.n > 0 then
+        ---@type JM.Physics.Body
+        local first = col.items[1]
+        local dash_direction = first.x > body.x and 1 or -1
+
         local x = col.most_left.x
         local y = col.most_up.y
         local r = col.most_right:right()
@@ -214,10 +218,23 @@ local function dash_collide_wall(self)
         local w = r - x
         local h = b - y
 
-        local pound = self.pound_collider
-        pound:refresh(x - 32, y - 32, w + 64, h + 32)
+        w = 32 * 4
+        if dash_direction > 0 then
+            w = Utils:clamp(w, 0, col.most_right:right() - col.most_left.x + 16)
+            x = col.most_left.x
+        else
+            w = Utils:clamp(w, 0, col.most_right:right() - col.most_left.x + 16)
+            x = col.most_right:right() - w
+        end
+        y = col.most_up.y - 32
+        h = h + 32 + 10
+        h = Utils:clamp(h, 0, col.most_bottom:bottom() - col.most_up.y + 32 + 10)
 
-        local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
+
+        local pound = self.pound_collider
+        pound:refresh(x, y, w, h)
+
+        -- local dash_direction = pound:right() - 32 > self.body:right() and 1 or -1
 
         if self.attr_atk > 0 then
             local col2 = pound:check(nil, nil,
@@ -243,13 +260,13 @@ local function dash_collide_wall(self)
                 self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
                 self.Game.camera:shake_in_y(0.2, 3, nil, 0.15)
                 self.Game.camera.shake_rad_y = math.pi
-            end
-        end
 
-        self:set_state(States.default)
-        body:jump(32 * 0.5, -1)
-        body.speed_x = (32 * 5) * (-dash_direction)
-        body.allowed_air_dacc = false
+                self:set_state(States.default)
+                body:jump(32 * 0.5, -1)
+                body.speed_x = (32 * 5) * (-dash_direction)
+                body.allowed_air_dacc = false
+            end -- END Collide with Enemy
+        end
     end
 end
 
