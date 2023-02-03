@@ -47,7 +47,8 @@ State:implements {
 
     update = function(dt, camera)
         if State.prev_state then
-            State.camera.x = State.prev_state.camera.x
+            -- State.camera.x = State.prev_state.camera.x
+            -- State.camera.y = State.prev_state.camera.y
         end
     end,
 
@@ -57,10 +58,14 @@ State:implements {
                 if State.prev_state then
                     love.graphics.push()
                     love.graphics.translate(
-                        (State.prev_state.camera.x - State.offset_x), 0)
+                        (State.prev_state.camera.x * 0 - State.offset_x), State.prev_state.camera.y)
                     State.prev_state:draw(camera)
                     love.graphics.pop()
                 end
+
+                love.graphics.setColor(0, 0, 0, 0.6)
+                love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH,
+                    SCREEN_HEIGHT)
             end
         }
     },

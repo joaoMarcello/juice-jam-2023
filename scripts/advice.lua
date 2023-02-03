@@ -25,7 +25,7 @@ function Advice:__constructor__(game, text, extra_update)
     self.game = game
     self.extra_update = extra_update
 
-    self.textbox = TextBox:new(text, Pack.Font:get_font("komika text 2"), 32 * 4, 32 * 3, 32 * 10)
+    self.textbox = TextBox:new(text, Pack.Font:get_font("komika text 2"), 32 * 5, 32 * 2, 32 * 10)
 
     self.is_locked = true
 
