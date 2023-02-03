@@ -646,6 +646,8 @@ do
                     dispatch_event(self, BodyEvents.ceil_touch)
                 end
 
+                self.speed_y = 0.1
+
                 self.ceil = col.most_bottom
             end
         end

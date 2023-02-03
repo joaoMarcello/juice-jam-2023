@@ -94,9 +94,11 @@ local function move_default(self, dt)
     local body = self.body
     if pressing(self, 'left') and body.speed_x <= 0.0 then
         body:apply_force(-self.acc)
+        self.direction = -1
 
     elseif pressing(self, "right") and body.speed_x >= 0.0 then
         body:apply_force(self.acc)
+        self.direction = 1
 
     elseif math_abs(body.speed_x) ~= 0.0 then
 
@@ -300,7 +302,7 @@ local function pound_destroy_enemy(self, only_on_target)
 
     pound:refresh(
         body.x + body.w / 2 - width / 2,
-        body.y + body.h - height + body.speed_y * (1 / 60),
+        body.y + body.h - height + body.speed_y * (1 / 60) + 10,
         width,
         height
     )
@@ -320,7 +322,7 @@ local function pound_destroy_enemy(self, only_on_target)
 
             if enemy then
                 if only_on_target and enemy:check_collision(
-                    body.x - 20, body.y, body.w + 40, body.h + 10
+                    body.x - 20, body.y, body.w + 40, body.h + body.speed_y * (1 / 60) + 10
                 )
                     or not only_on_target
                 then
@@ -450,6 +452,8 @@ function Player:__constructor__(Game, args)
     self:set_update_order(10)
     self:set_draw_order(10)
 
+    self.direction = 1
+
     -- ========   ATRIBUTES  ===============================
     self.attr_hp = 3
     self.attr_hp_max = 6
@@ -491,7 +495,9 @@ function Player:__constructor__(Game, args)
 
     local Anima = Pack.Anima
     self.anima = {
-        ["idle"] = Anima:new({ img = img["idle"], frames = 2 })
+        ["idle"] = Anima:new { img = img["idle"], frames = 2 },
+        ["jump"] = Anima:new { img = img["jump"], frames = 1 },
+        ["fall"] = Anima:new { img = img["fall"], frames = 1 },
     }
 
     self.hair_colors = {
@@ -506,9 +512,18 @@ function Player:__constructor__(Game, args)
 end
 
 function Player:load()
+    local loadImage = love.graphics.newImage
     img = img or {
-        ["idle"] = love.graphics.newImage('/data/animations/player-idle-sheet.png')
+        ["idle"] = loadImage('/data/animations/player-idle-sheet.png'),
+
+        ["jump"] = loadImage("/data/animations/player-jump-sheet.png"),
+
+        ["fall"] = loadImage("/data/animations/player-falling-sheet.png"),
     }
+
+    for _, data in pairs(img) do
+        data:setFilter("nearest", "nearest")
+    end
 
     shader = shader or love.graphics.newShader(shader_code)
 
@@ -521,14 +536,30 @@ end
 
 function Player:finish()
     if img then
-        local r = img["idle"] and img["idle"]:release()
-        img["idle"] = nil
+        local r
+        r = img["idle"] and img["idle"]:release()
+        r = img["jump"] and img["jump"]:release()
+        r = img["fall"] and img["fall"]:release()
     end
     img = nil
 
     local r = shader and shader:release()
 
     Pill:finish()
+end
+
+function Player:select_anima()
+    local body = self.body
+    local mode = self.mode
+    local state = self.state
+
+    local new_anima = self.anima["idle"]
+    if body.speed_y ~= 0 and (body.speed_y < 0.3 or body.speed_y < 32 * 3) then
+        new_anima = self.anima["jump"]
+    elseif body.speed_y > 0 then
+        new_anima = self.anima["fall"]
+    end
+    self.cur_anima = Pack.Anima.change_animation(self.cur_anima, new_anima)
 end
 
 ---@param atk number
@@ -1048,6 +1079,8 @@ function Player:update(dt)
         )
     end
 
+    self:select_anima()
+    self.cur_anima:set_flip_x(self.direction < 0 and true)
     self.cur_anima:update(dt)
 
     self.x, self.y = Utils:round(body.x), Utils:round(body.y)
@@ -1082,8 +1115,6 @@ function Player:my_draw()
 
     love.graphics.setShader(shader)
     shader:sendColor("hair_color", self.hair_colors[self.mode])
-    self.cur_anima.ox = self.x + self.w / 2
-    self.cur_anima.oy = self.y + self.h / 2
     self.cur_anima:draw_rec(self.x, self.y, self.body.w, self.body.h)
     love.graphics.setShader()
 
