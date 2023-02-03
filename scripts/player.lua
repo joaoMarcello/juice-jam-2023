@@ -7,6 +7,24 @@ local Utils = _G.Pack.Utils
 
 local Font = _G.Pack.Font
 
+local img
+
+local shader_code = [[
+extern vec3 hair_color;    
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords){
+    vec4 pix = Texel(texture, texture_coords);
+    if (pix.r == 1.0 && pix.g == 0.0 && pix.b == 1.0){
+        return vec4(hair_color.r, hair_color.g, hair_color.b, 1.0);
+    }
+    else{
+        return pix;
+    }
+}
+]]
+
+---@type love.Shader
+local shader
+
 ---@enum Game.Player.States
 local States = {
     default = 1,
@@ -470,9 +488,30 @@ function Player:__constructor__(Game, args)
 
     self.ox = self.w / 2
     self.oy = self.h / 2
+
+    local Anima = Pack.Anima
+    self.anima = {
+        ["idle"] = Anima:new({ img = img["idle"], frames = 2 })
+    }
+
+    self.hair_colors = {
+        [Modes.normal] = { 66 / 255, 57 / 255, 62 / 255 },
+        [Modes.dash] = { 130 / 255, 108 / 255, 212 / 255 },
+        [Modes.dash_ex] = { 76 / 255, 90 / 255, 212 / 255 },
+        [Modes.jump] = { 212 / 255, 138 / 255, 154 / 255 },
+        [Modes.jump_ex] = { 209 / 255, 98 / 255, 187 / 255 },
+        [Modes.extreme] = { 250 / 255, 137 / 255, 62 / 255 },
+    }
+    self.cur_anima = self.anima["idle"]
 end
 
 function Player:load()
+    img = img or {
+        ["idle"] = love.graphics.newImage('/data/animations/player-idle-sheet.png')
+    }
+
+    shader = shader or love.graphics.newShader(shader_code)
+
     Pill:load()
 end
 
@@ -481,6 +520,14 @@ function Player:init()
 end
 
 function Player:finish()
+    if img then
+        local r = img["idle"] and img["idle"]:release()
+        img["idle"] = nil
+    end
+    img = nil
+
+    local r = shader and shader:release()
+
     Pill:finish()
 end
 
@@ -1001,6 +1048,8 @@ function Player:update(dt)
         )
     end
 
+    self.cur_anima:update(dt)
+
     self.x, self.y = Utils:round(body.x), Utils:round(body.y)
 end
 
@@ -1030,6 +1079,13 @@ function Player:my_draw()
         -- , "left", math.huge
         )
     end
+
+    love.graphics.setShader(shader)
+    shader:sendColor("hair_color", self.hair_colors[self.mode])
+    self.cur_anima.ox = self.x + self.w / 2
+    self.cur_anima.oy = self.y + self.h / 2
+    self.cur_anima:draw_rec(self.x, self.y, self.body.w, self.body.h)
+    love.graphics.setShader()
 
     -- Font:print(self.draw_order, self.x - 100, self.y)
 end
