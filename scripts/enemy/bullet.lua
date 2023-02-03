@@ -36,12 +36,9 @@ function Bullet:__constructor__(args)
 
     self.body.allowed_gravity = false
 
-    -- self.collider = Pack.Physics:newBody(self.world, self.x, self.y, self.w, self.h, "ghost")
-    -- self.collider.allowed_gravity = false
-
-    self.body:extra_collisor_filter(function()
-        return false
-    end)
+    -- self.body:extra_collisor_filter(function()
+    --     return false
+    -- end)
 
     self.is_projectile = true
     self.allow_respawn = true
@@ -73,7 +70,7 @@ end
 function Bullet:update(dt, camera)
     local is_active = Enemy.update(self, dt)
     if not is_active then return end
-    
+
     self.body.speed_x = 32 * 2
 end
 

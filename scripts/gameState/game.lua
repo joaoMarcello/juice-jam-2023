@@ -1,6 +1,7 @@
 local Pack = _G.Pack
 local Font = Pack.Font
 local Physics = Pack.Physics
+local TileMap = require "JM_love2d_package.modules.tile.tile_map"
 
 local Player = require "scripts.player"
 local Timer = require "scripts.timer"
@@ -43,6 +44,9 @@ local displayHP
 
 ---@type Game.GUI.DisplayPill
 local displayPill
+
+---@type JM.TileMap
+local map
 
 local sort_update = function(a, b) return a.update_order > b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
@@ -95,6 +99,8 @@ Game:implements({
         MiddleBoo:load()
         WeightBoo:load()
         Bullet:load()
+
+        map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
 
     finish = function()
@@ -245,6 +251,8 @@ Game:implements({
             name = "main",
 
             draw = function(self, camera)
+                map:draw(camera)
+
                 world:draw()
 
                 table.sort(components, sort_draw)
