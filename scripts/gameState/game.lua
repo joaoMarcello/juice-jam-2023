@@ -169,7 +169,7 @@ Game:implements({
             bottom = checkpoint.bottom
         })
 
-        Game.camera.x = checkpoint.x - Game.offset_x / Game.camera.desired_scale -
+        Game.camera.x = checkpoint.x + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
             Game.camera.focus_x / Game.camera.desired_scale
 
         for _, r in ipairs(rects) do
