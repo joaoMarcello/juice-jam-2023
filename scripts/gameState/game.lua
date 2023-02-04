@@ -106,6 +106,12 @@ function Game:game_add_advice(text, extra_update)
     end
 end
 
+local checkpoint
+function Game:game_checkpoint(x, y, bottom)
+    checkpoint = { x = x, y = y, bottom = bottom }
+end
+
+Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
 --=========================================================================
 
 Game:implements({
@@ -132,6 +138,8 @@ Game:implements({
         Refill:load()
         PillRestaure:load()
 
+        Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
+
         map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
 
@@ -149,11 +157,20 @@ Game:implements({
         Advice:finish()
         Refill:finish()
         PillRestaure:finish()
+
+        checkpoint = nil
     end,
 
     init = function()
         world = Physics:newWorld()
-        player = Player:new(Game, world, {})
+        player = Player:new(Game, world, {
+            x = checkpoint.x,
+            y = checkpoint.y,
+            bottom = checkpoint.bottom
+        })
+
+        Game.camera:move(-(player.x + player.w / 2), 0)
+        Game.camera.x = player.x
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
@@ -231,7 +248,7 @@ Game:implements({
         }))
 
         Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.all,
+            refill_type = Refill.Types.pill_atk,
             bottom = 32 * 11,
             x = 32 * 16
         }))

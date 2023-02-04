@@ -5,6 +5,9 @@ local GC = require "scripts.bodyComponent"
 ---@type love.Image|nil
 local img
 
+---@type love.Image|nil
+local img_flash
+
 local Type = {
     pill_atk = 1,
     pill_def = 2,
@@ -17,16 +20,17 @@ local TypeString = {
     [Type.pill_atk] = "pill_atk",
     [Type.pill_def] = "pill_def",
     [Type.pill_hp] = "pill_hp",
-    [Type.pill_time] = "pill_time"
+    [Type.pill_time] = "pill_time",
+    [Type.all] = ""
 }
 
 ---@class Game.Component.PillRestaure: BodyComponent
-local Refill = setmetatable({}, GC)
-Refill.__index = Refill
-Refill.Types = Type
-Refill.TypesString = TypeString
+local Restaure = setmetatable({}, GC)
+Restaure.__index = Restaure
+Restaure.Types = Type
+Restaure.TypesString = TypeString
 
-function Refill:new(game, world, args)
+function Restaure:new(game, world, args)
     args = args or {}
     args.x = args.x or (32 * 10)
     args.y = args.y or (32 * 9)
@@ -38,11 +42,11 @@ function Refill:new(game, world, args)
 
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
-    Refill.__constructor__(obj, game, args)
+    Restaure.__constructor__(obj, game, args)
     return obj
 end
 
-function Refill:__constructor__(game, args)
+function Restaure:__constructor__(game, args)
     self.x = args.x
     self.y = args.y
     self.w = args.w
@@ -60,34 +64,45 @@ function Refill:__constructor__(game, args)
 
     self:set_draw_order(15)
 
-    self.time_catch = 1.0
-
     self.anima = Pack.Anima:new { img = img or '' }
+    self.flash = Pack.Anima:new { img = img_flash or '' }
+
+    local r, g, b = unpack(self.__colors[self.refill_type])
+    local a = 0.2
+    self.flash:set_color2(r, g, b, 0.3)
 end
 
-function Refill:load()
+function Restaure:load()
     img = img or love.graphics.newImage('/data/animations/pill-restaure.png')
+    img_flash = img_flash or love.graphics.newImage('/data/animations/pill-restaure-flash.png')
 end
 
-function Refill:init()
+function Restaure:init()
 
 end
 
-function Refill:finish()
+function Restaure:finish()
     local r
     r = img and img:release()
     img = nil
 end
 
-function Refill:update(dt)
+function Restaure:update(dt)
     GC.update(self, dt)
+    local player = self.game:get_player()
 
-    if not self.__remove and self.time_catch <= 0 then
-        local player = self.game:get_player()
+    local attr
+    attr = player["attr_" .. TypeString[self.refill_type]]
+    local attr_max = player["attr_" .. TypeString[self.refill_type] .. "_max"]
+
+    if (attr and attr_max and attr < attr_max) or
+        (not attr and self.refill_type == Type.all)
+    then
         local body = player.body
+        local x, y, w, h = self.body:rect()
 
-        if body:check_collision(self.body:rect()) then
-            self.__remove = true
+        if player.body:check_collision(x + 2, y - 1, w - 4, h) then
+            self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
 
             if self.refill_type == Type.all then
                 player:set_attribute("pill_atk", "add",
@@ -99,29 +114,39 @@ function Refill:update(dt)
                 player:set_attribute("pill_hp", "add",
                     player.attr_pill_hp_max)
 
-                player:set_attribute("pill_time", "add",
-                    player.attr_pill_time_max)
+                -- player:set_attribute("pill_time", "add",
+                --     player.attr_pill_time_max)
 
+                player:pulse()
             else
                 player:set_attribute(TypeString[self.refill_type],
                     "add",
                     self.value
                 )
+
+                player:pulse()
             end
         end
     end
 
-    self.time_catch = self.time_catch - dt
 end
 
-function Refill:my_draw()
+function Restaure:my_draw()
     -- love.graphics.setColor(self.__colors[self.refill_type])
     -- love.graphics.rectangle("fill", self.body:rect())
+
+    self.flash:draw_rec(self.body:rect())
     self.anima:draw_rec(self.body:rect())
+
+    local player = self.game:get_player()
+    local x, y, w, h = self.body:rect()
+    if player.body:check_collision(x - 32 * 2, y + h - 32 * 5, w + 32 * 4, 32 * 5) then
+        player:draw()
+    end
 end
 
-function Refill:draw()
+function Restaure:draw()
     GC.draw(self, self.my_draw)
 end
 
-return Refill
+return Restaure

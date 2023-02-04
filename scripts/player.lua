@@ -422,7 +422,7 @@ function Player:new(Game, world, args)
     args.y = args.y or (32 * 4)
     args.w = 25
     args.h = 50
-    args.y = args.bottom and (args.bottom - self.h) or args.y
+    args.y = args.bottom and (args.bottom - args.h) or args.y
 
     local obj = bodyGC:new(Game, world, args)
     setmetatable(obj, self)

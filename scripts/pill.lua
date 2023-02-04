@@ -263,7 +263,9 @@ function Pill:update(dt)
             self:punish(gain)
         end
 
-        self.game:get_player():pulse()
+        if not self.game:get_player():is_dead() then
+            self.game:get_player():pulse()
+        end
     end
 
     if self.follow_player then
