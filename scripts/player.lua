@@ -274,6 +274,7 @@ local function dash_collide_wall(self)
 
                 self.game:pause(0.3, function(dt)
                     self.game.camera:update(dt)
+                    self.cur_anima = Pack.Anima.change_animation(self.cur_anima, self.anima["dash"])
                 end)
 
                 self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
@@ -365,6 +366,11 @@ local function dashing(self, dt)
         end
     end
 
+    if body.speed_x < 0 then
+        self.direction = -1
+    else
+        self.direction = 1
+    end
 
     if self.dash_time < self.dash_duration then
         if body.speed_y >= 0 then
@@ -402,8 +408,8 @@ function Player:new(Game, world, args)
     args.type = "dynamic"
     args.x = args.x or (32 * 3)
     args.y = args.y or (32 * 4)
-    args.w = 28
-    args.h = 58
+    args.w = 25
+    args.h = 50
     args.y = args.bottom and (args.bottom - self.h) or args.y
 
     local obj = bodyGC:new(Game, world, args)
@@ -449,7 +455,7 @@ function Player:__constructor__(Game, args)
     self.invicible_time = 0.0
     self.invicible_duration = 1.3
 
-    self:set_update_order(10)
+    self:set_update_order(20)
     self:set_draw_order(10)
 
     self.direction = 1
@@ -499,6 +505,10 @@ function Player:__constructor__(Game, args)
         ["jump"] = Anima:new { img = img["jump"], frames = 1 },
         ["fall"] = Anima:new { img = img["fall"], frames = 1 },
         ["dash"] = Anima:new { img = img["dash"], frames = 1 },
+        ["dead"] = Anima:new { img = img["dead"], frames = 1 },
+        ["damage"] = Anima:new { img = img["damage"], frames = 1 },
+        ["run"] = Anima:new { img = img["run"],
+            frames = 8, duration = 0.6 },
     }
 
     self.hair_colors = {
@@ -522,6 +532,12 @@ function Player:load()
         ["fall"] = loadImage("/data/animations/player-falling-sheet.png"),
 
         ["dash"] = loadImage("/data/animations/player-dash-sheet.png"),
+
+        ["run"] = loadImage("/data/animations/player-run-sheet.png"),
+
+        ["dead"] = loadImage("/data/animations/player-dead-sheet.png"),
+
+        ["damage"] = loadImage("/data/animations/player-damage-sheet.png"),
     }
 
     for _, data in pairs(img) do
@@ -544,6 +560,9 @@ function Player:finish()
         r = img["jump"] and img["jump"]:release()
         r = img["fall"] and img["fall"]:release()
         r = img["dash"] and img["dash"]:release()
+        r = img["run"] and img["run"]:release()
+        r = img["dead"] and img["dead"]:release()
+        r = img["damage"] and img["damage"]:release()
     end
     img = nil
 
@@ -559,10 +578,14 @@ function Player:select_anima()
 
     local new_anima = self.anima["idle"]
     if self.state == States.default then
-        if body.speed_y ~= 0 and (body.speed_y < 0.3 or body.speed_y < 32 * 3) then
+        if body.speed_y ~= 0 and self.jump_count > 0
+            and (body.speed_y < -32 or body.speed_y < 16) then
             new_anima = self.anima["jump"]
+
         elseif body.speed_y > 0 then
             new_anima = self.anima["fall"]
+        elseif math.abs(body.speed_x) >= 32 and not body.wall_left and not body.wall_right then
+            new_anima = self.anima["run"]
         end
 
     elseif self.state == States.groundPound then
@@ -570,6 +593,8 @@ function Player:select_anima()
 
     elseif state == States.dash then
         new_anima = self.anima["dash"]
+    elseif self:is_dead() then
+        new_anima = self.anima["dead"]
     end
     self.cur_anima = Pack.Anima.change_animation(self.cur_anima, new_anima)
 end
@@ -690,6 +715,7 @@ function Player:set_attribute(attr, mode, value)
                 function(dt)
                     self.Game:game_get_displayHP():update(dt)
                     self.Game.camera:update(dt)
+                    self.cur_anima = Pack.Anima.change_animation(self.cur_anima, self.anima["damage"])
                 end)
 
             if not self:is_dead() then
@@ -835,6 +861,11 @@ function Player:set_state(state)
         self.attr_atk = 0
         self.attr_def = 0
 
+        self.anima['dead']:apply_effect(
+            self.direction > 1 and "clockWise" or "counterClockWise",
+            { speed = 1.3 })
+        self:set_visible(true)
+
         self.current_movement =
         ---@param self Game.Player
         function(self, dt)
@@ -868,6 +899,7 @@ function Player:set_state(state)
         self.game:pause(0.5, function(dt)
             self.Game:game_get_displayHP():update(dt)
             self.game.camera:update(dt)
+            self.cur_anima = Pack.Anima.change_animation(self.cur_anima, self.anima["dead"])
         end)
 
         local r = self.eff_actives and self.eff_actives['flickering']
@@ -1082,6 +1114,8 @@ function Player:update(dt)
 
     bodyGC.update(self, dt)
 
+    -- self:select_anima()
+
     self.current_movement(self, dt)
 
     if self.invicible_time > 0 then
@@ -1091,7 +1125,6 @@ function Player:update(dt)
         )
     end
 
-    self:select_anima()
     self.cur_anima:set_flip_x(self.direction < 0 and true)
     self.cur_anima:update(dt)
 
@@ -1099,6 +1132,10 @@ function Player:update(dt)
 end
 
 function Player:my_draw()
+    if not self.game:is_paused() then
+        self:select_anima()
+    end
+
     love.graphics.setColor(121 / 255, 58 / 255, 128 / 255, 1)
     love.graphics.rectangle("fill", self.body:rect())
 

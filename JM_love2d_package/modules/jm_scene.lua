@@ -315,6 +315,10 @@ function Scene:pause(time, action)
     self.pause_action = action or nil
 end
 
+function Scene:is_paused()
+    return self.time_pause
+end
+
 ---@param duration number|nil
 ---@param color table|nil
 ---@param delay number|nil

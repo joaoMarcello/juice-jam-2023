@@ -20,7 +20,13 @@ local WeightBoo = require "scripts.enemy.weightBoo"
 local Bullet = require "scripts.enemy.bullet"
 
 ---@class GameState.Game: JM.Scene, GameState
-local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
+local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT,
+    {
+        top = 0,
+        left = 0,
+        right = 32 * 100,
+        bottom = 32 * 12
+    })
 Game.camera:toggle_debug()
 Game.camera:toggle_grid()
 Game.camera:toggle_world_bounds()
