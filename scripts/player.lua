@@ -126,6 +126,8 @@ local function move_default(self, dt)
 
             self.jump_count = 0
             self.wall_jump_ready = true
+
+            self.direction = pressing(self, 'left') and 1 or -1
         else
             self.wall = nil
         end
@@ -198,6 +200,8 @@ local function dash_destroy_enemy(self)
                 if not enemy:is_dead() then
                     body.speed_x = body.speed_x * (-1)
                     self:set_state(States.default)
+                else
+                    self.game:pause(0.2)
                 end
             end
         end
@@ -274,7 +278,10 @@ local function dash_collide_wall(self)
 
                 self.game:pause(0.3, function(dt)
                     self.game.camera:update(dt)
-                    self.cur_anima = Pack.Anima.change_animation(self.cur_anima, self.anima["dash"])
+
+                    if col2.n > 0 then
+                        self.cur_anima = Pack.Anima.change_animation(self.cur_anima, self.anima["dash"])
+                    end
                 end)
 
                 self.Game.camera:shake_in_x(0.2, 2, nil, 0.1)
@@ -333,6 +340,11 @@ local function pound_destroy_enemy(self, only_on_target)
                         self:set_state(States.default)
                         self.body:jump(32 * (1 + self.attr_atk / self.attr_atk_max), -1)
                         body:refresh(nil, enemy.body.y - body.h)
+                    end
+
+                    if enemy:is_dead() then
+                        self:set_visible(true)
+                        self.game:pause(0.2)
                     end
                 end
             end
@@ -507,6 +519,7 @@ function Player:__constructor__(Game, args)
         ["dash"] = Anima:new { img = img["dash"], frames = 1 },
         ["dead"] = Anima:new { img = img["dead"], frames = 1 },
         ["damage"] = Anima:new { img = img["damage"], frames = 1 },
+        ["wall"] = Anima:new { img = img["wall"], frames = 1 },
         ["run"] = Anima:new { img = img["run"],
             frames = 8, duration = 0.6 },
     }
@@ -538,6 +551,8 @@ function Player:load()
         ["dead"] = loadImage("/data/animations/player-dead-sheet.png"),
 
         ["damage"] = loadImage("/data/animations/player-damage-sheet.png"),
+
+        ["wall"] = loadImage("/data/animations/player-wall-sheet.png"),
     }
 
     for _, data in pairs(img) do
@@ -563,6 +578,7 @@ function Player:finish()
         r = img["run"] and img["run"]:release()
         r = img["dead"] and img["dead"]:release()
         r = img["damage"] and img["damage"]:release()
+        r = img["wall"] and img["wall"]:release()
     end
     img = nil
 
@@ -577,6 +593,7 @@ function Player:select_anima()
     local state = self.state
 
     local new_anima = self.anima["idle"]
+
     if self.state == States.default then
         if body.speed_y ~= 0 and self.jump_count > 0
             and (body.speed_y < -32 or body.speed_y < 16) then
@@ -584,15 +601,21 @@ function Player:select_anima()
 
         elseif body.speed_y > 0 then
             new_anima = self.anima["fall"]
-        elseif math.abs(body.speed_x) >= 32 and not body.wall_left and not body.wall_right then
+        elseif math.abs(body.speed_x) >= 40 and not body.wall_left and not body.wall_right then
             new_anima = self.anima["run"]
+        end
+
+        if self.wall_jump_ready then
+            new_anima = self.anima['wall']
         end
 
     elseif self.state == States.groundPound then
         new_anima = self.anima["fall"]
 
     elseif state == States.dash then
-        new_anima = self.anima["dash"]
+        if true or math.abs(body.speed_x) == self.body.max_speed_x then
+            new_anima = self.anima["dash"]
+        end
     elseif self:is_dead() then
         new_anima = self.anima["dead"]
     end
@@ -747,6 +770,7 @@ function Player:set_mode(mode)
         self.jump_max = 3
         self.dash_max = 0
         self.dash_count = 0
+        self.jump_count = 1
 
     elseif mode == Modes.dash then
         self.dash_max = 1
@@ -908,6 +932,8 @@ function Player:set_state(state)
     else
         self.current_movement = move_default
     end
+
+    -- self:select_anima()
 end
 
 function Player:restaure_height()
@@ -1005,10 +1031,10 @@ function Player:key_pressed(key)
                     or self.mode == Modes.jump_ex
                     or self.mode == Modes.extreme
                 then
-                    if pressing(self, 'right') and body.speed_x < 0 then
-                        body.speed_x = -(body.speed_x * 1.1)
-                    elseif pressing(self, 'left') and body.speed_x > 0 then
-                        body.speed_x = body.speed_x * 1.1
+                    if pressing(self, 'right') then
+                        body.speed_x = math.abs(body.speed_x * 1.1) * self.direction
+                    elseif pressing(self, 'left') then
+                        body.speed_x = math.abs(body.speed_x * 1.1) * self.direction
                     end
                 end
 

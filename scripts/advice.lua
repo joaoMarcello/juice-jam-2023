@@ -25,7 +25,8 @@ function Advice:__constructor__(game, text, extra_update)
     self.game = game
     self.extra_update = extra_update
 
-    self.textbox = TextBox:new(text, Pack.Font:get_font("komika text 2"), 32 * 5, 32 * 2, 32 * 10)
+    self.textbox = TextBox:new(text, Pack.Font:get_font("komika text 2"),
+        32 * 4, 32 * 2, 32 * 10)
 
     self.is_locked = true
 
@@ -46,7 +47,7 @@ function Advice:__constructor__(game, text, extra_update)
     end)
 
     self.arrow = Pack.Anima:new({ img = img_arrow or '' })
-    self.arrow:set_color({ 0.2, 0.2, 0.3, 1 })
+    self.arrow:set_color({ 0.3, 0.3, 0.3, 1 })
     self.arrow:set_rotation(math.pi)
     self.arrow:apply_effect("float", { speed = 0.6, range = 3 })
 
