@@ -116,15 +116,16 @@ local function apply_transform(self, x, y)
     local eff_transf = self.__effect_transform
 
     if eff_transf then
+        local ox, oy = self.ox, self.oy
 
         self.__transform:setTransformation(
-            (x + self.ox + eff_transf.ox),
-            (y + self.oy + eff_transf.oy),
+            (x + ox + eff_transf.ox),
+            (y + oy + eff_transf.oy),
             eff_transf.rot,
             eff_transf.sx,
             eff_transf.sy,
-            (x + self.ox),
-            (y + self.oy),
+            (x + ox),
+            (y + oy),
             eff_transf.kx,
             eff_transf.ky
         )

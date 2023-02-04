@@ -801,6 +801,9 @@ function Player:set_mode(mode)
         self.attr_def = 0
     end
 
+    -- if self.mode ~= Modes.normal then
+    -- end
+
     return true
 end
 
@@ -846,6 +849,8 @@ function Player:set_state(state)
             self.Game.camera:shake_in_y(0.1, 3, 0.2, 0.1)
             pound_destroy_enemy(self)
             self:set_state(States.default)
+            local eff = self:apply_effect("pulse", { speed = 0.25, max_sequence = 1 })
+            eff.__rad = -math.pi / 2
         end)
 
     elseif state == States.dash then

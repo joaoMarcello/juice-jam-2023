@@ -124,6 +124,9 @@ function Effect:__constructor__(object, args)
 
     self.__remove = false
 
+    self.ox = nil
+    self.oy = nil
+
     self.__obj_initial_color = { 1, 1, 1, 1 }
     self:set_object(object)
 end

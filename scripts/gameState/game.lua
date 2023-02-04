@@ -13,6 +13,7 @@ local ModeChanger = require "scripts.modeChanger"
 local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
 local AdviceBox = require "scripts.adviceBox"
+local Refill = require "scripts.refill"
 
 local PeekaBoo = require "scripts.enemy.peekaboo"
 local MiddleBoo = require "scripts.enemy.middleBoo"
@@ -109,7 +110,7 @@ end
 Game:implements({
     load = function()
         rects = {
-            { 0, 32 * 12, 32 * 40, 32 * 2 },
+            { 0, 32 * 11, 32 * 40, 32 * 2 },
             { 0, -32 * 10, 1, 32 * 40 },
             { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
             { 32 * 10, 32 * 7, 32 * 5, 32 }
@@ -127,6 +128,7 @@ Game:implements({
 
         Advice:load()
         AdviceBox:load()
+        Refill:load()
 
         map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
@@ -143,6 +145,7 @@ Game:implements({
         Bullet:finish()
 
         Advice:finish()
+        Refill:finish()
     end,
 
     init = function()
@@ -222,6 +225,10 @@ Game:implements({
 
         Game:game_add_component(AdviceBox:new(Game, world, {
             x = 32 * 3
+        }))
+
+        Game:game_add_component(Refill:new(Game, world, {
+            refill_type = Refill.Types.all
         }))
 
         -- advice = Advice:new()

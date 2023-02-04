@@ -86,6 +86,7 @@ end
 
 function Component:update(dt)
     Affectable.update(self, dt)
+    self.x, self.y = self.body.x, self.body.y
 end
 
 function Component:draw(custom_draw)

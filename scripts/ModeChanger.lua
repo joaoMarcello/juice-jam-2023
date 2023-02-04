@@ -157,9 +157,11 @@ function Changer:update(dt)
         self.time_respawn = 1.5
 
         player:set_mode(self.mode_type)
+
         if player.body.speed_y > 0 then
             player.body.speed_y = player.body.speed_y * 0.3
         end
+
         self.game:pause(0.3, function(dt)
             self.game:game_get_displayHP().displayMode:update(dt)
         end)
