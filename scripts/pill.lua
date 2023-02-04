@@ -262,6 +262,8 @@ function Pill:update(dt)
             local gain = self:reward()
             self:punish(gain)
         end
+
+        self.game:get_player():pulse()
     end
 
     if self.follow_player then

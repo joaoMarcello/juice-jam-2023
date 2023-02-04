@@ -1,5 +1,6 @@
 local GC = require "scripts.bodyComponent"
 local Utils = Pack.Utils
+local Refill = require "scripts.refill"
 
 ---@enum Game.Enemy.States
 local States = {
@@ -184,6 +185,28 @@ function Enemy:kill()
         body.mass = body.mass * 1.2
         dispatch_event(self, Events.killed)
         self:set_draw_order(20)
+
+        local refill_type = Refill.Types.pill_hp
+
+        if math.random() <= 0.07 then
+            refill_type = Refill.Types.all
+        else
+            refill_type = math.random(1, 4)
+        end
+
+        ---@type Game.Component.Refill
+        local refill = self.game:game_add_component(Refill:new(self.game,
+            self.world,
+            {
+                x = self.x + self.w / 2,
+                y = self.y,
+                bottom = self.y + self.h,
+                refill_type = refill_type
+            }
+        ))
+        local player = self.game:get_player()
+        refill.body:jump(32, -1)
+        refill.body.speed_x = player.x > body.x and (-32 * 4) or (32 * 4)
         return true
     end
 end

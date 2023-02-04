@@ -2,7 +2,9 @@ local Utils = Pack.Utils
 local Affectable = Pack.Affectable
 local GC = require "scripts.bodyComponent"
 
----@enum Game.Component.Refill.Types
+---@type love.Image|nil
+local img
+
 local Type = {
     pill_atk = 1,
     pill_def = 2,
@@ -11,7 +13,6 @@ local Type = {
     all = 5
 }
 
----@enum Game.Component.Refill.TypesString
 local TypeString = {
     [Type.pill_atk] = "pill_atk",
     [Type.pill_def] = "pill_def",
@@ -19,7 +20,7 @@ local TypeString = {
     [Type.pill_time] = "pill_time"
 }
 
----@class Game.Component.Refill: BodyComponent
+---@class Game.Component.PillRestaure: BodyComponent
 local Refill = setmetatable({}, GC)
 Refill.__index = Refill
 Refill.Types = Type
@@ -29,9 +30,9 @@ function Refill:new(game, world, args)
     args = args or {}
     args.x = args.x or (32 * 10)
     args.y = args.y or (32 * 9)
-    args.w = 32
-    args.h = 28
-    args.type = "dynamic"
+    args.w = 70
+    args.h = 18
+    args.type = "static"
     args.y = args.bottom and (args.bottom - args.h) or args.y
     args.mode = args.mode or args.refill_type or Type.pill_time
 
@@ -47,7 +48,7 @@ function Refill:__constructor__(game, args)
     self.w = args.w
     self.h = args.h
     self.refill_type = args.mode
-    self.value = 2
+    self.value = 20
 
     self.__colors = {
         { 1, 0, 0 },
@@ -57,11 +58,15 @@ function Refill:__constructor__(game, args)
         { 1, 1, 1 }
     }
 
+    self:set_draw_order(15)
+
     self.time_catch = 1.0
+
+    self.anima = Pack.Anima:new { img = img or '' }
 end
 
 function Refill:load()
-
+    img = img or love.graphics.newImage('/data/animations/pill-restaure.png')
 end
 
 function Refill:init()
@@ -69,7 +74,9 @@ function Refill:init()
 end
 
 function Refill:finish()
-
+    local r
+    r = img and img:release()
+    img = nil
 end
 
 function Refill:update(dt)
@@ -108,8 +115,9 @@ function Refill:update(dt)
 end
 
 function Refill:my_draw()
-    love.graphics.setColor(self.__colors[self.refill_type])
-    love.graphics.rectangle("fill", self.body:rect())
+    -- love.graphics.setColor(self.__colors[self.refill_type])
+    -- love.graphics.rectangle("fill", self.body:rect())
+    self.anima:draw_rec(self.body:rect())
 end
 
 function Refill:draw()

@@ -14,6 +14,7 @@ local Reseter = require "scripts.reseter"
 local Spike = require "scripts.spike"
 local AdviceBox = require "scripts.adviceBox"
 local Refill = require "scripts.refill"
+local PillRestaure = require "scripts.pillRestaure"
 
 local PeekaBoo = require "scripts.enemy.peekaboo"
 local MiddleBoo = require "scripts.enemy.middleBoo"
@@ -66,7 +67,7 @@ local sort_update = function(a, b) return a.update_order > b.update_order end
 local sort_draw = function(a, b) return a.draw_order < b.draw_order end
 --=========================================================================
 
----@param gc GameComponent
+-- -@param gc GameComponent|BodyComponent
 function Game:game_add_component(gc)
     table.insert(components, gc)
     return gc
@@ -129,6 +130,7 @@ Game:implements({
         Advice:load()
         AdviceBox:load()
         Refill:load()
+        PillRestaure:load()
 
         map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
@@ -146,6 +148,7 @@ Game:implements({
 
         Advice:finish()
         Refill:finish()
+        PillRestaure:finish()
     end,
 
     init = function()
@@ -227,8 +230,10 @@ Game:implements({
             x = 32 * 3
         }))
 
-        Game:game_add_component(Refill:new(Game, world, {
-            refill_type = Refill.Types.all
+        Game:game_add_component(PillRestaure:new(Game, world, {
+            refill_type = Refill.Types.all,
+            bottom = 32 * 11,
+            x = 32 * 16
         }))
 
         -- advice = Advice:new()

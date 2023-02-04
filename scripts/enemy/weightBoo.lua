@@ -1,5 +1,7 @@
 local Enemy = require "scripts.enemy.enemy"
 
+local img
+
 ---@class Game.Enemy.WeightBoo: Game.Enemy
 local Boo = setmetatable({}, Enemy)
 Boo.__index = Boo
@@ -10,7 +12,7 @@ function Boo:new(game, world, args)
     args.x = args.x or (32 * 10)
     args.y = args.y or (32 * 4)
     args.w = 56
-    args.h = 58
+    args.h = 70
     args.atk = 2
     args.def = 1
     args.hp = 2
@@ -32,7 +34,7 @@ function Boo:__constructor__(args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
-    self:apply_effect("jelly", { speed = 0.6 })
+    -- self:apply_effect("jelly", { speed = 0.6 })
 
     self.jump_time_max = 3.0
     self.jump_time = self.jump_time_max
@@ -46,6 +48,16 @@ function Boo:__constructor__(args)
         local camera = self.game.camera
         if camera:rect_is_on_view(self.body:rect()) then
             camera:shake_in_y(0.3, 2, nil, 0.1)
+        end
+
+        local player = self.game:get_player()
+        local x, y, w, h = self.body:rect()
+
+        if player.body:check_collision(x - 32 * 3, y + h - 20, w + 32 * 6, 30)
+            and not player:is_dead()
+            and self.invicible_time == 0
+        then
+            player:receive_damage(self.attr_atk, self)
         end
     end)
     self:on_event("damaged", function()
@@ -63,10 +75,20 @@ function Boo:__constructor__(args)
     self:on_event("killed", function()
         self.body.mass = self.world.default_mass
     end)
+
+    local Anima = Pack.Anima
+    self.anima = {
+        ["idle"] = Anima:new { img = img['idle'], frames = 2 }
+    }
+    self.cur_anima = self.anima['idle']
+    self.cur_anima:apply_effect("jelly", { speed = 0.6, range = 0.02 })
 end
 
 function Boo:load()
-
+    img = img or {
+        ["idle"] = love.graphics.newImage("/data/animations/weightboo-idle-sheet.png")
+    }
+    img['idle']:setFilter("linear", "nearest")
 end
 
 function Boo:finish()
@@ -87,13 +109,19 @@ function Boo:update(dt, camera)
             body:jump(32, -1)
         end
     end
-    -- local direction = self.game:get_player().x < body.x and -1 or 1
-    -- body:apply_force(self.acc * direction)
+
+    if not self:is_dead() then
+        self.cur_anima:set_flip_x(self.game:get_player().body.x > self.x)
+        self.cur_anima:update(dt)
+    end
+    -- self.cur_anima:set_flip_y(self:is_dead() and body.speed_y > 0)
 end
 
 function Boo:my_draw()
     love.graphics.setColor(64 / 255, 51 / 255, 83 / 255, 1)
     love.graphics.rectangle("fill", self.body:rect())
+
+    self.cur_anima:draw_rec(self.body:rect())
 end
 
 function Boo:draw()

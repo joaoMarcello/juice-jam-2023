@@ -525,7 +525,7 @@ function Player:__constructor__(Game, args)
     }
 
     self.hair_colors = {
-        [Modes.normal] = { 66 / 255, 57 / 255, 62 / 255 },
+        [Modes.normal] = { 50 / 255, 43 / 255, 40 / 255 },
         [Modes.dash] = { 130 / 255, 108 / 255, 212 / 255 },
         [Modes.dash_ex] = { 76 / 255, 90 / 255, 212 / 255 },
         [Modes.jump] = { 212 / 255, 138 / 255, 154 / 255 },
@@ -832,6 +832,12 @@ function Player:finish_state(next_state)
     end
 end
 
+function Player:pulse()
+    local eff = self:apply_effect("pulse", { speed = 0.25, max_sequence = 1 })
+    eff.__rad = -math.pi / 2
+    return eff
+end
+
 function Player:set_state(state)
     if self.state == state then return false end
 
@@ -849,8 +855,8 @@ function Player:set_state(state)
             self.Game.camera:shake_in_y(0.1, 3, 0.2, 0.1)
             pound_destroy_enemy(self)
             self:set_state(States.default)
-            local eff = self:apply_effect("pulse", { speed = 0.25, max_sequence = 1 })
-            eff.__rad = -math.pi / 2
+
+            self:pulse()
         end)
 
     elseif state == States.dash then
