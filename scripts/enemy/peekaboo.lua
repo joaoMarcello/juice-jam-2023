@@ -1,5 +1,7 @@
 local Enemy = require "scripts.enemy.enemy"
 
+local img
+
 ---@class Game.Enemy.PeekaBoo: Game.Enemy
 local Boo = setmetatable({}, Enemy)
 Boo.__index = Boo
@@ -21,8 +23,7 @@ function Boo:new(game, world, args)
 end
 
 function Boo:__constructor__(args)
-    self:apply_effect("pulse", { speed = 0.6 })
-    self:apply_effect("float", { range = 4 })
+    self:apply_effect("jelly", { speed = 0.6, range = 0.05 })
 
     self.x = args.x
     self.y = args.y
@@ -49,6 +50,27 @@ function Boo:__constructor__(args)
     end)
 
     self.body.max_speed_x = 32 * 2
+
+    local Anima = Pack.Anima
+    self.anima = {
+        ["walk"] = Anima:new { img = img["walk"] }
+    }
+
+    self.cur_anima = self.anima["walk"]
+end
+
+function Boo:load()
+    img = img or {
+        ["walk"] = love.graphics.newImage('/data/animations/peekaboo-walk.png')
+    }
+
+    img["walk"]:setFilter("nearest", "nearest")
+end
+
+function Boo:finish()
+    local r
+    r = img["walk"] and img["walk"]:release()
+    img = nil
 end
 
 function Boo:update(dt, camera)
@@ -64,11 +86,16 @@ function Boo:update(dt, camera)
     local body = self.body
     -- body.speed_x = -self.speed
     self.body:apply_force(-self.acc)
+
+    self.cur_anima:set_flip_x(self.body.speed_x > 0)
+    self.cur_anima:set_flip_y(self:is_dead())
 end
 
 function Boo:my_draw()
     love.graphics.setColor(1, 0, 0)
     love.graphics.rectangle("fill", self.body:rect())
+
+    self.cur_anima:draw_rec(self.body:rect())
 end
 
 function Boo:draw()
