@@ -129,7 +129,9 @@ function Restaure:update(dt)
         end
     end
 
-    if player.body:check_collision(x, y - 3, w, h) then
+    if player.body:check_collision(x, y - 3, w, h)
+        and not player:is_dead()
+    then
         self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
     end
 

@@ -169,9 +169,8 @@ Game:implements({
             bottom = checkpoint.bottom
         })
 
-        -- Game.camera:follow(player.x, player.y, 'player')
-        -- Game.camera:move(-(player.x + player.w / 2), 0)
-        Game.camera.x = checkpoint.x
+        Game.camera.x = checkpoint.x - Game.offset_x / Game.camera.desired_scale -
+            Game.camera.focus_x / Game.camera.desired_scale
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
