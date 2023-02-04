@@ -94,15 +94,15 @@ function Restaure:update(dt)
     local attr
     attr = player["attr_" .. TypeString[self.refill_type]]
     local attr_max = player["attr_" .. TypeString[self.refill_type] .. "_max"]
+    local x, y, w, h = self.body:rect()
 
     if (attr and attr_max and attr < attr_max) or
         (not attr and self.refill_type == Type.all)
     then
         local body = player.body
-        local x, y, w, h = self.body:rect()
 
         if player.body:check_collision(x + 2, y - 1, w - 4, h) then
-            self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
+
 
             if self.refill_type == Type.all then
                 player:set_attribute("pill_atk", "add",
@@ -127,6 +127,10 @@ function Restaure:update(dt)
                 player:pulse()
             end
         end
+    end
+
+    if player.body:check_collision(x, y - 3, w, h) then
+        self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
     end
 
 end

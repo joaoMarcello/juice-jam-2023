@@ -169,8 +169,9 @@ Game:implements({
             bottom = checkpoint.bottom
         })
 
-        Game.camera:move(-(player.x + player.w / 2), 0)
-        Game.camera.x = player.x
+        -- Game.camera:follow(player.x, player.y, 'player')
+        -- Game.camera:move(-(player.x + player.w / 2), 0)
+        Game.camera.x = checkpoint.x
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
@@ -251,6 +252,12 @@ Game:implements({
             refill_type = Refill.Types.pill_atk,
             bottom = 32 * 11,
             x = 32 * 16
+        }))
+
+        Game:game_add_component(PillRestaure:new(Game, world, {
+            refill_type = Refill.Types.pill_hp,
+            bottom = 32 * 11,
+            x = 32 * 25
         }))
 
         -- advice = Advice:new()
