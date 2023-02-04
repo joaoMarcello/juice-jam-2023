@@ -29,9 +29,10 @@ function Spike:new(game, world, args)
 
     if args.position == "ceil" then
         args.w = args.len * 32
-        args.y = args.bottom and (args.bottom - args.h) or args.y
+        -- args.y = args.bottom and (args.bottom - args.h) or args.y
     elseif args.position == "ground" then
         args.w = args.len * 32
+        args.y = args.y + 32 - args.h
     elseif args.position == "wallRight" or args.position == "wallLeft" then
         args.h = 32 * args.len
     end

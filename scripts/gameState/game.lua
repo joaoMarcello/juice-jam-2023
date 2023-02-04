@@ -131,8 +131,9 @@ Game:implements({
         local w = 32 * 4
         local h = 32 * 2
         for i = 0, 70 do
-            if i ~= 23 and i ~= 24 and i ~= 25 and i ~= 29 and i ~= 30 and i ~= 31 and i ~= 32 and i ~= 33 and i ~= 34
-                and i ~= 38 and i ~= 52 and i ~= 53 and i ~= 54 and i ~= 55
+            if i ~= 23 and i ~= 24 and i ~= 25 and i ~= 26 and i ~= 29 and i ~= 30 and i ~= 31 and i ~= 32 and i ~= 33
+                and i ~= 34
+                and i ~= 38 and i ~= 52 and i ~= 53 and i ~= 54 and i ~= 55 and i ~= 56
             then
                 table.insert(rects, { i * w, y, w, h })
             end
@@ -143,14 +144,37 @@ Game:implements({
         local three = 32 * 3
         local four = 32 * 4
         local five = 32 * 5
+        local six = 32 * 6
+        local seven = 32 * 7
+        local eight = 32 * 8
 
         table.insert(rects, { 2 * w + two, y - one, two, one })
         table.insert(rects, { (5 * w) + two, (y - four), two, four })
         table.insert(rects, { (9 * w) + two, (y - four), two, four })
 
         table.insert(rects, { (13 * w) + two, (y - four), two, four })
+        table.insert(rects, { (19 * w), (y - three * 4), four, four * 2 })
 
-        player_pos = 13 * w
+        table.insert(rects, { (27 * w), (y - three), three, four })
+        table.insert(rects, { (35 * w), (y - three), three, four })
+
+        table.insert(rects, { (38 * w) - one, (y - 32 * 7), one, 32 * 7 })
+        table.insert(rects, { (39 * w), (y - 32 * 11), one, 32 * 8 })
+
+        table.insert(rects, { (45 * w), (y - four), four, 32 })
+        table.insert(rects, { (48 * w) - one, (y - six), two, six })
+        table.insert(rects, { (48 * w) - one, (y - 32 * 11), six, two })
+
+        table.insert(rects, { (51 * w) + two, (y - six), two, six })
+        table.insert(rects, { (53 * w), (y - six), six, three })
+        -- table.insert(rects, { (54 * w) + six, (y - six), one, one })
+        table.insert(rects, { (56 * w) + two, (y - three), two, four })
+
+        table.insert(rects, { (61 * w) - one, (y - five), six, one })
+
+
+
+        player_pos = 50 * w
         -- table.insert(rects, { 0, y, w, h })
         -- table.insert(rects, { 3 * w, y, w, h })
 
@@ -202,6 +226,8 @@ Game:implements({
             bottom = checkpoint.bottom
         })
 
+        player:set_mode(Player.Modes.extreme)
+
         Game.camera.x = checkpoint.x + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
             Game.camera.focus_x / Game.camera.desired_scale
 
@@ -237,7 +263,7 @@ Game:implements({
         }))
 
         Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 26,
+            x = 32 * 50,
             mode_type = Player.Modes.extreme
         }))
 
@@ -266,6 +292,9 @@ Game:implements({
         local three = 32 * 3
         local four = 32 * 4
         local five = 32 * 5
+        local six = 32 * 6
+        local seven = 32 * 7
+        local eight = 32 * 8
 
         Game:game_add_component(Spike:new(Game, world, {
             x = (9 * w) + one,
@@ -273,6 +302,49 @@ Game:implements({
             len = 4,
             position = "wallRight"
         }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (19 * w),
+            y = y - four,
+            len = 4,
+            position = "ceil"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (38 * w),
+            y = y - 32 * 6,
+            len = 6,
+            position = "wallLeft"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (39 * w) - one,
+            y = y - 32 * 11,
+            len = 4,
+            position = "wallRight"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (39 * w) - one,
+            y = y - 32 * 6,
+            len = 3,
+            position = "wallRight"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (53 * w) - one,
+            y = y - six,
+            len = 3,
+            position = "wallRight"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (53 * w),
+            y = 32 * 3 + 32,
+            len = 6,
+            position = "ground"
+        }))
+
 
 
         -- Game:game_add_component(Spike:new(Game, world, {
