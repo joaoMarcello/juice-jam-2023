@@ -498,6 +498,7 @@ function Player:__constructor__(Game, args)
         ["idle"] = Anima:new { img = img["idle"], frames = 2 },
         ["jump"] = Anima:new { img = img["jump"], frames = 1 },
         ["fall"] = Anima:new { img = img["fall"], frames = 1 },
+        ["dash"] = Anima:new { img = img["dash"], frames = 1 },
     }
 
     self.hair_colors = {
@@ -519,10 +520,12 @@ function Player:load()
         ["jump"] = loadImage("/data/animations/player-jump-sheet.png"),
 
         ["fall"] = loadImage("/data/animations/player-falling-sheet.png"),
+
+        ["dash"] = loadImage("/data/animations/player-dash-sheet.png"),
     }
 
     for _, data in pairs(img) do
-        data:setFilter("nearest", "nearest")
+        data:setFilter("linear", "nearest")
     end
 
     shader = shader or love.graphics.newShader(shader_code)
@@ -540,6 +543,7 @@ function Player:finish()
         r = img["idle"] and img["idle"]:release()
         r = img["jump"] and img["jump"]:release()
         r = img["fall"] and img["fall"]:release()
+        r = img["dash"] and img["dash"]:release()
     end
     img = nil
 
@@ -554,10 +558,18 @@ function Player:select_anima()
     local state = self.state
 
     local new_anima = self.anima["idle"]
-    if body.speed_y ~= 0 and (body.speed_y < 0.3 or body.speed_y < 32 * 3) then
-        new_anima = self.anima["jump"]
-    elseif body.speed_y > 0 then
+    if self.state == States.default then
+        if body.speed_y ~= 0 and (body.speed_y < 0.3 or body.speed_y < 32 * 3) then
+            new_anima = self.anima["jump"]
+        elseif body.speed_y > 0 then
+            new_anima = self.anima["fall"]
+        end
+
+    elseif self.state == States.groundPound then
         new_anima = self.anima["fall"]
+
+    elseif state == States.dash then
+        new_anima = self.anima["dash"]
     end
     self.cur_anima = Pack.Anima.change_animation(self.cur_anima, new_anima)
 end
