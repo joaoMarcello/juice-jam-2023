@@ -833,6 +833,7 @@ function Player:finish_state(next_state)
 end
 
 function Player:pulse()
+    if self.game:is_paused() then return end
     local eff = self:apply_effect("pulse", { speed = 0.25, max_sequence = 1 })
     eff.__rad = -math.pi / 2
     return eff
@@ -970,9 +971,11 @@ function Player:jump()
 
     local body = self.body
 
-    local h = (math_abs(body.speed_x) >= self.max_speed
-        or self.state == States.dash)
-        and 4.5 or 3.5
+    -- local h = (math_abs(body.speed_x) >= self.max_speed
+    --     or self.state == States.dash)
+    --     and 3.5 or 3.5
+
+    local h = 3.5
 
     if self.jump_count >= 1 then h = 2.5 end
 
@@ -1173,8 +1176,8 @@ function Player:my_draw()
         self:select_anima()
     end
 
-    love.graphics.setColor(121 / 255, 58 / 255, 128 / 255, 1)
-    love.graphics.rectangle("fill", self.body:rect())
+    -- love.graphics.setColor(121 / 255, 58 / 255, 128 / 255, 1)
+    -- love.graphics.rectangle("fill", self.body:rect())
 
     Font:printf(get_state_string(self), self.x,
         self.y - Font.current.__font_size - 20

@@ -26,7 +26,7 @@ local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT,
     {
         top = 0,
         left = 0,
-        right = 32 * 100,
+        right = 32 * 70 * 4,
         bottom = 32 * 12
     })
 Game.camera:toggle_debug()
@@ -114,14 +114,46 @@ end
 Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
 --=========================================================================
 
+
+local player_pos = 0
+
 Game:implements({
     load = function()
         rects = {
-            { 0, 32 * 11, 32 * 40, 32 * 2 },
+            -- { 0, 32 * 11, 32 * 40, 32 * 2 },
             { 0, -32 * 10, 1, 32 * 40 },
-            { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
-            { 32 * 10, 32 * 7, 32 * 5, 32 }
+            { 0, -64, 32 * 70 * 4, 32 },
+            -- { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
+            -- { 32 * 10, 32 * 7, 32 * 5, 32 }
         }
+
+        local x, y = 0, 32 * 11
+        local w = 32 * 4
+        local h = 32 * 2
+        for i = 0, 70 do
+            if i ~= 23 and i ~= 24 and i ~= 25 and i ~= 29 and i ~= 30 and i ~= 31 and i ~= 32 and i ~= 33 and i ~= 34
+                and i ~= 38 and i ~= 52 and i ~= 53 and i ~= 54 and i ~= 55
+            then
+                table.insert(rects, { i * w, y, w, h })
+            end
+        end
+
+        local one = 32
+        local two = 32 * 2
+        local three = 32 * 3
+        local four = 32 * 4
+        local five = 32 * 5
+
+        table.insert(rects, { 2 * w + two, y - one, two, one })
+        table.insert(rects, { (5 * w) + two, (y - four), two, four })
+        table.insert(rects, { (9 * w) + two, (y - four), two, four })
+
+        table.insert(rects, { (13 * w) + two, (y - four), two, four })
+
+        player_pos = 13 * w
+        -- table.insert(rects, { 0, y, w, h })
+        -- table.insert(rects, { 3 * w, y, w, h })
+
 
         Player:load()
         DisplayHP:load()
@@ -140,7 +172,7 @@ Game:implements({
 
         Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
 
-        map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
+        -- map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
 
     finish = function()
@@ -164,12 +196,16 @@ Game:implements({
     init = function()
         world = Physics:newWorld()
         player = Player:new(Game, world, {
-            x = checkpoint.x,
+            -- x = checkpoint.x,
+            x = player_pos,
             y = checkpoint.y,
             bottom = checkpoint.bottom
         })
 
         Game.camera.x = checkpoint.x + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
+            Game.camera.focus_x / Game.camera.desired_scale
+
+        Game.camera.x = player_pos + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
             Game.camera.focus_x / Game.camera.desired_scale
 
         for _, r in ipairs(rects) do
@@ -220,44 +256,62 @@ Game:implements({
             y = 32 * 10,
             mode = Reseter.Types.dash
         }))
+        --=======================================================
+        local x, y = 0, 32 * 11
+        local w = 32 * 4
+        local h = 32 * 2
+
+        local one = 32
+        local two = 32 * 2
+        local three = 32 * 3
+        local four = 32 * 4
+        local five = 32 * 5
 
         Game:game_add_component(Spike:new(Game, world, {
-            y = 32 * 8,
-            x = 32 * 7,
-            position = "wallLeft"
+            x = (9 * w) + one,
+            y = y - four,
+            len = 4,
+            position = "wallRight"
         }))
 
-        Game:game_add_component(PeekaBoo:new(Game, world, {
-            x = 32 * 26
-        }))
 
-        Game:game_add_component(MiddleBoo:new(Game, world, {
-            x = 32 * 10
-        }))
+        -- Game:game_add_component(Spike:new(Game, world, {
+        --     y = 32 * 8,
+        --     x = 32 * 7,
+        --     position = "wallLeft"
+        -- }))
 
-        Game:game_add_component(WeightBoo:new(Game, world, {
-            x = 32 * 20
-        }))
+        -- Game:game_add_component(PeekaBoo:new(Game, world, {
+        --     x = 32 * 26
+        -- }))
 
-        Game:game_add_component(Bullet:new(Game, world, {
-            x = 32 * 8
-        }))
+        -- Game:game_add_component(MiddleBoo:new(Game, world, {
+        --     x = 32 * 10
+        -- }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = 32 * 3
-        }))
+        -- Game:game_add_component(WeightBoo:new(Game, world, {
+        --     x = 32 * 20
+        -- }))
 
-        Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.pill_atk,
-            bottom = 32 * 11,
-            x = 32 * 16
-        }))
+        -- Game:game_add_component(Bullet:new(Game, world, {
+        --     x = 32 * 8
+        -- }))
 
-        Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.pill_hp,
-            bottom = 32 * 11,
-            x = 32 * 25
-        }))
+        -- Game:game_add_component(AdviceBox:new(Game, world, {
+        --     x = 32 * 3
+        -- }))
+
+        -- Game:game_add_component(PillRestaure:new(Game, world, {
+        --     refill_type = Refill.Types.pill_atk,
+        --     bottom = 32 * 11,
+        --     x = 32 * 16
+        -- }))
+
+        -- Game:game_add_component(PillRestaure:new(Game, world, {
+        --     refill_type = Refill.Types.pill_hp,
+        --     bottom = 32 * 11,
+        --     x = 32 * 25
+        -- }))
 
         -- advice = Advice:new()
 
@@ -336,10 +390,18 @@ Game:implements({
         {
             name = "main",
 
+            ---@param camera JM.Camera.Camera
             draw = function(self, camera)
-                map:draw(camera)
+                -- map:draw(camera)
 
-                world:draw()
+                for i = 1, world.bodies_number do
+                    ---@type JM.Physics.Body|JM.Physics.Slope
+                    local obj = world.bodies[i]
+
+                    if obj and camera:rect_is_on_view(obj:rect()) then
+                        local r = obj.type == 2 and obj.draw and obj:draw()
+                    end
+                end
 
                 table.sort(components, sort_draw)
                 for i = 1, #components do
