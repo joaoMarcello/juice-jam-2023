@@ -182,7 +182,7 @@ Game:implements({
 
 
 
-        player_pos = 77 * w
+        player_pos = 58 * w
         -- table.insert(rects, { 0, y, w, h })
         -- table.insert(rects, { 3 * w, y, w, h })
 
@@ -339,15 +339,15 @@ Game:implements({
 
             Game:game_add_component(Spike:new(Game, world, {
                 x = (38 * w),
-                y = y - 32 * 6,
-                len = 7,
+                y = y - 32 * 7,
+                len = 8,
                 position = "wallLeft"
             }))
 
             Game:game_add_component(Spike:new(Game, world, {
                 x = (39 * w) - one,
                 y = y - 32 * 11,
-                len = 4,
+                len = 5,
                 position = "wallRight"
             }))
 
@@ -398,62 +398,74 @@ Game:implements({
         do
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = 32 * 5,
-                y = y - four
+                y = y - four,
+                text = "commands"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (6 * w) + three,
-                y = y - four
+                y = y - four,
+                text = "mode_jump"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (10 * w) + three,
-                y = y - four
+                y = y - four,
+                text = "mode_jump_ex"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (14 * w) + three,
-                y = y - four
+                y = y - four,
+                text = "checkpoint"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (18 * w),
-                y = y - four
+                y = y - four,
+                text = "mode_normal"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (21 * w) - one,
-                y = y - four
+                y = y - four,
+                text = "dash_mode"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (28 * w) - one,
-                y = y - four
+                y = y - four,
+                text = "dash_ex_mode"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (38 * w) - two,
-                y = y - four
+                y = y - four,
+                text = "ground_pound"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (40 * w),
-                y = y - four
+                y = y - four,
+                text = "pills"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (47 * w) - two,
-                y = y - four
+                y = y - four,
+                text = "dash_push"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (57 * w) + five,
-                y = y - four
+                y = y - four,
+                text = "extreme"
             }))
 
             Game:game_add_component(AdviceBox:new(Game, world, {
                 x = (78 * w) - two,
-                y = y - four
+                y = y - four,
+                text = "final"
             }))
         end
         --=========================================================
@@ -470,7 +482,11 @@ Game:implements({
                 x = (36 * w) + two
             }))
 
-
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.all,
+                bottom = 32 * 11,
+                x = (41 * w) + three
+            }))
 
             Game:game_add_component(PillRestaure:new(Game, world, {
                 refill_type = PillRestaure.Types.none,
