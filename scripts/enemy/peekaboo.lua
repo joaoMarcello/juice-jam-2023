@@ -57,6 +57,8 @@ function Boo:__constructor__(args)
     }
 
     self.cur_anima = self.anima["walk"]
+
+    if self.game:get_player().body.x > self.x then self.acc = -self.acc end
 end
 
 function Boo:load()

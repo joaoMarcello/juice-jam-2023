@@ -169,13 +169,13 @@ Game:implements({
         table.insert(rects, { (51 * w) + two, (y - six), two, six })
         table.insert(rects, { (53 * w), (y - six), six, three })
         -- table.insert(rects, { (54 * w) + six, (y - six), one, one })
-        table.insert(rects, { (56 * w) + two, (y - three), two, four })
+        table.insert(rects, { (56 * w) + two, (y - three), four, four })
 
         table.insert(rects, { (61 * w) - one, (y - five), six, one })
 
 
 
-        player_pos = 60 * w
+        player_pos = 59 * w
         -- table.insert(rects, { 0, y, w, h })
         -- table.insert(rects, { 3 * w, y, w, h })
 
@@ -314,7 +314,7 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             x = (38 * w),
             y = y - 32 * 6,
-            len = 6,
+            len = 7,
             position = "wallLeft"
         }))
 
@@ -356,11 +356,117 @@ Game:implements({
         Game:game_add_component(Spike:new(Game, world, {
             x = (63 * w),
             y = 32 * 10,
-            len = 32 + 4,
+            len = 32 + 5,
             position = "ground"
         }))
+        --==========================================================
 
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = 32 * 3,
+            y = y - four
+        }))
 
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (6 * w) + three,
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (10 * w) + three,
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (14 * w) + three,
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (18 * w),
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (24 * w),
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (28 * w) - one,
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (40 * w),
+            y = y - four
+        }))
+
+        Game:game_add_component(AdviceBox:new(Game, world, {
+            x = (57 * w) + five,
+            y = y - four
+        }))
+
+        --=========================================================
+
+        Game:game_add_component(PillRestaure:new(Game, world, {
+            refill_type = Refill.Types.pill_hp,
+            bottom = 32 * 11,
+            x = (16 * w)
+        }))
+
+        Game:game_add_component(PillRestaure:new(Game, world, {
+            refill_type = Refill.Types.pill_hp,
+            bottom = 32 * 11,
+            x = (36 * w) + two
+        }))
+
+        Game:game_add_component(PillRestaure:new(Game, world, {
+            refill_type = Refill.Types.pill_hp,
+            bottom = 32 * 8,
+            x = (56 * w) + three
+        }))
+
+        --===========================================================
+
+        Game:game_add_component(PeekaBoo:new(Game, world, {
+            x = (41 * w) + two,
+            y = 32 * 11
+        }))
+
+        Game:game_add_component(WeightBoo:new(Game, world, {
+            x = (48 * w) - one,
+            bottom = 32 * 5
+        }))
+
+        Game:game_add_component(MiddleBoo:new(Game, world, {
+            x = (51 * w),
+            bottom = 32 * 11
+        }))
+
+        Game:game_add_component(MiddleBoo:new(Game, world, {
+            x = (61 * w),
+            bottom = 32 * 11
+        }))
+
+        Game:game_add_component(MiddleBoo:new(Game, world, {
+            x = (62 * w) + three,
+            bottom = 32 * 11
+        }))
+
+        -- Game:game_add_component(MiddleBoo:new(Game, world, {
+        --     x = (63 * w) + three,
+        --     bottom = 32 * 11
+        -- }))
+
+        Game:game_add_component(PeekaBoo:new(Game, world, {
+            x = (62 * w),
+            y = 32 * 10
+        }))
+
+        Game:game_add_component(WeightBoo:new(Game, world, {
+            x = (61 * w) + two,
+            bottom = 32 * 7
+        }))
 
         -- Game:game_add_component(Spike:new(Game, world, {
         --     y = 32 * 8,
