@@ -13,7 +13,8 @@ local Type = {
     pill_def = 2,
     pill_hp = 3,
     pill_time = 4,
-    all = 5
+    all = 5,
+    none = 6
 }
 
 local TypeString = {
@@ -21,7 +22,8 @@ local TypeString = {
     [Type.pill_def] = "pill_def",
     [Type.pill_hp] = "pill_hp",
     [Type.pill_time] = "pill_time",
-    [Type.all] = ""
+    [Type.all] = "",
+    [Type.none] = ""
 }
 
 ---@class Game.Component.PillRestaure: BodyComponent
@@ -38,7 +40,7 @@ function Restaure:new(game, world, args)
     args.h = 18
     args.type = "static"
     args.y = args.bottom and (args.bottom - args.h) or args.y
-    args.mode = args.mode or args.refill_type or Type.pill_time
+    args.mode = args.mode or args.refill_type or Type.none
 
     local obj = GC:new(game, world, args)
     setmetatable(obj, self)
@@ -59,6 +61,7 @@ function Restaure:__constructor__(game, args)
         { 0, 0, 1 },
         { 0, 1, 0 },
         { 1, 1, 0 },
+        { 1, 1, 1 },
         { 1, 1, 1 }
     }
 

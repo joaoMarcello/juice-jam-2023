@@ -26,10 +26,11 @@ local scene
 
 ---@param new_state GameState
 function CHANGE_GAME_STATE(new_state, skip_finish, skip_load, save_prev, skip_collect, skip_fadein, skip_init)
+    -- local p = scene and scene:init()
     local r = scene and not skip_finish and scene:finish()
     new_state.prev_state = save_prev and scene or nil
-    r = not skip_load and new_state:load()
-    r = not skip_init and new_state:init()
+    r = (not skip_load) and new_state:load()
+    r = (not skip_init) and new_state:init()
     r = not skip_collect and collectgarbage()
     scene = new_state
     r = not skip_fadein and scene:fadein(nil, nil, nil)
@@ -51,7 +52,7 @@ function UNPAUSE(state)
 end
 
 function love.load()
-    CHANGE_GAME_STATE(require 'scripts.gameState.game', true)
+    CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', true)
 end
 
 function love.keypressed(key)

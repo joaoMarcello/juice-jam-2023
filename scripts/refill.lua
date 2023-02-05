@@ -105,6 +105,14 @@ function Refill:update(dt)
     end
 
     self.time_catch = self.time_catch - dt
+
+    if self.time_catch <= -2.5 and not self.flick then
+        self.flick = self:apply_effect("flickering", { speed = 0.07 })
+    end
+
+    if self.time_catch <= -4.5 then
+        self.__remove = true
+    end
 end
 
 function Refill:my_draw()

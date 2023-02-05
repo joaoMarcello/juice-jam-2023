@@ -108,7 +108,14 @@ end
 
 local checkpoint
 function Game:game_checkpoint(x, y, bottom)
+    if checkpoint and checkpoint.x == x
+        and checkpoint.y == y and checkpoint.bottom == bottom
+    then
+        return false
+    end
+
     checkpoint = { x = x, y = y, bottom = bottom }
+    return true
 end
 
 Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
@@ -156,7 +163,7 @@ Game:implements({
         table.insert(rects, { (13 * w) + two, (y - four), two, four })
         table.insert(rects, { (19 * w), (y - three * 4), four, four * 2 })
 
-        table.insert(rects, { (27 * w), (y - three), three, four })
+        table.insert(rects, { (27 * w) - three, (y - three), four, four })
         table.insert(rects, { (35 * w), (y - three), three, four })
 
         table.insert(rects, { (38 * w) - one, (y - 32 * 7), one, 32 * 7 })
@@ -175,7 +182,7 @@ Game:implements({
 
 
 
-        player_pos = 59 * w
+        player_pos = 77 * w
         -- table.insert(rects, { 0, y, w, h })
         -- table.insert(rects, { 3 * w, y, w, h })
 
@@ -219,21 +226,22 @@ Game:implements({
     end,
 
     init = function()
+
         world = Physics:newWorld()
         player = Player:new(Game, world, {
-            -- x = checkpoint.x,
-            x = player_pos,
+            x = checkpoint.x,
+            -- x = player_pos,
             y = checkpoint.y,
             bottom = checkpoint.bottom
         })
 
-        player:set_mode(Player.Modes.extreme)
+        -- player:set_mode(Player.Modes.extreme)
 
         Game.camera.x = checkpoint.x + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
             Game.camera.focus_x / Game.camera.desired_scale
 
-        Game.camera.x = player_pos + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
-            Game.camera.focus_x / Game.camera.desired_scale
+        -- Game.camera.x = player_pos + player.w / 2 - Game.offset_x / Game.camera.desired_scale -
+        --     Game.camera.focus_x / Game.camera.desired_scale
 
         for _, r in ipairs(rects) do
             local x, y, w, h = unpack(r)
@@ -247,42 +255,45 @@ Game:implements({
         components_gui = {}
 
         Game:game_add_component(player)
-        Game:game_add_component(ModeChanger:new(Game, world, {}))
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 2,
-            mode_type = Player.Modes.jump
-        }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 18,
-            mode_type = Player.Modes.jump_ex
-        }))
+        -- do
+        --     Game:game_add_component(ModeChanger:new(Game, world, {}))
+        --     Game:game_add_component(ModeChanger:new(Game, world, {
+        --         x = 32 * 2,
+        --         mode_type = Player.Modes.jump
+        --     }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 24,
-            mode_type = Player.Modes.dash_ex
-        }))
+        --     Game:game_add_component(ModeChanger:new(Game, world, {
+        --         x = 32 * 18,
+        --         mode_type = Player.Modes.jump_ex
+        --     }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 50,
-            mode_type = Player.Modes.extreme
-        }))
+        --     Game:game_add_component(ModeChanger:new(Game, world, {
+        --         x = 32 * 24,
+        --         mode_type = Player.Modes.dash_ex
+        --     }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = 32 * 30,
-            mode_type = Player.Modes.normal
-        }))
+        --     Game:game_add_component(ModeChanger:new(Game, world, {
+        --         x = 32 * 50,
+        --         mode_type = Player.Modes.extreme
+        --     }))
 
-        Game:game_add_component(Reseter:new(Game, world, {
-            x = 32 * 5,
-            y = 32 * 6
-        }))
+        --     Game:game_add_component(ModeChanger:new(Game, world, {
+        --         x = 32 * 30,
+        --         mode_type = Player.Modes.normal
+        --     }))
 
-        Game:game_add_component(Reseter:new(Game, world, {
-            x = 32 * 16,
-            y = 32 * 10,
-            mode = Reseter.Types.dash
-        }))
+        --     Game:game_add_component(Reseter:new(Game, world, {
+        --         x = 32 * 5,
+        --         y = 32 * 6
+        --     }))
+
+        --     Game:game_add_component(Reseter:new(Game, world, {
+        --         x = 32 * 16,
+        --         y = 32 * 10,
+        --         mode = Reseter.Types.dash
+        --     }))
+        -- end
         --=======================================================
         local x, y = 0, 32 * 11
         local w = 32 * 4
@@ -297,216 +308,303 @@ Game:implements({
         local seven = 32 * 7
         local eight = 32 * 8
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (9 * w) + one,
-            y = y - four,
-            len = 4,
-            position = "wallRight"
-        }))
+        do
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (9 * w) + one,
+                y = y - four,
+                len = 4,
+                position = "wallRight"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (19 * w),
-            y = y - four,
-            len = 4,
-            position = "ceil"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (13 * w) + one,
+                y = y - four,
+                len = 4,
+                position = "wallRight"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (38 * w),
-            y = y - 32 * 6,
-            len = 7,
-            position = "wallLeft"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (13 * w) + two,
+                y = y - five,
+                len = 2,
+                position = "ground"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (39 * w) - one,
-            y = y - 32 * 11,
-            len = 4,
-            position = "wallRight"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (19 * w),
+                y = y - four,
+                len = 4,
+                position = "ceil"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (39 * w) - one,
-            y = y - 32 * 6,
-            len = 3,
-            position = "wallRight"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (38 * w),
+                y = y - 32 * 6,
+                len = 7,
+                position = "wallLeft"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (53 * w) - one,
-            y = y - six,
-            len = 3,
-            position = "wallRight"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (39 * w) - one,
+                y = y - 32 * 11,
+                len = 4,
+                position = "wallRight"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (53 * w),
-            y = 32 * 4,
-            len = 6,
-            position = "ground"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (39 * w) - one,
+                y = y - 32 * 6,
+                len = 3,
+                position = "wallRight"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (53 * w),
-            y = 32 * 8,
-            len = 6,
-            position = "ceil"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (53 * w) - one,
+                y = y - six,
+                len = 3,
+                position = "wallRight"
+            }))
 
-        Game:game_add_component(Spike:new(Game, world, {
-            x = (63 * w),
-            y = 32 * 10,
-            len = 32 + 5,
-            position = "ground"
-        }))
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (53 * w),
+                y = 32 * 4,
+                len = 6,
+                position = "ground"
+            }))
+
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (53 * w),
+                y = 32 * 8,
+                len = 6,
+                position = "ceil"
+            }))
+
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (56 * w) + one,
+                y = 32 * 8,
+                len = 4,
+                position = "wallRight"
+            }))
+
+            Game:game_add_component(Spike:new(Game, world, {
+                x = (63 * w),
+                y = 32 * 10,
+                len = 32 + 5,
+                position = "ground"
+            }))
+
+        end
         --==========================================================
+        do
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = 32 * 5,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = 32 * 3,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (6 * w) + three,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (6 * w) + three,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (10 * w) + three,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (10 * w) + three,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (14 * w) + three,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (14 * w) + three,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (18 * w),
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (18 * w),
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (21 * w) - one,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (24 * w),
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (28 * w) - one,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (28 * w) - one,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (38 * w) - two,
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (40 * w),
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (40 * w),
+                y = y - four
+            }))
 
-        Game:game_add_component(AdviceBox:new(Game, world, {
-            x = (57 * w) + five,
-            y = y - four
-        }))
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (47 * w) - two,
+                y = y - four
+            }))
 
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (57 * w) + five,
+                y = y - four
+            }))
+
+            Game:game_add_component(AdviceBox:new(Game, world, {
+                x = (78 * w) - two,
+                y = y - four
+            }))
+        end
         --=========================================================
+        do
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.pill_hp,
+                bottom = 32 * 11,
+                x = (16 * w)
+            }))
 
-        Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.pill_hp,
-            bottom = 32 * 11,
-            x = (16 * w)
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.pill_hp,
+                bottom = 32 * 11,
+                x = (36 * w) + two
+            }))
+
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.pill_hp,
+                bottom = 32 * 8,
+                x = (56 * w) + three
+            }))
+
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.none,
+                bottom = 32 * 11,
+                x = (49 * w) + three
+            }))
+
+            --===========================================================
+
+            Game:game_add_component(PeekaBoo:new(Game, world, {
+                x = (41 * w) + two,
+                y = 32 * 11
+            }))
+
+            Game:game_add_component(WeightBoo:new(Game, world, {
+                x = (48 * w) - one,
+                bottom = 32 * 5
+            }))
+
+            Game:game_add_component(MiddleBoo:new(Game, world, {
+                x = (51 * w),
+                bottom = 32 * 11
+            }))
+
+            Game:game_add_component(MiddleBoo:new(Game, world, {
+                x = (61 * w),
+                bottom = 32 * 11
+            }))
+
+            Game:game_add_component(MiddleBoo:new(Game, world, {
+                x = (62 * w) + three,
+                bottom = 32 * 11
+            }))
+
+            -- Game:game_add_component(MiddleBoo:new(Game, world, {
+            --     x = (63 * w) + three,
+            --     bottom = 32 * 11
+            -- }))
+
+            Game:game_add_component(PeekaBoo:new(Game, world, {
+                x = (62 * w),
+                y = 32 * 10
+            }))
+
+            Game:game_add_component(WeightBoo:new(Game, world, {
+                x = (61 * w) + two,
+                bottom = 32 * 7
+            }))
+        end
+        --================================================================
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (7 * w) + two,
+            y = y - four,
+            mode_type = Player.Modes.jump
         }))
 
-        Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.pill_hp,
-            bottom = 32 * 11,
-            x = (36 * w) + two
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (11 * w) + two,
+            y = y - four,
+            mode_type = Player.Modes.jump_ex
         }))
 
-        Game:game_add_component(PillRestaure:new(Game, world, {
-            refill_type = Refill.Types.pill_hp,
-            bottom = 32 * 8,
-            x = (56 * w) + three
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (19 * w) + two,
+            y = y - two,
+            mode_type = Player.Modes.normal
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (22 * w),
+            y = y - four,
+            mode_type = Player.Modes.dash
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (28 * w) + two,
+            y = y - four,
+            mode_type = Player.Modes.dash_ex
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (38 * w) - one,
+            y = y - 32 * 9,
+            mode_type = Player.Modes.dash
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (43 * w) - one,
+            y = y - four,
+            mode_type = Player.Modes.dash
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (52 * w) + one,
+            y = y - four,
+            mode_type = Player.Modes.dash
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (55 * w),
+            y = y,
+            mode_type = Player.Modes.jump_ex
+        }))
+
+        Game:game_add_component(ModeChanger:new(Game, world, {
+            x = (58 * w) + four,
+            y = y - four,
+            mode_type = Player.Modes.extreme
         }))
 
         --===========================================================
 
-        Game:game_add_component(PeekaBoo:new(Game, world, {
-            x = (41 * w) + two,
-            y = 32 * 11
+        Game:game_add_component(Reseter:new(Game, world, {
+            x = (32 * w),
+            y = y - four,
+            mode = Reseter.Types.dash
         }))
 
-        Game:game_add_component(WeightBoo:new(Game, world, {
-            x = (48 * w) - one,
-            bottom = 32 * 5
+        Game:game_add_component(Reseter:new(Game, world, {
+            x = (53 * w) + two,
+            y = y - one,
+            mode = Reseter.Types.dash
         }))
 
-        Game:game_add_component(MiddleBoo:new(Game, world, {
-            x = (51 * w),
-            bottom = 32 * 11
+        Game:game_add_component(Reseter:new(Game, world, {
+            x = (55 * w) + two,
+            y = y - four,
+            mode = Reseter.Types.jump
         }))
-
-        Game:game_add_component(MiddleBoo:new(Game, world, {
-            x = (61 * w),
-            bottom = 32 * 11
-        }))
-
-        Game:game_add_component(MiddleBoo:new(Game, world, {
-            x = (62 * w) + three,
-            bottom = 32 * 11
-        }))
-
-        -- Game:game_add_component(MiddleBoo:new(Game, world, {
-        --     x = (63 * w) + three,
-        --     bottom = 32 * 11
-        -- }))
-
-        Game:game_add_component(PeekaBoo:new(Game, world, {
-            x = (62 * w),
-            y = 32 * 10
-        }))
-
-        Game:game_add_component(WeightBoo:new(Game, world, {
-            x = (61 * w) + two,
-            bottom = 32 * 7
-        }))
-
-        -- Game:game_add_component(Spike:new(Game, world, {
-        --     y = 32 * 8,
-        --     x = 32 * 7,
-        --     position = "wallLeft"
-        -- }))
-
-        -- Game:game_add_component(PeekaBoo:new(Game, world, {
-        --     x = 32 * 26
-        -- }))
-
-        -- Game:game_add_component(MiddleBoo:new(Game, world, {
-        --     x = 32 * 10
-        -- }))
-
-        -- Game:game_add_component(WeightBoo:new(Game, world, {
-        --     x = 32 * 20
-        -- }))
-
-        -- Game:game_add_component(Bullet:new(Game, world, {
-        --     x = 32 * 8
-        -- }))
-
-        -- Game:game_add_component(AdviceBox:new(Game, world, {
-        --     x = 32 * 3
-        -- }))
-
-        -- Game:game_add_component(PillRestaure:new(Game, world, {
-        --     refill_type = Refill.Types.pill_atk,
-        --     bottom = 32 * 11,
-        --     x = 32 * 16
-        -- }))
-
-        -- Game:game_add_component(PillRestaure:new(Game, world, {
-        --     refill_type = Refill.Types.pill_hp,
-        --     bottom = 32 * 11,
-        --     x = 32 * 25
-        -- }))
-
-        -- advice = Advice:new()
 
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
@@ -560,6 +658,29 @@ Game:implements({
 
             if gc.__remove then
                 Game:game_remove_component(i)
+            end
+        end
+
+        if not player:is_dead() then
+            if player.y > (32 * 12 + 20) then
+                player:kill(true)
+            end
+
+            if player.body:check_collision(32 * 4 * 80 - 32, 0, 32, 32 * 12)
+                and not Game.fadeout_time
+            then
+                Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
+                -- CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', true, false, false, false, false, false)
+                Game:fadeout(nil, nil, nil,
+                    nil,
+                    function()
+                        Game:init()
+                        Game:game_checkpoint(32 * 2, 32 * 11, 32 * 11 + 32)
+
+                        CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', true, false, false, false, false,
+                            false)
+                    end)
+                return
             end
         end
 

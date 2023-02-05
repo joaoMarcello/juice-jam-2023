@@ -35,6 +35,13 @@ function Button:__constructor__(args)
     ---@type JM.Effect|nil
     self.eff_pulse = nil
 
+    self.action = args.action or function()
+        love.event.quit()
+        --
+    end
+
+    self.is_quit = args.is_quit
+
     self:on_event("gained_focus", function()
         if self.eff_pulse then self.eff_pulse.__remove = true end
         self.eff_pulse = self:apply_effect("pulse", { speed = 0.7, range = 0.04 })
@@ -48,6 +55,7 @@ function Button:__constructor__(args)
     self.pressed = false
 
     self:on_event("key_pressed", function(key)
+        if self.is_quit then love.event.quit() end
         if not self.pressed and (key == "space" or key == "return") then
             self.pressed = true
 

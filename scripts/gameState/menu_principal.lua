@@ -19,7 +19,9 @@ State:implements {
     end,
 
     init = function()
-
+        buttons = {
+            Button:new(State, {})
+        }
     end,
 
     finish = function()

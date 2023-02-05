@@ -153,6 +153,10 @@ function Spike:update(dt)
 end
 
 function Spike:draw()
+    if not self.game.camera:rect_is_on_view(self.body:rect()) then
+        return
+    end
+
     if self:is_on_wall_right() or self:is_on_wall_left() then
         for i = 1, self.len do
             local y = self.y + 32 * (i - 1)
