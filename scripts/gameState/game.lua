@@ -26,7 +26,7 @@ local Game = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT,
     {
         top = 0,
         left = 0,
-        right = 32 * 70 * 4,
+        right = 32 * 80 * 4,
         bottom = 32 * 12
     })
 Game.camera:toggle_debug()
@@ -122,7 +122,8 @@ Game:implements({
         rects = {
             -- { 0, 32 * 11, 32 * 40, 32 * 2 },
             { 0, -32 * 10, 1, 32 * 40 },
-            { 0, -64, 32 * 70 * 4, 32 },
+            { 0, -64, 32 * 80 * 4, 32 },
+            { 32 * 4 * 80, 0, 32, 32 * 12 },
             -- { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
             -- { 32 * 10, 32 * 7, 32 * 5, 32 }
         }
@@ -130,7 +131,7 @@ Game:implements({
         local x, y = 0, 32 * 11
         local w = 32 * 4
         local h = 32 * 2
-        for i = 0, 70 do
+        for i = 0, 80 do
             if i ~= 23 and i ~= 24 and i ~= 25 and i ~= 26 and i ~= 29 and i ~= 30 and i ~= 31 and i ~= 32 and i ~= 33
                 and i ~= 34
                 and i ~= 38 and i ~= 52 and i ~= 53 and i ~= 54 and i ~= 55 and i ~= 56
@@ -174,7 +175,7 @@ Game:implements({
 
 
 
-        player_pos = 50 * w
+        player_pos = 60 * w
         -- table.insert(rects, { 0, y, w, h })
         -- table.insert(rects, { 3 * w, y, w, h })
 
@@ -340,8 +341,22 @@ Game:implements({
 
         Game:game_add_component(Spike:new(Game, world, {
             x = (53 * w),
-            y = 32 * 3 + 32,
+            y = 32 * 4,
             len = 6,
+            position = "ground"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (53 * w),
+            y = 32 * 8,
+            len = 6,
+            position = "ceil"
+        }))
+
+        Game:game_add_component(Spike:new(Game, world, {
+            x = (63 * w),
+            y = 32 * 10,
+            len = 32 + 4,
             position = "ground"
         }))
 
