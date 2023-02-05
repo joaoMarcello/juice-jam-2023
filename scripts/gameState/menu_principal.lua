@@ -9,9 +9,8 @@ State.camera:toggle_debug()
 State.camera:toggle_grid()
 State.camera:toggle_world_bounds()
 --=========================================================================
-local buttons = {
-    Button:new(State, {})
-}
+local buttons
+local current
 --=========================================================================
 State:implements {
     load = function()
@@ -20,8 +19,13 @@ State:implements {
 
     init = function()
         buttons = {
-            Button:new(State, {})
+            Button:new(State, {}),
+            Button:new(State, { is_quit = true, text = "QUIT", y = 285 }),
         }
+
+        current = 1
+
+        buttons[current]:set_focus(true)
     end,
 
     finish = function()
@@ -35,11 +39,18 @@ State:implements {
             State.camera:toggle_world_bounds()
         end
 
-        buttons[1]:key_pressed(key)
+        if key == "up" or key == "down" then
+            buttons[current]:set_focus(false)
+            current = current == 1 and 2 or 1
+            buttons[current]:set_focus(true)
+
+        else
+            buttons[current]:key_pressed(key)
+        end
     end,
 
     update = function(dt, camera)
-        buttons[1]:update(dt)
+        buttons[current]:update(dt)
     end,
 
     ---@param camera JM.Camera.Camera
@@ -47,10 +58,11 @@ State:implements {
         local l, t, r, b = camera:get_viewport_in_world_coord()
         r, b = camera:world_to_screen(r, b)
 
-        love.graphics.setColor(1, 1, 1, 0.6)
+        love.graphics.setColor(1, 1, 1, 1)
         love.graphics.rectangle("fill", 0, 0, r, b)
 
         buttons[1]:draw()
+        buttons[2]:draw()
     end
 }
 

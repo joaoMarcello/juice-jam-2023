@@ -120,7 +120,7 @@ function Restaure:update(dt)
                 -- player:set_attribute("pill_time", "add",
                 --     player.attr_pill_time_max)
 
-                player:pulse()
+                -- player:pulse()
             else
                 player:set_attribute(TypeString[self.refill_type],
                     "add",
@@ -135,7 +135,9 @@ function Restaure:update(dt)
     if player.body:check_collision(x, y - 3, w, h)
         and not player:is_dead()
     then
-        self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
+        local r = self.game:game_checkpoint(self.body.x + self.body.w / 2 - player.w / 2, self.body.y, self.body.y)
+
+        if r then player:pulse() end
     end
 
 end

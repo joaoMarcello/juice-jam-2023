@@ -9,9 +9,9 @@ Button.__index = Button
 ---@return GameState.MenuPrincipal.Button
 function Button:new(game, args)
     args   = args or {}
-    args.x = 200
-    args.y = 200
-    args.w = 32 * 6
+    args.y = args.y or 230
+    args.w = 32 * 5
+    args.x = SCREEN_WIDTH / 2 - args.w / 2
     args.h = (32 * 2) - 16
 
     local obj = Component:new(args)
@@ -25,9 +25,12 @@ end
 function Button:__constructor__(args)
     self.text = args.text or "START"
     self.text = "<color, 1, 1, 1> <bold>" .. self.text
+    self.text2 = "<color, 0.1, 0.1, 0.1, 0.8> <bold>" .. self.text .. " "
 
     self.print_obj = Font:get_phrase(self.text, self.x, self.y, "center", self.x + self.w)
     self.text_h = self.print_obj:text_height(self.print_obj:get_lines(self.x))
+
+    self.print_obj2 = Font:get_phrase(self.text2, self.x, self.y, "center", self.x + self.w)
 
     self.ox = self.w / 2
     self.oy = self.h / 2
@@ -35,24 +38,24 @@ function Button:__constructor__(args)
     ---@type JM.Effect|nil
     self.eff_pulse = nil
 
-    self.action = args.action or function()
-        love.event.quit()
-        --
-    end
-
     self.is_quit = args.is_quit
+
+    self.__color = { 1, 0, 0 }
 
     self:on_event("gained_focus", function()
         if self.eff_pulse then self.eff_pulse.__remove = true end
-        self.eff_pulse = self:apply_effect("pulse", { speed = 0.7, range = 0.04 })
+        self.eff_pulse = self:apply_effect("pulse", { speed = 0.7, range = 0.06 })
+        self.__color = { 1, 1, 0 }
     end)
 
     self:on_event("lose_focus", function()
         if self.eff_pulse then self.eff_pulse.__remove = true end
         self.eff_pulse = nil
+        self.__color = { 191 / 255, 144 / 255, 50 / 255 }
     end)
 
     self.pressed = false
+
 
     self:on_event("key_pressed", function(key)
         if self.is_quit then love.event.quit() end
@@ -84,6 +87,7 @@ function Button:__constructor__(args)
     end)
 
     self:set_focus(true)
+    self:set_focus(false)
 end
 
 function Button:update(dt)
@@ -92,12 +96,14 @@ function Button:update(dt)
 end
 
 function Button:__custom_draw__()
-    love.graphics.setColor(1, 1, 0)
+    love.graphics.setColor(self.__color)
     love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
+
+    love.graphics.setColor(50 / 255, 43 / 255, 40 / 255)
+    love.graphics.rectangle("line", self.x, self.y, self.w, self.h)
 
     self.print_obj:draw(self.x, self.y + self.h / 2 - self.text_h / 2, "center")
 
-    -- Font:print(self.pressed, self.x, self.y)
 end
 
 return Button

@@ -480,14 +480,14 @@ function Player:__constructor__(Game, args)
     self.attr_atk = 1
     self.attr_atk_max = 3
 
-    self.attr_pill_hp = 5
-    self.attr_pill_hp_max = 10
-    self.attr_pill_atk = 5
+    self.attr_pill_hp = 3
+    self.attr_pill_hp_max = 5
+    self.attr_pill_atk = 3
     self.attr_pill_atk_max = 5
-    self.attr_pill_def = 5
+    self.attr_pill_def = 3
     self.attr_pill_def_max = 5
-    self.attr_pill_time = 10
-    self.attr_pill_time_max = 15
+    self.attr_pill_time = 5
+    self.attr_pill_time_max = 10
     --=======================================================
 
     self.dash_width = self.w

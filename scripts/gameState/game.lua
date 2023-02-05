@@ -459,27 +459,29 @@ Game:implements({
         --=========================================================
         do
             Game:game_add_component(PillRestaure:new(Game, world, {
-                refill_type = PillRestaure.Types.pill_hp,
+                refill_type = PillRestaure.Types.none,
                 bottom = 32 * 11,
                 x = (16 * w)
             }))
 
             Game:game_add_component(PillRestaure:new(Game, world, {
-                refill_type = PillRestaure.Types.pill_hp,
+                refill_type = PillRestaure.Types.all,
                 bottom = 32 * 11,
                 x = (36 * w) + two
+            }))
+
+
+
+            Game:game_add_component(PillRestaure:new(Game, world, {
+                refill_type = PillRestaure.Types.none,
+                bottom = 32 * 11,
+                x = (49 * w) + three
             }))
 
             Game:game_add_component(PillRestaure:new(Game, world, {
                 refill_type = PillRestaure.Types.pill_hp,
                 bottom = 32 * 8,
                 x = (56 * w) + three
-            }))
-
-            Game:game_add_component(PillRestaure:new(Game, world, {
-                refill_type = PillRestaure.Types.none,
-                bottom = 32 * 11,
-                x = (49 * w) + three
             }))
 
             --===========================================================
@@ -495,7 +497,7 @@ Game:implements({
             }))
 
             Game:game_add_component(MiddleBoo:new(Game, world, {
-                x = (51 * w),
+                x = (45 * w) + three,
                 bottom = 32 * 11
             }))
 
