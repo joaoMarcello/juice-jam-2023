@@ -1179,28 +1179,28 @@ function Player:my_draw()
     -- love.graphics.setColor(121 / 255, 58 / 255, 128 / 255, 1)
     -- love.graphics.rectangle("fill", self.body:rect())
 
-    Font:printf(get_state_string(self), self.x,
-        self.y - Font.current.__font_size - 20
-        , "center"
-        , self.x + self.w
-    )
+    -- Font:printf(get_state_string(self), self.x,
+    --     self.y - Font.current.__font_size - 20
+    --     , "center"
+    --     , self.x + self.w
+    -- )
 
-    if self.dash_count < self.dash_max then
-        Font:print('<color, 0, 0, 1>' .. self.dash_count, self.x, self.y - Font.current.__font_size * 2 - 30)
-    else
-        Font:print('<color, 1, 0, 0>' .. self.dash_count, self.x, self.y - Font.current.__font_size * 2 - 30)
-    end
+    -- if self.dash_count < self.dash_max then
+    --     Font:print('<color, 0, 0, 1>' .. self.dash_count, self.x, self.y - Font.current.__font_size * 2 - 30)
+    -- else
+    --     Font:print('<color, 1, 0, 0>' .. self.dash_count, self.x, self.y - Font.current.__font_size * 2 - 30)
+    -- end
 
-    Font:print('<color, 1, 1,0>' .. self.jump_count, self.x + self.w, self.y - Font.current.__font_size * 2 - 30)
+    -- Font:print('<color, 1, 1,0>' .. self.jump_count, self.x + self.w, self.y - Font.current.__font_size * 2 - 30)
 
-    if debbug['gain'] and debbug['lost'] then
-        Font:print('<color, 0.1, 1, 0.1>' ..
-            debbug['gain'] .. "\n<color>" .. debbug['lost'],
-            self.x + self.w + 10,
-            self.y + 10
-        -- , "left", math.huge
-        )
-    end
+    -- if debbug['gain'] and debbug['lost'] then
+    --     Font:print('<color, 0.1, 1, 0.1>' ..
+    --         debbug['gain'] .. "\n<color>" .. debbug['lost'],
+    --         self.x + self.w + 10,
+    --         self.y + 10
+    --     -- , "left", math.huge
+    --     )
+    -- end
 
     love.graphics.setShader(shader)
     shader:sendColor("hair_color", self.hair_colors[self.mode])

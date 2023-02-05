@@ -94,8 +94,8 @@ function Boo:update(dt, camera)
 end
 
 function Boo:my_draw()
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill", self.body:rect())
+    -- love.graphics.setColor(1, 0, 0)
+    -- love.graphics.rectangle("fill", self.body:rect())
 
     self.cur_anima:draw_rec(self.body:rect())
 end

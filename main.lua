@@ -16,7 +16,7 @@ love.mouse.setVisible(false)
 
 --==================================================================
 
-SCREEN_HEIGHT = Pack.Utils:round(love.graphics.getHeight() / 2)
+SCREEN_HEIGHT = Pack.Utils:round(32 * 12)
 SCREEN_WIDTH = Pack.Utils:round(SCREEN_HEIGHT * 1.5)
 
 --==================================================================

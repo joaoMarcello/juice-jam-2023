@@ -3,6 +3,7 @@ local Font = Pack.Font
 
 local Button = require "scripts.menu_principal_button"
 
+
 ---@class GameState.MenuPrincipal: JM.Scene, GameState
 local State = Pack.Scene:new(nil, nil, nil, nil, SCREEN_WIDTH, SCREEN_HEIGHT)
 State.camera:toggle_debug()
@@ -11,10 +12,12 @@ State.camera:toggle_world_bounds()
 --=========================================================================
 local buttons
 local current
+local logo = love.graphics.newImage('/data/animations/logo.png')
+---@type JM.Anima
+local anima
 --=========================================================================
 State:implements {
     load = function()
-
     end,
 
     init = function()
@@ -26,6 +29,8 @@ State:implements {
         current = 1
 
         buttons[current]:set_focus(true)
+
+        anima = Pack.Anima:new { img = logo or '' }
     end,
 
     finish = function()
@@ -63,6 +68,8 @@ State:implements {
 
         buttons[1]:draw()
         buttons[2]:draw()
+
+        anima:draw_rec(0, 0, SCREEN_WIDTH - 32, 32 * 6)
     end
 }
 

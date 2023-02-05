@@ -1,5 +1,7 @@
 local Enemy = require "scripts.enemy.enemy"
 
+local img = love.graphics.newImage('/data/animations/middleboo.png')
+
 ---@class Game.Enemy.MiddleBoo: Game.Enemy
 local Boo = setmetatable({}, Enemy)
 Boo.__index = Boo
@@ -31,8 +33,6 @@ function Boo:__constructor__(args)
     self.ox = self.w / 2
     self.oy = self.h / 2
 
-    self:apply_effect("jelly", { speed = 0.6 })
-
     self.acc = 32 * 6
     self.body.max_speed_x = 32 * 4
     self.body.dacc_x = self.world.meter * 8
@@ -53,14 +53,18 @@ function Boo:__constructor__(args)
     self:on_event("pushPlayer", function()
         self.body.speed_x = 0
     end)
+
+    self.anima = Pack.Anima:new { img = img }
+    self.anima:apply_effect("float", { speed = 1, range = 2 })
 end
 
 function Boo:load()
-
+    local r = img or love.graphics.newImage('/data/animations/middleboo.png')
+    img:setFilter("nearest", "nearest")
 end
 
 function Boo:finish()
-
+    local r = img and img:release()
 end
 
 function Boo:update(dt, camera)
@@ -70,11 +74,16 @@ function Boo:update(dt, camera)
     local body = self.body
     local direction = self.game:get_player().x < body.x and -1 or 1
     body:apply_force(self.acc * direction)
+
+    self.anima:update(dt)
+    self.anima:set_flip_x(self.game:get_player().x > self.body.x)
 end
 
 function Boo:my_draw()
-    love.graphics.setColor(250 / 255, 106 / 255, 10 / 255, 1)
-    love.graphics.rectangle("fill", self.body:rect())
+    -- love.graphics.setColor(250 / 255, 106 / 255, 10 / 255, 1)
+    -- love.graphics.rectangle("fill", self.body:rect())
+
+    self.anima:draw_rec(self.x, self.y, self.w, self.h)
 end
 
 function Boo:draw()

@@ -720,6 +720,14 @@ Game:implements({
         --================================================================
         --================================================================
         {
+            factor_x = -1,
+            draw = function()
+                love.graphics.setColor(160 / 255, 165 / 255, 186 / 255)
+                love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+            end
+        },
+
+        {
             name = "main",
 
             ---@param camera JM.Camera.Camera

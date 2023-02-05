@@ -324,7 +324,7 @@ function Enemy:draw(custom_draw)
         self.x + self.w + 3,
         self.y - 16)
 
-    font:print(self.out_of_bounds and 'out_of_bounds' or self:get_state_string(), self.x - self.ox, self.y - 22)
+    -- font:print(self.out_of_bounds and 'out_of_bounds' or self:get_state_string(), self.x - self.ox, self.y - 22)
 end
 
 return Enemy
