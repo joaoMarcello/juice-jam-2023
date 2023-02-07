@@ -8,6 +8,17 @@ State.camera:toggle_debug()
 State.camera:toggle_grid()
 State.camera:toggle_world_bounds()
 --===========================================================================
+local shader_code = [[   
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords){
+    vec4 pix = Texel(texture, texture_coords);
+    if (pix.r == 1.0 && pix.g == 0.0 && pix.b == 0.0){
+       return pix; // return vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    else{
+        return pix;
+    }
+}
+]]
 
 local px1, px2
 local speed = 32 * 10
@@ -25,6 +36,11 @@ local speed_rad = 20
 local acc
 
 local total_spin = (math.pi) + math.pi * 0.7
+
+local radius, radius_max
+
+---@type love.Shader
+local shader
 
 local function draw_rects()
     love.graphics.setColor(132 / 255, 155 / 255, 228 / 255)
@@ -47,16 +63,20 @@ end
 State:implements({
     init = function()
         affect = Pack.Affectable:new()
-        affect.ox = SCREEN_WIDTH / 2
+        affect.ox = SCREEN_WIDTH / 2 - 28
         affect.oy = SCREEN_HEIGHT / 2
         --eff = affect:apply_effect("clockWise", { speed = 20 })
         px1 = SCREEN_WIDTH
         px2 = -SCREEN_WIDTH
 
         rad = 0
-        speed = 32 * 10
+        speed = 32 * 15
         acc = (32 * 20)
-        speed_rad = 1.7
+        speed_rad = 1.2
+        radius_max = SCREEN_WIDTH / 2 * 1.4
+        radius = radius_max
+
+        shader = love.graphics.newShader(shader_code)
     end,
 
     keypressed = function(key)
@@ -67,6 +87,7 @@ State:implements({
 
     finish = function()
         affect = nil
+        shader:release()
     end,
 
     update = function(dt)
@@ -77,9 +98,15 @@ State:implements({
             rad = rad + (total_spin) / speed_rad * dt
         end
 
+
         rad = Utils:clamp(rad, -10, total_spin)
 
-        px1 = Utils:clamp(px1 - speed * dt, -64 * 2, SCREEN_WIDTH)
+        if rad >= total_spin * 0.6 then
+            radius = radius - radius_max / 0.6 * dt
+            radius = Utils:clamp(radius, 64, math.huge)
+        end
+
+        px1 = Utils:clamp(px1 - speed * dt, -64 * 3, SCREEN_WIDTH)
         px2 = Utils:clamp(px2 + speed * dt, -SCREEN_WIDTH, -64 * 2)
 
         if affect then
@@ -90,11 +117,18 @@ State:implements({
     end,
 
     draw = function(camera)
+        --love.graphics.setShader(shader)
+
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
         local r = affect and affect:draw(draw_rects)
 
-
+        if rad >= total_spin * 0.6 then
+            love.graphics.setColor(1, 0, 0, 0.6)
+            love.graphics.circle("fill", SCREEN_WIDTH / 2,
+                SCREEN_HEIGHT * 0.4, radius)
+        end
+        love.graphics.setShader()
     end
 })
 
