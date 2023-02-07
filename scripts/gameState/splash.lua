@@ -215,13 +215,13 @@ State:implements({
                 love_anima:update(dt)
                 anima_made_with:update(dt)
 
-                if love_anima:time_updating() >= 2.3
-                    and not State.fadeout_time
-                then
-                    State:fadeout(0.7, nil, nil, nil, function()
-                        CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
-                    end)
-                end
+                -- if love_anima:time_updating() >= 2.3
+                --     and not State.fadeout_time
+                -- then
+                --     State:fadeout(0.7, nil, nil, nil, function()
+                --         CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
+                --     end)
+                -- end
             end
         end
 
