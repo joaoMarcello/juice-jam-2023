@@ -9,17 +9,12 @@ State.camera:toggle_grid()
 State.camera:toggle_world_bounds()
 State.camera.border_color = { 0, 0, 0, 0 }
 --===========================================================================
-local shader_code = [[
-vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords){vec4 pix = Texel(texture, texture_coords);if(pix.a < 1.0){return vec4(0.0, 0.0 ,0.0, 1.0);}return vec4(0.0, 0.0, 0.0, 0.0);}]]
 
 local px1, px2
 local speed = 32 * 10
 
 ---@type JM.Template.Affectable|nil
 local affect
-
----@type JM.Effect.Rotate
-local eff
 
 local rad
 
@@ -31,21 +26,19 @@ local total_spin = (math.pi) + math.pi * 0.7
 
 local radius, radius_max
 
-local w, h, w_max, max_sx, max_sy
+local w, h, max_sx, max_sy
 
 local delay
 
----@type love.Shader
-local shader
-
-local img = love.graphics.newImage('/data/mask_splash_02.png')
-img:setFilter("linear", "linear")
+local img
 
 ---@type love.Image
-local heart = love.graphics.newImage("/data/love-heart-logo.png")
-img:setFilter("linear", 'linear')
+local heart
 
-local love_img = love.graphics.newImage("/data/love-logo.png")
+local love_img
+
+---@type love.Image
+local made_with_img
 
 ---@type JM.Anima
 local anima
@@ -56,9 +49,15 @@ local heart_anima
 ---@type JM.Anima
 local love_anima
 
-local pulse
+---@type JM.Anima
+local anima_made_with
 
 local show_love
+
+---@type love.Source
+local sound
+
+local is_playing
 
 local function draw_rects()
     --  BLUE
@@ -81,8 +80,25 @@ local function draw_rects()
 end
 
 State:implements({
+    load = function()
+        img = love.graphics.newImage('/data/mask_splash_02.png')
+        img:setFilter("linear", "linear")
+
+        heart = love.graphics.newImage("/data/love-heart-logo.png")
+        heart:setFilter("linear", 'linear')
+
+        love_img = love.graphics.newImage("/data/love-logo-512x256.png")
+        love_img:setFilter("linear", "linear")
+
+        made_with_img = love.graphics.newImage("/data/made-with.png")
+
+        sound = love.audio.newSource('/data/sound/positive-logo-opener-13622.ogg', "static")
+        sound:setLooping(false)
+    end,
+    --
+    --
     init = function()
-        delay = 0.5
+        delay = 0.6
 
         show_love = false
 
@@ -103,17 +119,13 @@ State:implements({
         radius_max = SCREEN_WIDTH / 2 * 1.4
         radius = radius_max
 
-        shader = love.graphics.newShader(shader_code)
-
         w = SCREEN_WIDTH * 30
         h = SCREEN_HEIGHT * 30
         anima = Anima:new { img = img }
-        -- anima:set_scale(10, 10)
         anima:set_size(w, h)
         max_sx = anima.scale_x
         max_sy = anima.scale_y
-        -- anima.ox = 288
-        anima.oy = 144
+        -- anima.oy = 144
 
         heart_anima = Anima:new { img = heart }
         local eff = heart_anima:apply_effect("pulse", { speed = 0.3, duration = 0.3 })
@@ -124,23 +136,45 @@ State:implements({
 
         love_anima = Anima:new { img = love_img }
         local ww, hh = love_img:getDimensions()
-        love_anima:set_size(nil, 32 * 1.3)
-        love_anima:apply_effect('fadein', { speed = 0.8 })
+        love_anima:set_size(32 * 4)
+        love_anima:apply_effect('fadein', { speed = 1.3, delay = 0.1 })
 
-        pulse = false
+        anima_made_with = Anima:new { img = made_with_img }
+        -- anima_made_with:set_size(32 * 4 * 0.3)
+        anima_made_with:set_size(nil, 8)
+        anima_made_with:apply_effect('fadein', { speed = 0.8, delay = 0.1 })
+
+        is_playing = false
     end,
+    --
+    --
     keypressed = function(key)
         if key == "space" then
             CHANGE_GAME_STATE(State, false, false, false, false, true, false)
         end
     end,
+    --
+    --
     finish = function()
         affect = nil
-        shader:release()
+        img:release()
+        love_img:release()
+        heart:release()
+        sound:stop()
+        sound:release()
     end,
+    --
+    --
     update = function(dt)
         delay = delay - dt
-        if delay > 0 then return end
+        if delay > 0 then
+            return
+        end
+
+        if not is_playing then
+            sound:play()
+            is_playing = true
+        end
 
         speed = speed + acc * dt
 
@@ -177,6 +211,15 @@ State:implements({
 
             if show_love then
                 love_anima:update(dt)
+                anima_made_with:update(dt)
+
+                if love_anima:time_updating() >= 2.3
+                    and not State.fadeout_time
+                then
+                    -- State:fadeout(0.7, nil, nil, nil, function()
+                    --     CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
+                    -- end)
+                end
             end
         end
 
@@ -188,6 +231,8 @@ State:implements({
             affect:update(dt)
         end
     end,
+    --
+    --
     draw = function(camera)
         love.graphics.setColor(233 / 255, 245 / 255, 255 / 255)
         love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -195,24 +240,27 @@ State:implements({
         local r = affect and affect:draw(draw_rects)
 
         if rad >= total_spin * 0.6 then
-            --love.graphics.setShader(shader)
-
             -- love.graphics.setColor(1, 0, 0)
             -- love.graphics.circle("fill", SCREEN_WIDTH / 2,
             --     SCREEN_HEIGHT * 0.4, radius)
 
             anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         end
-        love.graphics.setShader()
 
         if rad == total_spin then
+            heart_anima:set_color2(0, 0, 0, 0.3)
+            heart_anima:draw(SCREEN_WIDTH / 2 + 2, SCREEN_HEIGHT * 0.38 + 3)
+
+            heart_anima:set_color2(1, 1, 1, 1)
             heart_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.38)
         end
 
         if show_love then
-            love_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.7)
+            anima_made_with:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.59)
+            love_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.67)
         end
     end
 })
+-- Sound Effect by Muzaproduction from Pixabay
 
 return State
