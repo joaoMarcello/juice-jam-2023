@@ -35,7 +35,7 @@ end
 ---@param Game GameState.Game
 function Timer:__constructor__(Game, args)
     self.game = Game
-    self.time = args.init_time or 200
+    self.time = args.init_time or 150
     self.time_max = 200
     self.time_init = self.time
     self.speed = 0.5

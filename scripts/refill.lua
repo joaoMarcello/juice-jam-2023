@@ -74,6 +74,7 @@ end
 
 function Refill:update(dt)
     GC.update(self, dt)
+    if self.game:get_player():is_dead() then return end
 
     if not self.__remove and self.time_catch <= 0 then
         local player = self.game:get_player()

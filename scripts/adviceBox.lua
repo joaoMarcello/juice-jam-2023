@@ -37,7 +37,7 @@ local text = {
 
     ["ground_pound"] = format("Execute a <color>ground pound </color> by pressing the DOWN key while in the air. \n \n \n Cancel the ground pound using an dash."),
 
-    ["pills"] = format("Press the A, S, D or C keys to\n use a pill. Each pill <color, %.2f, %.2f, %.2f>increase</color> one atribute, but <color>decreases</color> another. \n \n \n If you not use it carefully, you can ending <effect=spooky>paying the price</effect no-space>. \n \n <color>Red</color> pills: increase ATK.\n <color, 0, 0, 1>Blue</color> pills: increase DEF.\n <color, 0, 1, 0>Green</color> pills: increase HP. \n <color, 1, 1, 0>Yellow</color> pills: increase time. \n The yellow pills DON'T decreases you HP, so use it if you need some time."
+    ["pills"] = format("Press the A, S, D or V keys to\n use a pill. Each pill <color, %.2f, %.2f, %.2f>increase</color> one atribute, but <color>decreases</color> another. \n \n \n If you not use it carefully, you can ending <effect=spooky>paying the price</effect no-space>. \n \n <color>Red</color> pills: increase ATK.\n <color, 0, 0, 1>Blue</color> pills: increase DEF.\n <color, 0, 1, 0>Green</color> pills: increase HP. \n <color, 1, 1, 0>Yellow</color> pills: increase time. \n The yellow pills DON'T decreases you HP, so use it if you need some time."
         ,
         color["green"][1], color["green"][2], color["green"][3]),
 
