@@ -11,12 +11,10 @@ State.camera:toggle_world_bounds()
 local shader_code = [[   
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords){
     vec4 pix = Texel(texture, texture_coords);
-    if (pix.r == 1.0 && pix.g == 0.0 && pix.b == 0.0){
-       return pix; // return vec4(0.0, 0.0, 0.0, 1.0);
+    if(pix.a == 0.0){
+        return vec4(0.0, 0.0, 0.0, 1.0);
     }
-    else{
-        return pix;
-    }
+    return vec4(0.0, 0.0, 0.0, 0.0);
 }
 ]]
 
@@ -39,9 +37,14 @@ local total_spin = (math.pi) + math.pi * 0.7
 
 local radius, radius_max
 
+local w, w_max
+
 ---@type love.Shader
 local shader
 
+local img = love.graphics.newImage('/data/mask_splash.png')
+---@type JM.Anima
+local anima
 local function draw_rects()
     love.graphics.setColor(132 / 255, 155 / 255, 228 / 255)
     love.graphics.polygon("fill",
@@ -77,6 +80,12 @@ State:implements({
         radius = radius_max
 
         shader = love.graphics.newShader(shader_code)
+
+        w = SCREEN_WIDTH * 1.5
+        anima = Pack.Anima:new { img = img }
+        anima:set_scale(10, 10)
+        anima.ox = 288
+        anima.py = 150
     end,
 
     keypressed = function(key)
@@ -104,6 +113,12 @@ State:implements({
         if rad >= total_spin * 0.6 then
             radius = radius - radius_max / 0.6 * dt
             radius = Utils:clamp(radius, 64, math.huge)
+
+            local sx, sy = anima.scale_x, anima.scale_y
+            anima:set_scale(
+                Utils:clamp(sx - 10 / 0.4 * dt, 1, math.huge),
+                Utils:clamp(sy - 10 / 0.4 * dt, 1, math.huge)
+            )
         end
 
         px1 = Utils:clamp(px1 - speed * dt, -64 * 3, SCREEN_WIDTH)
@@ -117,16 +132,19 @@ State:implements({
     end,
 
     draw = function(camera)
-        --love.graphics.setShader(shader)
 
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
         local r = affect and affect:draw(draw_rects)
 
         if rad >= total_spin * 0.6 then
-            love.graphics.setColor(1, 0, 0, 0.6)
+            love.graphics.setShader(shader)
+
+            love.graphics.setColor(1, 0, 0)
             love.graphics.circle("fill", SCREEN_WIDTH / 2,
                 SCREEN_HEIGHT * 0.4, radius)
+
+            -- anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         end
         love.graphics.setShader()
     end
