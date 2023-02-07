@@ -92,7 +92,7 @@ State:implements({
 
         made_with_img = love.graphics.newImage("/data/made-with.png")
 
-        sound = love.audio.newSource('/data/sound/positive-logo-opener-13622.ogg', "static")
+        sound = love.audio.newSource('/data/sound/simple-clean-logo.ogg', "static")
         sound:setLooping(false)
     end,
     --
@@ -166,15 +166,17 @@ State:implements({
     --
     --
     update = function(dt)
+        if not is_playing then
+            sound:play()
+            is_playing = true
+        end
+
         delay = delay - dt
         if delay > 0 then
             return
         end
 
-        if not is_playing then
-            sound:play()
-            is_playing = true
-        end
+
 
         speed = speed + acc * dt
 
@@ -216,9 +218,9 @@ State:implements({
                 if love_anima:time_updating() >= 2.3
                     and not State.fadeout_time
                 then
-                    -- State:fadeout(0.7, nil, nil, nil, function()
-                    --     CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
-                    -- end)
+                    State:fadeout(0.7, nil, nil, nil, function()
+                        CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
+                    end)
                 end
             end
         end
