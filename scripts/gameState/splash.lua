@@ -81,7 +81,7 @@ end
 
 State:implements({
     load = function()
-        img = love.graphics.newImage('/data/mask_splash_02.png')
+        img = love.graphics.newImage('/data/mask_splash_03.png')
         img:setFilter("linear", "linear")
 
         heart = love.graphics.newImage("/data/love-heart-logo.png")
@@ -119,8 +119,8 @@ State:implements({
         radius_max = SCREEN_WIDTH / 2 * 1.4
         radius = radius_max
 
-        w = SCREEN_WIDTH * 30
-        h = SCREEN_HEIGHT * 30
+        w = SCREEN_WIDTH * 7
+        h = SCREEN_HEIGHT * 7
         anima = Anima:new { img = img }
         anima:set_size(w, h)
         max_sx = anima.scale_x
@@ -199,8 +199,8 @@ State:implements({
             local sx, sy = anima.scale_x, anima.scale_y
 
             anima:set_scale(
-                Utils:clamp(sx - max_sx / 0.3 * dt, 1, math.huge),
-                Utils:clamp(sy - max_sy / 0.3 * dt, 1, math.huge)
+                Utils:clamp(sx - max_sx / 0.4 * dt, 1, math.huge),
+                Utils:clamp(sx - max_sx / 0.4 * dt, 1, math.huge)
             )
 
             if rad >= total_spin * 0.95 and affect then
@@ -246,7 +246,7 @@ State:implements({
             -- love.graphics.circle("fill", SCREEN_WIDTH / 2,
             --     SCREEN_HEIGHT * 0.4, radius)
 
-            anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.38)
         end
 
         if rad == total_spin then
