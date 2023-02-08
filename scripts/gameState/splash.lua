@@ -59,6 +59,9 @@ local sound
 
 local is_playing
 
+---@type JM.GUI.Icon
+local icon
+
 local function draw_rects()
     --  BLUE
     love.graphics.setColor(39 / 255, 170 / 255, 255 / 255)
@@ -105,7 +108,6 @@ State:implements({
         affect = _G.JM_Affectable:new()
         affect.ox = SCREEN_WIDTH / 2 - 32
         affect.oy = SCREEN_HEIGHT / 2
-        --eff = affect:apply_effect("clockWise", { speed = 20 })
 
         -- BLUE -- BOTTOM
         px1 = SCREEN_WIDTH + 64
@@ -113,7 +115,7 @@ State:implements({
         px2 = -SCREEN_WIDTH * 1.3 - 64
 
         rad = 0
-        speed = 32 * 15
+        speed = 32 * 2
         acc = (32 * 40)
         speed_rad = 0.8
         radius_max = SCREEN_WIDTH / 2 * 1.4
@@ -125,14 +127,12 @@ State:implements({
         anima:set_size(w, h)
         max_sx = anima.scale_x
         max_sy = anima.scale_y
-        -- anima.oy = 144
 
         heart_anima = Anima:new { img = heart }
         local eff = heart_anima:apply_effect("pulse", { speed = 0.3, duration = 0.3 })
         eff:set_final_action(function()
             show_love = true
         end)
-
 
         love_anima = Anima:new { img = love_img }
         local ww, hh = love_img:getDimensions()
@@ -145,6 +145,9 @@ State:implements({
         anima_made_with:apply_effect('fadein', { speed = 0.8, delay = 0.1 })
 
         is_playing = false
+
+        icon = Pack.GUI.Icon:new { img = love_img }
+        icon:apply_effect("pulse")
     end,
     --
     --
@@ -181,7 +184,6 @@ State:implements({
         speed = speed + acc * dt
 
         if px1 <= SCREEN_WIDTH * 0.4 then
-            -- speed_rad = Utils:clamp(speed_rad - 7 * dt, 1, 100)
             rad = rad + (total_spin) / speed_rad * dt
 
             if rad < total_spin * 0.6 then
@@ -192,7 +194,7 @@ State:implements({
 
         rad = Utils:clamp(rad, -10, total_spin)
 
-        if rad >= total_spin * 0.6 then
+        if rad >= total_spin * 0.35 then
             radius = radius - radius_max / 0.6 * dt
             radius = Utils:clamp(radius, 64, math.huge)
 
@@ -232,6 +234,8 @@ State:implements({
             affect:set_effect_transform("rot", rad)
             affect:update(dt)
         end
+
+        icon:update(dt)
     end,
     --
     --
@@ -241,7 +245,7 @@ State:implements({
 
         local r = affect and affect:draw(draw_rects)
 
-        if rad >= total_spin * 0.6 then
+        if rad >= total_spin * 0.35 then
             -- love.graphics.setColor(1, 0, 0)
             -- love.graphics.circle("fill", SCREEN_WIDTH / 2,
             --     SCREEN_HEIGHT * 0.4, radius)
@@ -261,6 +265,8 @@ State:implements({
             anima_made_with:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.59)
             love_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.67)
         end
+
+        icon:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     end
 })
 -- Sound Effect by Muzaproduction from Pixabay

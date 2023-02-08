@@ -45,15 +45,15 @@ function Phrase:__constructor__(args)
     self.word_to_tag = {}
 
     for i = 1, #self.__separated_string do
-        local w = Word:new({ text = self.__separated_string[i],
-            font = self.__font,
-            format = self.__font:get_format_mode()
-        })
+        local w = Word:new({
+                text = self.__separated_string[i],
+                font = self.__font,
+                format = self.__font:get_format_mode()
+            })
 
         local tag_values = self:__verify_commands(w.text)
 
         if w.text ~= "" then
-
             if not self.__font:__is_a_nickname(w.text, 1) then
                 w:set_color(self.__font.__default_color)
             end
@@ -146,12 +146,12 @@ function Phrase:__verify_commands(text)
         local tag_values = get_tag_args(text)
         tag_values["tag_name"] = result
 
-        if result:match("< *bold *>") then
+        if result == "<bold>" then
             self.__font:set_format_mode(self.__font.format_options.bold)
-
-        elseif result:match("< */ *bold *>") then
+            --
+        elseif result == "</bold>" then
             self.__font:set_format_mode(self.__font_config.format)
-
+            --
         elseif result == "<color>" then
             local tag = text:match("< *color[ ,%d.]*>")
             local parse = Utils:parse_csv_line(tag:sub(2, #tag - 1))
@@ -161,34 +161,12 @@ function Phrase:__verify_commands(text)
             local a = tonumber(parse[5]) or 1
 
             self.__font:set_color({ r, g, b, a })
-
         elseif result:match("< */ *color *>") then
             self.__font:set_color(self.__font_config.color)
-
         elseif result:match("< *italic *>") then
             self.__font:set_format_mode(self.__font.format_options.italic)
-
         elseif result:match("< */ *italic *>") then
             self.__font:set_format_mode(self.__font_config.format)
-
-            -- elseif result == "<effect>" then
-
-            --     --self.__effect = tag_values["effect"]
-            --     self.__eff_args = {}
-
-            --     for left, right in pairs(tag_values) do
-            --         self.__eff_args[left] = right
-            --     end
-            --     self.__eff_args.effect = nil
-
-            -- elseif result == "</effect>" then
-            --     self.__effect = false
-            -- elseif result == "<font-size>" then
-            --     --self.__font:set_font_size(22)
-            --     --self.__font:set_format_mode(self.__font.format_options.bold)
-            -- elseif result == "</font-size>" then
-            --     --self.__font:set_font_size(14)
-            --     --self.__font:set_format_mode(self.__font.format_options.normal)
         end
 
         return tag_values
@@ -268,7 +246,6 @@ function Phrase:get_lines(x)
 
                         eff_args = eff_args or {}
                         table_insert(eff_args, tag)
-
                     elseif tag_name == "</effect>" then
                         effect = nil
                         eff_args = nil
@@ -290,7 +267,6 @@ function Phrase:get_lines(x)
 
         if tx + r > self.__bounds.right
             or current_word.text:match("\n ?") then
-
             tx = x
 
             -- Try remove the last added space word
@@ -305,7 +281,6 @@ function Phrase:get_lines(x)
             if not lines[cur_line] then lines[cur_line] = {} end
             cur_line = cur_line + 1
             if not lines[cur_line] then lines[cur_line] = {} end
-
         end
 
         if not lines[cur_line] then lines[cur_line] = {} end
@@ -370,7 +345,6 @@ function Phrase:__line_length(line)
 end
 
 function Phrase:width(lines)
-
     lines = lines or self:get_lines(self.x)
     local max = -math.huge
     local N = #lines
@@ -477,12 +451,9 @@ function Phrase:draw_lines(lines, x, y, align, threshold, __max_char__)
     for i = 1, #lines do
         if align == "right" then
             tx = self.__bounds.right - self:__line_length(lines[i])
-
         elseif align == "center" then
             tx = x + (self.__bounds.right - x) / 2 - self:__line_length(lines[i]) / 2
-
         elseif align == "justify" then
-
             local total = self:__line_length(lines[i])
 
             local len_line = #lines[i]
@@ -566,7 +537,6 @@ end
 ---@param __max_char__ number|nil
 ---@param dt number|nil
 function Phrase:draw(x, y, align, __max_char__, dt)
-
     if __max_char__ and __max_char__ == 0 then return end
     -- self:__debbug()
 
@@ -576,10 +546,10 @@ function Phrase:draw(x, y, align, __max_char__, dt)
     self:update(dt or love.timer.getDelta())
 
     return self:draw_lines(
-        self:get_lines(x),
-        x, y, align,
-        nil, __max_char__
-    )
+            self:get_lines(x),
+            x, y, align,
+            nil, __max_char__
+        )
 
     -- love.graphics.setColor(0.4, 0.4, 0.4, 1)
     -- love.graphics.line(self.__bounds.right, 0, self.__bounds.right, 600)

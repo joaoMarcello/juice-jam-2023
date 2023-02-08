@@ -11,11 +11,15 @@ local Container = require(path .. "gui.container")
 ---@type JM.GUI.TextBox
 local TextBox = require(path .. "gui.textBox")
 
+---@type JM.GUI.Icon
+local Icon = require(path .. "gui.icon")
+
 ---@class JM.GUI
 local GUI = {}
 
 GUI.Button = Button
 GUI.Container = Container
 GUI.TextBox = TextBox
+GUI.Icon = Icon
 
 return GUI

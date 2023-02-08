@@ -113,7 +113,7 @@ function Display:flash()
     if self.eff_flash then self.eff_flash.__remove = true end
 
     self.eff_flash = self.affect:apply_effect("ghost",
-        { speed = 0.2, max_sequence = self.mode ~= self.game:get_player().Modes.extreme and 4 or nil })
+            { speed = 0.2, max_sequence = self.mode ~= self.game:get_player().Modes.extreme and 4 or nil })
 
     self.eff_flash:set_final_action(function()
         if self.mode ~= self.game:get_player().Modes.extreme then
@@ -188,33 +188,33 @@ function Display:my_draw()
         self.arrow:draw(self.x, self.y - 12 + 4)
     end)
 
-    local font = Pack.Font.current
-    font:push()
-    font:set_font_size(6)
-    font:set_line_space(2)
-    local s = self:get_mode_string():upper():gsub("_", " ")
-    local py = self.y + self.radius - 10
-    local pw = x + self.radius * 2
+    -- local font = Pack.Font.current
+    -- font:push()
+    -- font:set_font_size(6)
+    -- font:set_line_space(2)
+    -- local s = self:get_mode_string():upper():gsub("_", " ")
 
-    font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s\nMODE", s), x - 1, py, pw - 1, "center")
+    -- local py = self.y + self.radius - 10
+    -- local pw = x + self.radius * 2
 
-    font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s\nMODE", s), x, py + 1, pw, "center")
+    -- font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s\n MODE", s), x - 1, py, pw - 1, "center")
 
-    font:printx(string.format("<color, 0, 0, 0, 1> <bold> %s\nMODE", s), x + 1, py + 1, pw + 1, "center")
+    -- font:printx(string.format("<color, 0.3, 0.3, 0.3, 1> <bold> %s \n MODE", s), x, py + 1, pw, "center")
 
-    if self.mode == modes.normal then
-        font:printx(
-            string.format("<color, 0.8, 0.8, 0.8, 1> <bold> %s\nMODE", s),
-            x, py,
-            pw, "center")
-    else
-        font:printx(
-            string.format("<color, 1, 1, 1, 1> <bold> %s\nMODE", s),
-            x, py,
-            pw, "center")
-    end
-    font:pop()
+    -- font:printx(string.format("<color, 0, 0, 0, 1> <bold> %s\n MODE", s), x + 1, py + 1, pw + 1, "center")
 
+    -- if self.mode == modes.normal then
+    --     font:printx(
+    --         string.format("<color, 0.8, 0.8, 0.8, 1> <bold> %s\n MODE", s),
+    --         x, py,
+    --         pw, "center")
+    -- else
+    --     font:printx(
+    --         string.format("<color, 1, 1, 1, 1> <bold> %s\n MODE", s),
+    --         x, py,
+    --         pw, "center")
+    -- end
+    -- font:pop()
 end
 
 function Display:draw()

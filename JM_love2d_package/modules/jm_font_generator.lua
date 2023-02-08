@@ -159,7 +159,7 @@ function Font:__constructor__(args)
         .. "%s/%s.png"
 
     self:load_characters(args.regular_data
-        or string.format(dir, args.name, args.name),
+    or string.format(dir, args.name, args.name),
         FontFormat.normal, find_nicks(get_glyphs(args.glyphs)),
         args.regular_quads
     )
@@ -167,7 +167,7 @@ function Font:__constructor__(args)
 
     if not args.regular_data or args.bold_data then
         self:load_characters(args.bold_data
-            or string.format(dir, args.name, args.name .. "_bold"),
+        or string.format(dir, args.name, args.name .. "_bold"),
             FontFormat.bold, find_nicks(get_glyphs(args.glyphs_bold or args.glyphs)),
             args.bold_quads
         )
@@ -178,7 +178,7 @@ function Font:__constructor__(args)
 
     if (not args.regular_data or args.italic_data) then
         self:load_characters(args.italic_data
-            or string.format(dir, args.name, args.name .. "_italic"),
+        or string.format(dir, args.name, args.name .. "_italic"),
             FontFormat.italic, find_nicks(get_glyphs(args.glyphs_italic or args.glyphs)),
             args.italic_quads
         )
@@ -203,18 +203,20 @@ function Font:__constructor__(args)
     self:set_font_size(self.__font_size)
 
     self.__tab_char = Glyph:new(self.__imgs[FontFormat.normal], {
-        id = "\t",
-        x = 0, y = 0,
-        w = self.__word_space * self.__tab_size,
-        h = self.__ref_height
-    })
+            id = "\t",
+            x = 0,
+            y = 0,
+            w = self.__word_space * self.__tab_size,
+            h = self.__ref_height
+        })
 
     self.__space_char = Glyph:new(self.__imgs[FontFormat.normal], {
-        id = " ",
-        x = 0, y = 0,
-        w = self.__word_space,
-        h = self.__ref_height
-    })
+            id = " ",
+            x = 0,
+            y = 0,
+            w = self.__word_space,
+            h = self.__ref_height
+        })
 
     local nule_glyph = self:get_nule_character()
 
@@ -230,14 +232,12 @@ function Font:__constructor__(args)
 
     self.batches = {
         [FontFormat.normal] = self.__imgs[FontFormat.normal] and
-            love.graphics.newSpriteBatch(self.__imgs[FontFormat.normal])
-            or nil,
-
+        love.graphics.newSpriteBatch(self.__imgs[FontFormat.normal])
+        or nil,
         [FontFormat.bold] = self.__imgs[FontFormat.bold] and
-            love.graphics.newSpriteBatch(self.__imgs[FontFormat.bold]) or nil,
-
+        love.graphics.newSpriteBatch(self.__imgs[FontFormat.bold]) or nil,
         [FontFormat.italic] = self.__imgs[FontFormat.italic] and
-            love.graphics.newSpriteBatch(self.__imgs[FontFormat.italic]) or nil
+        love.graphics.newSpriteBatch(self.__imgs[FontFormat.italic]) or nil
     }
 end
 
@@ -296,14 +296,13 @@ end
 ---@param format JM.Font.FormatOptions
 ---@param glyphs table
 function Font:load_characters(path, format, glyphs, quads_pos)
-
     -- try load the img data
     local success, img_data = pcall(
-        function()
-            return type(path) == "string" and love.image.newImageData(path)
-                or path
-        end
-    )
+            function()
+                return type(path) == "string" and love.image.newImageData(path)
+                    or path
+            end
+        )
 
     if not success or not path then return end
 
@@ -385,13 +384,15 @@ function Font:load_characters(path, format, glyphs, quads_pos)
                 qh = qh or (h - 1)
 
                 local glyph = Glyph:new(img,
-                    { id = glyphs[cur_id],
-                        x = qx,
-                        y = qy,
-                        w = qw,
-                        h = qh,
-                        bottom = bottom or (qy + qh),
-                        format = format })
+                        {
+                            id = glyphs[cur_id],
+                            x = qx,
+                            y = qy,
+                            w = qw,
+                            h = qh,
+                            bottom = bottom or (qy + qh),
+                            format = format
+                        })
 
                 list[glyph.__id] = glyph
 
@@ -416,14 +417,16 @@ function Font:load_characters(path, format, glyphs, quads_pos)
                 local qx, qy, qw, qh, bottom, right = quad.x, quad.y, quad.w, quad.h, quad.bottom, quad.right
 
                 local glyph = Glyph:new(img,
-                    { id = glyphs[cur_id],
-                        x = qx,
-                        y = qy,
-                        w = qw,
-                        h = qh,
-                        bottom = bottom or (qy + qh),
-                        right = right or nil,
-                        format = format })
+                        {
+                            id = glyphs[cur_id],
+                            x = qx,
+                            y = qy,
+                            w = qw,
+                            h = qh,
+                            bottom = bottom or (qy + qh),
+                            right = right or nil,
+                            format = format
+                        })
 
                 list[glyph.__id] = glyph
             end
@@ -448,13 +451,14 @@ local function load_by_tff(name, path, dpi)
     local success
 
     success, render = pcall(function()
-        return love.font.newRasterizer(path, dpi or 64)
-    end)
+            return love.font.newRasterizer(path, dpi or 64)
+        end)
 
     if not success or not path then return end
 
     local glyphs = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVxXyYzZ0123456789."
-    glyphs = [[aAàÀáÁãÃâÂäÄeEéÉèÈêÊëËiIíÍìÌîÎïÏoOóÓòÒôÔõÕöÖuUúÚùÙûÛüÜbBcCçÇdDfFgGhHjJkKlLmMnNpPqQrRsStTvVwWxXyYzZ0123456789+-=/*%\#§@({[]})|_"'!?,.:;ªº°¹²³£¢¬¨~$<>&^`]]
+    glyphs =
+    [[aAàÀáÁãÃâÂäÄeEéÉèÈêÊëËiIíÍìÌîÎïÏoOóÓòÒôÔõÕöÖuUúÚùÙûÛüÜbBcCçÇdDfFgGhHjJkKlLmMnNpPqQrRsStTvVwWxXyYzZ0123456789+-=/*%\#§@({[]})|_"'!?,.:;ªº°¹²³£¢¬¨~$<>&^`]]
 
     local glyph_table = get_glyphs(glyphs)
     local N_glyphs = #glyph_table
@@ -539,10 +543,12 @@ local function load_by_tff(name, path, dpi)
             end
 
             quad_pos[glyph_s] = {
-                x = cur_x - 1, y = cur_y - 1,
-                w = glyphDataWidth + 2, h = glyphDataHeight + 2,
+                x = cur_x - 1,
+                y = cur_y - 1,
+                w = glyphDataWidth + 2,
+                h = glyphDataHeight + 2,
                 bottom = (posR_y >= 0 and posR_y <= data_h - 1 and posR_y)
-                    or nil,
+                or nil,
                 right = (posBlue >= 0 and posBlue <= data_w - 1 and posBlue) or nil
             }
 
@@ -560,7 +566,7 @@ end
 ---@return JM.Font.Glyph
 function Font:get_nule_character()
     local char_ = Glyph:new(nil,
-        { id = "__nule__", x = nil, y = nil, w = self.__word_space, h = self.__ref_height })
+            { id = "__nule__", x = nil, y = nil, w = self.__word_space, h = self.__ref_height })
 
     return char_
 end
@@ -571,27 +577,15 @@ local results_get_config = setmetatable({}, { __mode = 'k' })
 
 ---@return JM.Font.Configuration
 function Font:__get_configuration()
-    local index = string.format("%d %d %.1f %.1f %.1f %.1f %d %d",
-        self.__font_size,
-        self.__character_space,
-        (self.__default_color[1]),
-        (self.__default_color[2]),
-        (self.__default_color[3]),
-        (self.__default_color[4]),
-        self.__line_space,
-        self.__format)
-
-    -- local index = "" ..
-    --     self.__font_size ..
-    --     self.__character_space
-    --     .. (self.__default_color[1])
-    --     .. (self.__default_color[2])
-    --     .. (self.__default_color[3])
-    --     .. (self.__default_color[4])
-    --     .. self.__line_space
-    --     --.. self.__word_space
-    --     --.. self.__tab_size
-    --     .. self.__format
+    local index = string.format("%d %d %.2f %.2f %.2f %.2f %d %d",
+            self.__font_size,
+            self.__character_space,
+            (self.__default_color[1]),
+            (self.__default_color[2]),
+            (self.__default_color[3]),
+            (self.__default_color[4]),
+            self.__line_space,
+            self.__format)
 
     local result = results_get_config[self] and results_get_config[self][index]
     if result then return result end
@@ -680,11 +674,11 @@ function Font:add_nickname_animated(nickname, args)
     local animation = Anima:new(args)
 
     local new_character = Glyph:new(nil, {
-        id = nickname,
-        anima = animation,
-        w = self.__ref_height * 1.5,
-        h = self.__ref_height
-    })
+            id = nickname,
+            anima = animation,
+            w = self.__ref_height * 1.5,
+            h = self.__ref_height
+        })
 
     table_insert(self.__nicknames, nickname)
 
@@ -767,7 +761,6 @@ function Font:separate_string(s, list)
 
             table_insert(words, sub_s)
             current_init = endp
-
         elseif nick and nick ~= "----" then
             local startp, endp = string.find(s, "%-%-%w-%-%-", current_init)
             local sub_s = s:sub(startp, endp)
@@ -782,9 +775,7 @@ function Font:separate_string(s, list)
             end
 
             current_init = endp
-
         elseif find then
-
             local startp, endp = string_find(s, regex, current_init)
             local sub_s = s:sub(startp, endp - 1)
 
@@ -872,7 +863,6 @@ function Font:print(text, x, y, w, h, __i__, __color__, __x_origin__, __format__
     end
 
     while (i <= text_size) do
-
         local char_string = text:sub(i, i)
         local is_a_nick = self:__is_a_nickname(text, i)
 
@@ -890,9 +880,9 @@ function Font:print(text, x, y, w, h, __i__, __color__, __x_origin__, __format__
             local r_tx, r_ty
             if match then
                 r_tx, r_ty = self:print(text:sub(i, startp - 1),
-                    tx, ty, w, h, 1,
-                    current_color, x_origin, current_format
-                )
+                        tx, ty, w, h, 1,
+                        current_color, x_origin, current_format
+                    )
             end
 
             if match == "<color>" then
@@ -903,7 +893,6 @@ function Font:print(text, x, y, w, h, __i__, __color__, __x_origin__, __format__
                 local a = parse[5] or 1
 
                 current_color = Utils:get_rgba(r, g, b, a) --{ r, g, b, 1 }
-
             elseif match == "</color>" then
                 current_color = original_color
             elseif match == "<bold>" then
@@ -945,7 +934,6 @@ function Font:print(text, x, y, w, h, __i__, __color__, __x_origin__, __format__
         end
 
         if char_obj then
-
             char_obj:set_color(current_color)
 
             char_obj:set_scale(self.__scale)
@@ -962,7 +950,6 @@ function Font:print(text, x, y, w, h, __i__, __color__, __x_origin__, __format__
                     ty + char_obj.h / 2 * char_obj.sy
                 )
             else
-
                 local quad = char_obj:get_quad()
                 local x, y
                 -- x, y = char_obj:get_pos_draw_rec(tx, ty + self.__font_size - height, width, height)
@@ -1038,7 +1025,6 @@ do
         end
 
         for k, word in ipairs(word_list) do
-
             if index_action then
                 for _, action in ipairs(index_action) do
                     if action.i == k then
@@ -1051,7 +1037,6 @@ do
                 ---@type JM.Font.Glyph
                 local char_obj = word[i] --get_char_obj(word[i])
                 if char_obj then
-
                     char_obj:set_color2(Utils:unpack_color(current_color[1]))
 
                     char_obj:set_scale(self.__scale)
@@ -1068,7 +1053,6 @@ do
                             ty + char_obj.h / 2 * char_obj.sy
                         )
                     else
-
                         local quad = char_obj:get_quad()
                         local x, y
 
@@ -1130,7 +1114,6 @@ do
 
         while (separated[current_index]
             and self:__is_a_command_tag(separated[current_index])) do
-
             current_index = current_index + 1
         end
 
@@ -1145,7 +1128,6 @@ do
     ---@param list any
     ---@return unknown
     function get_words(self, separated, list)
-
         local result = results_get_word[self]
             and results_get_word[self][separated]
         if result then return result end
@@ -1228,7 +1210,6 @@ function Font:printf(text, x, y, align, limit_right)
             local action_func
 
             if command_tag == "<color>" then
-
                 action_func = function()
                     local parse = Utils:parse_csv_line(separated[m]:sub(2, #separated[m] - 1))
                     local r = parse[2] or 1
@@ -1250,7 +1231,6 @@ function Font:printf(text, x, y, align, limit_right)
         local current_is_break_line = separated[m] == "\n"
 
         if not command_tag then
-
             if not current_is_break_line or true then
                 table_insert(
                     line,
@@ -1307,7 +1287,6 @@ function Font:printf(text, x, y, align, limit_right)
                     )
                 end
             end
-
         end
 
         if line and m == #words then
@@ -1367,7 +1346,6 @@ end
 ---@param right any
 ---@param align any
 function Font:printx(text, x, y, right, align)
-
     local fr = self:generate_phrase(text, x, y, right, align)
     local value = fr:draw(x, y, align)
 
@@ -1384,11 +1362,10 @@ local Generator = {
         local f = Font
         return Font.new(Font, args)
     end,
-
     new_by_ttf = function(self, args)
         args = args or {}
         local imgData, glyphs, quads_pos = load_by_tff(args.name,
-            args.path, args.dpi)
+                args.path, args.dpi)
         args.regular_data = imgData
         args.regular_quads = quads_pos
 
@@ -1401,8 +1378,8 @@ local Generator = {
 
         do
             local italic_data, glyphs, quads = load_by_tff(
-                args.name .. " italic",
-                args.path_italic, args.dpi)
+                    args.name .. " italic",
+                    args.path_italic, args.dpi)
 
             args.italic_data = italic_data
             args.italic_quads = quads
