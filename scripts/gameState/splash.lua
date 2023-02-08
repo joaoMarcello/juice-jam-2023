@@ -266,7 +266,7 @@ State:implements({
             love_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.67)
         end
 
-        icon:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        icon:draw(0, 0)
     end
 })
 -- Sound Effect by Muzaproduction from Pixabay

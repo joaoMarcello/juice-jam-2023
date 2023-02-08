@@ -76,6 +76,8 @@ function Icon:my_draw()
 end
 
 function Icon:draw(x, y)
+    x = x - self.ox
+    y = y - self.oy
     self.x, self.y = x, y
 
     Affectable.draw(self, self.my_draw)
