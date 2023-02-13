@@ -60,7 +60,6 @@ function Pulse:__constructor__(args)
 end
 
 function Pulse:update(dt)
-
     self.__speed = self.__speed + self.__acc / 1.0 * dt
 
     local last_rad = self.__rad
@@ -74,21 +73,18 @@ function Pulse:update(dt)
     end
 
     if self.__difX ~= 0 then
-
         self.__object:set_effect_transform(
             "sx",
-            1.0 + (m_sin(self.__rad)
-                * (self.__difX or self.__range))
+            (1.0) + (m_sin(self.__rad)
+            * (self.__difX or self.__range))
         )
-
     end
 
     if self.__difY ~= 0 then
-
         self.__object:set_effect_transform(
             "sy",
-            1.0 + (m_sin(self.__rad + self.__adjust)
-                * (self.__difY or self.__range))
+            (1.0) + (m_sin(self.__rad + self.__adjust)
+            * (self.__difY or self.__range))
         )
     end
 

@@ -217,13 +217,13 @@ State:implements({
                 love_anima:update(dt)
                 anima_made_with:update(dt)
 
-                -- if love_anima:time_updating() >= 2.3
-                --     and not State.fadeout_time
-                -- then
-                --     State:fadeout(0.7, nil, nil, nil, function()
-                --         CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal')
-                --     end)
-                -- end
+                if love_anima:time_updating() >= 2
+                    and not State.fadeout_time
+                then
+                    State:fadeout(0.7, nil, nil, nil, function()
+                        CHANGE_GAME_STATE(require 'scripts.gameState.menu_principal', nil, nil, nil, nil, nil)
+                    end)
+                end
             end
         end
 
@@ -266,7 +266,7 @@ State:implements({
             love_anima:draw(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.67)
         end
 
-        icon:draw(0, 0)
+        -- icon:draw(0, 0)
     end
 })
 -- Sound Effect by Muzaproduction from Pixabay
