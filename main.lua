@@ -31,7 +31,7 @@ function CHANGE_GAME_STATE(new_state, skip_finish, skip_load, save_prev, skip_co
     new_state.prev_state = save_prev and scene or nil
     r = (not skip_load) and new_state:load()
     r = (not skip_init) and new_state:init()
-    r = not skip_collect and collectgarbage()
+    r = (not skip_collect) and collectgarbage()
     scene = new_state
     r = not skip_fadein and scene:fadein(nil, nil, nil)
 end
@@ -91,11 +91,11 @@ end
 function love.draw()
     scene:draw()
 
-    -- love.graphics.setColor(0, 0, 0, 0.7)
-    -- love.graphics.rectangle("fill", 0, 0, 80, 120)
-    -- love.graphics.setColor(1, 1, 0, 1)
-    -- love.graphics.print(string.format("Memory:\n\t%.2f Mb", km), 5, 10)
-    -- love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 5, 50)
-    -- local maj, min, rev, code = love.getVersion()
-    -- love.graphics.print(string.format("Version:\n\t%d.%d.%d", maj, min, rev), 5, 75)
+    love.graphics.setColor(0, 0, 0, 0.7)
+    love.graphics.rectangle("fill", 0, 0, 80, 120)
+    love.graphics.setColor(1, 1, 0, 1)
+    love.graphics.print(string.format("Memory:\n\t%.2f Mb", km), 5, 10)
+    love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 5, 50)
+    local maj, min, rev, code = love.getVersion()
+    love.graphics.print(string.format("Version:\n\t%d.%d.%d", maj, min, rev), 5, 75)
 end
