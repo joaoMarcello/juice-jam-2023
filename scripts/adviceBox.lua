@@ -70,6 +70,8 @@ function Box:__constructor__(args)
 
     self.body.allowed_gravity = false
 
+    self.body.id = "advice_box"
+
     self.box = Pack.Anima:new({ img = img or '' })
 
     self:set_draw_order(0)

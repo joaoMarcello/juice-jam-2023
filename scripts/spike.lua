@@ -65,17 +65,23 @@ function Spike:__constructor__(game, world, args)
     self:set_draw_order(0)
 
     local Phys = _G.Pack.Physics
-    if self:is_on_ground() then
-        Phys:newBody(world, self.x + 3, self.y + self.h - 10, self.w - 3, 9, "static")
-    elseif self:is_on_ceil() then
-        Phys:newBody(world, self.x + 3, self.y, self.w - 3, 9, "static")
 
+    ---@type JM.Physics.Body|nil
+    local body
+    if self:is_on_ground() then
+        body = Phys:newBody(world, self.x + 3, self.y + self.h - 10, self.w - 3, 9, "static")
+    elseif self:is_on_ceil() then
+        body = Phys:newBody(world, self.x + 3, self.y, self.w - 3, 9, "static")
     elseif self:is_on_wall_right() then
-        Phys:newBody(world, self.body:right() - 9, self.y, 9, self.h, "static")
+        body = Phys:newBody(world, self.body:right() - 9, self.y, 9, self.h, "static")
         self.spike:set_rotation(math.pi * 1.5)
     else
-        Phys:newBody(world, self.x, self.y, 9, self.h, "static")
+        body = Phys:newBody(world, self.x, self.y, 9, self.h, "static")
         self.spike:set_rotation(math.pi / 2)
+    end
+
+    if body then
+        body.id = "spike"
     end
 end
 
@@ -137,7 +143,7 @@ function Spike:update(dt)
 
     if player.body:check_collision(x + 7, y, w - 7, h)
         and ((self:is_on_ceil() and player.body.speed_y <= 0)
-            or (self:is_on_ground() and player.body.speed_y >= 0))
+        or (self:is_on_ground() and player.body.speed_y >= 0))
         and not player:is_dead()
     then
         player:kill(true)
@@ -145,7 +151,7 @@ function Spike:update(dt)
 
     if player.body:check_collision(x, y, w, h)
         and ((self:is_on_wall_left() and player.body.speed_x <= 0)
-            or (self:is_on_wall_right() and player.body.speed_y >= 0))
+        or (self:is_on_wall_right() and player.body.speed_y >= 0))
         and not player:is_dead()
     then
         player:kill(true)
@@ -162,7 +168,6 @@ function Spike:draw()
             local y = self.y + 32 * (i - 1)
             self.spike:draw_rec(self.x, y, 32, 32)
         end
-
     else
         for i = 1, self.len do
             local x = self.x + 32 * (i - 1)

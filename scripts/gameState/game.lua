@@ -731,7 +731,8 @@ Game:implements({
                     local obj = world.bodies[i]
 
                     if obj and camera:rect_is_on_view(obj:rect()) then
-                        local r = obj.type == 2 and obj.draw and obj:draw()
+                        local r = obj.type == 2 and obj.id ~= "advice_box" and obj.id ~= "spike" and obj.draw and
+                            obj:draw()
                     end
                 end
 
