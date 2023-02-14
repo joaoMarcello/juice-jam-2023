@@ -128,9 +128,9 @@ Game:implements({
     load = function()
         rects = {
             -- { 0, 32 * 11, 32 * 40, 32 * 2 },
-            { 0, -32 * 10, 1, 32 * 40 },
-            { 0, -64, 32 * 80 * 4, 32 },
-            { 32 * 4 * 80, 0, 32, 32 * 12 },
+            { 0,           -32 * 10, 1,           32 * 40 },
+            { 0,           -64,      32 * 80 * 4, 32 },
+            { 32 * 4 * 80, 0,        32,          32 * 12 },
             -- { 32 * 20, 32 * 4, 32 * 2, 32 * 10 },
             -- { 32 * 10, 32 * 7, 32 * 5, 32 }
         }
@@ -206,7 +206,6 @@ Game:implements({
 
         -- map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
-
     finish = function()
         Player:finish()
         DisplayHP:finish()
@@ -224,9 +223,7 @@ Game:implements({
 
         checkpoint = nil
     end,
-
     init = function()
-
         world = Physics:newWorld()
         player = Player:new(Game, world, {
             x = checkpoint.x,
@@ -392,7 +389,6 @@ Game:implements({
                 len = 32 + 5,
                 position = "ground"
             }))
-
         end
         --==========================================================
         do
@@ -628,7 +624,6 @@ Game:implements({
         table.insert(components_gui, displayHP)
         table.insert(components_gui, displayPill)
     end,
-
     keypressed = function(key)
         if advice then
             advice:key_pressed(key)
@@ -646,13 +641,10 @@ Game:implements({
         else
             player:key_pressed(key)
         end
-
     end,
-
     keyreleased = function(key)
         player:key_released(key)
     end,
-
     update = function(dt)
         if advice then
             advice:update(dt)
@@ -715,12 +707,12 @@ Game:implements({
                 end)
         end
     end,
-
     layers = {
         --================================================================
         --================================================================
         {
             factor_x = -1,
+            lock_shake = true,
             draw = function()
                 love.graphics.setColor(160 / 255, 165 / 255, 186 / 255)
                 love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -757,10 +749,11 @@ Game:implements({
             name = "GUI",
             factor_x = -1,
             factor_y = -1,
+            lock_shake = true,
 
             draw = function(self, camera)
                 local left, top, right, bottom =
-                Game.camera:get_viewport_in_world_coord()
+                    Game.camera:get_viewport_in_world_coord()
 
                 local width = right - left - Game.camera.x
                 local height = bottom - top - Game.camera.y
@@ -784,7 +777,6 @@ Game:implements({
                     obj:draw(left + width / 2 - obj_w / 2, top + height * 0.3, "left")
 
                     Font.current:pop()
-
                 elseif player:is_dead() then
                     Font.current:push()
                     Font.current:set_font_size(32)

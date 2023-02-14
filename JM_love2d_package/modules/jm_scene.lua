@@ -18,7 +18,7 @@ local love_mouse_position = love.mouse.getPosition
 local math_abs = math.abs
 local love_set_scissor = love.graphics.setScissor
 
----@alias JM.Scene.Layer {draw:function, update:function, factor_x:number, factor_y:number, name:string, fixed_on_ground:boolean, fixed_on_ceil:boolean, top:number, bottom:number, shader:love.Shader, name:string}
+---@alias JM.Scene.Layer {draw:function, update:function, factor_x:number, factor_y:number, name:string, fixed_on_ground:boolean, fixed_on_ceil:boolean, top:number, bottom:number, shader:love.Shader, name:string, lock_shake:boolean}
 
 local function round(value)
     local absolute = math.abs(value)
@@ -601,7 +601,7 @@ function Scene:implements(param)
                         camera:draw_background()
                     end
 
-                    camera:attach()
+                    camera:attach(layer.lock_shake)
 
                     push()
 

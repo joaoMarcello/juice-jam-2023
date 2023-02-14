@@ -1,5 +1,5 @@
 local love = _G.love
-Pack = require "/JM_love2d_package/init"
+Pack = require "JM_love2d_package.init"
 
 math.randomseed(os.time())
 love.graphics.setBackgroundColor(0, 0, 0, 1)

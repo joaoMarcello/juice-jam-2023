@@ -1370,11 +1370,16 @@ function Camera:attach(lock_shake)
     love_push()
     love_scale(self.scale)
     love_scale(self.desired_scale, self.desired_scale)
+
+    local shake_x = (not lock_shake and self.shaking_in_x and self.shake_offset_x) or 0
+
+    local shake_y = (not lock_shake and self.shaking_in_y and self.shake_offset_y) or 0
+
     love_translate(
         -self.x + (self.viewport_x / self.desired_scale / self.scale)
-        + ((self.shaking_in_x and self.shake_offset_x or 0)),
+        + shake_x,
         -self.y + (self.viewport_y / self.desired_scale / self.scale)
-        + ((self.shaking_in_y and self.shake_offset_y or 0))
+        + shake_y
     )
 end
 
