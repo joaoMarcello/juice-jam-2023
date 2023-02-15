@@ -5,6 +5,9 @@ math.randomseed(os.time())
 love.graphics.setBackgroundColor(0, 0, 0, 1)
 love.mouse.setVisible(false)
 
+collectgarbage("setstepmul", 300)
+collectgarbage("setpause", 125)
+
 ---@class GameState: JM.Scene
 ---@field load function
 ---@field init function
