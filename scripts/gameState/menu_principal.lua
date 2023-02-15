@@ -12,12 +12,16 @@ State.camera:toggle_world_bounds()
 --=========================================================================
 local buttons
 local current
-local logo = love.graphics.newImage('/data/animations/logo.png')
+---@type love.Image|nil
+local logo
 ---@type JM.Anima
 local anima
 --=========================================================================
 State:implements {
     load = function()
+        logo = love.graphics.newImage('/data/animations/logo.png')
+
+        Pack.Sound:add_song('/data/sound/song/Mario Golf - Title Screen.mp3', "title screen")
     end,
 
     init = function()
@@ -31,10 +35,15 @@ State:implements {
         buttons[current]:set_focus(true)
 
         anima = Pack.Anima:new { img = logo or '' }
+
+        Pack.Sound:play_song("title screen")
     end,
 
     finish = function()
+        local r = logo and logo:release()
+        logo = nil
 
+        Pack.Sound:remove_song("title screen")
     end,
 
     keypressed = function(key)
@@ -48,7 +57,6 @@ State:implements {
             buttons[current]:set_focus(false)
             current = current == 1 and 2 or 1
             buttons[current]:set_focus(true)
-
         else
             buttons[current]:key_pressed(key)
         end

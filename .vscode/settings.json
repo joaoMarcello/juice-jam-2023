@@ -3,7 +3,7 @@
         "${3rd}/love2d/library"
     ],
     "Lua.runtime.special": [],
-    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.version": "LuaJIT",
     "Lua.diagnostics.disable": [
         "deprecated"
     ]

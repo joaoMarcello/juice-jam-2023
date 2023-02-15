@@ -63,13 +63,13 @@ local Sound = {}
 function Sound:add_sfx(path, name, volume)
     local audio = Audio:new(path, name, volume, "static")
     audio.source:setLooping(false)
-    audio.source:setVolume(volume * volume_sfx)
+    audio.source:setVolume(audio.volume * volume_sfx)
 end
 
 function Sound:add_song(path, name, volume)
     local audio = Audio:new(path, name, volume, "stream")
     audio.source:setLooping(true)
-    audio.source:setVolume(volume * volume_song)
+    audio.source:setVolume(audio.volume * volume_song)
 end
 
 function Sound:set_volume_sfx(value)
@@ -102,6 +102,15 @@ end
 ---@return JM.Sound.Audio|nil
 function Sound:get_song(name)
     return list_song[name]
+end
+
+function Sound:remove_song(name)
+    ---@type JM.Sound.Audio
+    local audio = list_song[name]
+    if not audio then return false end
+    audio.source:stop()
+    audio.source:release()
+    list_song[name] = nil
 end
 
 function Sound:get_current_song()
