@@ -88,6 +88,7 @@ function love.update(dt)
         love.event.quit()
     end
 
+    Pack.Sound:update(dt)
     scene:update(dt)
 end
 

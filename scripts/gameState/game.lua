@@ -126,6 +126,9 @@ local player_pos = 0
 
 Game:implements({
     load = function()
+        local Sound = Pack.Sound
+        Sound:add_song('/data/sound/song/24 - board - 5 turns left.mp3', 'course 01', 0.5)
+
         rects = {
             -- { 0, 32 * 11, 32 * 40, 32 * 2 },
             { 0,           -32 * 10, 1,           32 * 40 },
@@ -206,6 +209,8 @@ Game:implements({
 
         -- map = TileMap:new('data/my_map_data.lua', '/data/tileset_01.png', 32)
     end,
+    --
+    --
     finish = function()
         Player:finish()
         DisplayHP:finish()
@@ -221,8 +226,11 @@ Game:implements({
         Refill:finish()
         PillRestaure:finish()
 
+        Pack.Sound:remove_song('course 01')
         checkpoint = nil
     end,
+    --
+    --
     init = function()
         world = Physics:newWorld()
         player = Player:new(Game, world, {
@@ -623,7 +631,14 @@ Game:implements({
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
         table.insert(components_gui, displayPill)
+
+        local Sound = Pack.Sound
+        Sound:init()
+        Sound:fade_in()
+        Sound:play_song('course 01')
     end,
+    --
+    --
     keypressed = function(key)
         if advice then
             advice:key_pressed(key)
@@ -642,9 +657,13 @@ Game:implements({
             player:key_pressed(key)
         end
     end,
+    --
+    --
     keyreleased = function(key)
         player:key_released(key)
     end,
+    --
+    --
     update = function(dt)
         if advice then
             advice:update(dt)
@@ -659,6 +678,7 @@ Game:implements({
         end
 
         table.sort(components, sort_update)
+
         for i = #components, 1, -1 do
             ---@type GameComponent
             local gc = components[i]
@@ -692,6 +712,10 @@ Game:implements({
                     end)
                 return
             end
+            --
+        else
+            local audio = Pack.Sound:get_current_song()
+            local r = audio and audio.source:isPlaying() and audio.source:stop()
         end
 
         Game.camera:follow(player:get_cx(), player:get_cy(), "player")

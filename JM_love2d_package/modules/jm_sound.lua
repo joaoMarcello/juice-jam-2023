@@ -7,6 +7,8 @@ local volume_song = 1
 local current_song = nil
 
 --==========================================================================
+local love_get_volume = love.audio.getVolume
+local love_set_volume = love.audio.setVolume
 
 local function clamp(value, min, max)
     return math.min(math.max(value, min), max)
@@ -58,7 +60,50 @@ end
 --==========================================================================
 
 ---@class JM.Sound
-local Sound = {}
+local Sound = {
+    __fade_in = false,
+    __fade_out = false,
+    fade_out_speed = 1.5,
+    fade_in_speed = 0.5
+}
+
+function Sound:init()
+    self.__fade_in = false
+    self.__fade_out = false
+    love_set_volume(1)
+    self:stop_all()
+end
+
+function Sound:update(dt)
+    if self.__fade_out then
+        local volume = love_get_volume() - 1 / self.fade_out_speed * dt
+        volume = clamp(volume, 0, 1)
+
+        love_set_volume(volume)
+
+        if volume <= 0 then
+            self.__fade_out = false
+        end
+        ---
+    elseif self.__fade_in then
+        local volume = love_get_volume() + 1 / self.fade_in_speed * dt
+        love_set_volume(volume)
+        if volume >= 1 then
+            self.__fade_in = false
+        end
+    end
+end
+
+function Sound:fade_out()
+    self.__fade_out = true
+end
+
+function Sound:fade_in()
+    if not self.__fade_in then
+        self.__fade_in = true
+        love_set_volume(0)
+    end
+end
 
 function Sound:add_sfx(path, name, volume)
     local audio = Audio:new(path, name, volume, "static")
@@ -149,6 +194,16 @@ function Sound:pause()
         audio = audio
 
         audio.source:pause()
+    end
+end
+
+function Sound:stop_all()
+    for _, audio in pairs(list_song) do
+        audio.source:stop()
+    end
+
+    for _, audio in pairs(list_sfx) do
+        audio.source:stop()
     end
 end
 

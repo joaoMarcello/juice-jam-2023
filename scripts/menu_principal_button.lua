@@ -8,11 +8,11 @@ Button.__index = Button
 
 ---@return GameState.MenuPrincipal.Button
 function Button:new(game, args)
-    args   = args or {}
-    args.y = args.y or 230
-    args.w = 32 * 5
-    args.x = SCREEN_WIDTH / 2 - args.w / 2
-    args.h = (32 * 2) - 16
+    args      = args or {}
+    args.y    = args.y or 230
+    args.w    = 32 * 5
+    args.x    = SCREEN_WIDTH / 2 - args.w / 2
+    args.h    = (32 * 2) - 16
 
     local obj = Component:new(args)
     GC.__constructor__(obj, game, args)
@@ -67,6 +67,13 @@ function Button:__constructor__(args)
                 -- color = { 0.2, 0.2, 0.2, 1 }
             })
 
+            -- local audio = Pack.Sound:get_song("title screen")
+            -- if audio then
+            --     audio.source:stop()
+            --
+
+            Pack.Sound:fade_out()
+
             self.game:fadeout(1, nil, 1,
                 function(dt)
                     self:update(dt)
@@ -103,7 +110,6 @@ function Button:__custom_draw__()
     love.graphics.rectangle("line", self.x, self.y, self.w, self.h)
 
     self.print_obj:draw(self.x, self.y + self.h / 2 - self.text_h / 2, "center")
-
 end
 
 return Button

@@ -105,8 +105,6 @@ function Restaure:update(dt)
         local body = player.body
 
         if player.body:check_collision(x + 2, y - 1, w - 4, h) then
-
-
             if self.refill_type == Type.all then
                 player:set_attribute("pill_atk", "add",
                     player.attr_pill_atk_max)
@@ -139,7 +137,6 @@ function Restaure:update(dt)
 
         if r then player:pulse() end
     end
-
 end
 
 function Restaure:my_draw()

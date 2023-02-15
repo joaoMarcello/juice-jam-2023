@@ -36,7 +36,10 @@ State:implements {
 
         anima = Pack.Anima:new { img = logo or '' }
 
-        Pack.Sound:play_song("title screen")
+        local Sound = Pack.Sound
+        Sound:init()
+        Sound:fade_in()
+        Sound:play_song("title screen")
     end,
 
     finish = function()
