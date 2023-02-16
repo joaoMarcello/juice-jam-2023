@@ -261,44 +261,6 @@ Game:implements({
 
         Game:game_add_component(player)
 
-        -- do
-        --     Game:game_add_component(ModeChanger:new(Game, world, {}))
-        --     Game:game_add_component(ModeChanger:new(Game, world, {
-        --         x = 32 * 2,
-        --         mode_type = Player.Modes.jump
-        --     }))
-
-        --     Game:game_add_component(ModeChanger:new(Game, world, {
-        --         x = 32 * 18,
-        --         mode_type = Player.Modes.jump_ex
-        --     }))
-
-        --     Game:game_add_component(ModeChanger:new(Game, world, {
-        --         x = 32 * 24,
-        --         mode_type = Player.Modes.dash_ex
-        --     }))
-
-        --     Game:game_add_component(ModeChanger:new(Game, world, {
-        --         x = 32 * 50,
-        --         mode_type = Player.Modes.extreme
-        --     }))
-
-        --     Game:game_add_component(ModeChanger:new(Game, world, {
-        --         x = 32 * 30,
-        --         mode_type = Player.Modes.normal
-        --     }))
-
-        --     Game:game_add_component(Reseter:new(Game, world, {
-        --         x = 32 * 5,
-        --         y = 32 * 6
-        --     }))
-
-        --     Game:game_add_component(Reseter:new(Game, world, {
-        --         x = 32 * 16,
-        --         y = 32 * 10,
-        --         mode = Reseter.Types.dash
-        --     }))
-        -- end
         --=======================================================
         local x, y = 0, 32 * 11
         local w = 32 * 4
@@ -547,86 +509,87 @@ Game:implements({
             }))
         end
         --================================================================
+        do
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (7 * w) + two,
+                y = y - four,
+                mode_type = Player.Modes.jump
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (7 * w) + two,
-            y = y - four,
-            mode_type = Player.Modes.jump
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (11 * w) + two,
+                y = y - four,
+                mode_type = Player.Modes.jump_ex
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (11 * w) + two,
-            y = y - four,
-            mode_type = Player.Modes.jump_ex
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (19 * w) + two,
+                y = y - two,
+                mode_type = Player.Modes.normal
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (19 * w) + two,
-            y = y - two,
-            mode_type = Player.Modes.normal
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (22 * w),
+                y = y - four,
+                mode_type = Player.Modes.dash
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (22 * w),
-            y = y - four,
-            mode_type = Player.Modes.dash
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (28 * w) + two,
+                y = y - four,
+                mode_type = Player.Modes.dash_ex
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (28 * w) + two,
-            y = y - four,
-            mode_type = Player.Modes.dash_ex
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (38 * w) - one,
+                y = y - 32 * 9,
+                mode_type = Player.Modes.dash
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (38 * w) - one,
-            y = y - 32 * 9,
-            mode_type = Player.Modes.dash
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (43 * w) - one,
+                y = y - four,
+                mode_type = Player.Modes.dash
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (43 * w) - one,
-            y = y - four,
-            mode_type = Player.Modes.dash
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (52 * w) + one,
+                y = y - four,
+                mode_type = Player.Modes.dash
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (52 * w) + one,
-            y = y - four,
-            mode_type = Player.Modes.dash
-        }))
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (55 * w),
+                y = y,
+                mode_type = Player.Modes.jump_ex
+            }))
 
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (55 * w),
-            y = y,
-            mode_type = Player.Modes.jump_ex
-        }))
-
-        Game:game_add_component(ModeChanger:new(Game, world, {
-            x = (58 * w) + four,
-            y = y - four,
-            mode_type = Player.Modes.extreme
-        }))
-
+            Game:game_add_component(ModeChanger:new(Game, world, {
+                x = (58 * w) + four,
+                y = y - four,
+                mode_type = Player.Modes.extreme
+            }))
+        end
         --===========================================================
+        do
+            Game:game_add_component(Reseter:new(Game, world, {
+                x = (32 * w),
+                y = y - four,
+                mode = Reseter.Types.dash
+            }))
 
-        Game:game_add_component(Reseter:new(Game, world, {
-            x = (32 * w),
-            y = y - four,
-            mode = Reseter.Types.dash
-        }))
+            Game:game_add_component(Reseter:new(Game, world, {
+                x = (53 * w) + two,
+                y = y - one,
+                mode = Reseter.Types.dash
+            }))
 
-        Game:game_add_component(Reseter:new(Game, world, {
-            x = (53 * w) + two,
-            y = y - one,
-            mode = Reseter.Types.dash
-        }))
-
-        Game:game_add_component(Reseter:new(Game, world, {
-            x = (55 * w) + two,
-            y = y - four,
-            mode = Reseter.Types.jump
-        }))
+            Game:game_add_component(Reseter:new(Game, world, {
+                x = (55 * w) + two,
+                y = y - four,
+                mode = Reseter.Types.jump
+            }))
+        end
 
         table.insert(components_gui, timer)
         table.insert(components_gui, displayHP)
@@ -652,7 +615,7 @@ Game:implements({
         end
 
         if key == "return" and not player:is_dead() then
-            CHANGE_GAME_STATE(require 'scripts.gameState.pause', true, false, true, true, true)
+            CHANGE_GAME_STATE(require 'scripts.gameState.pause', true, false, true, false, true)
         else
             player:key_pressed(key)
         end
@@ -731,6 +694,8 @@ Game:implements({
                 end)
         end
     end,
+    --
+    --
     layers = {
         --================================================================
         --================================================================
@@ -765,7 +730,7 @@ Game:implements({
                     local r = components[i].draw and components[i]:draw()
                 end
 
-                -- Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
+                -- -- Font:print(tostring(world.bodies_number), 32 * 3, 32 * 3)
             end
         },
         --================================================================

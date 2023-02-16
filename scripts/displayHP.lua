@@ -149,7 +149,6 @@ function Display:update(dt)
     local player = self.game:get_player()
 
     if self:player_is_dying() and not self.eff_flash then
-
         self:flash()
 
         self.vanish:set_color(self.color_vanish_dying)
@@ -180,7 +179,6 @@ function Display:update(dt)
         if not self:player_is_dying() then
             self:flash(4)
         end
-
     elseif player.attr_hp > self.player_last_hp then
         self.last_width = width(self)
         self.player_last_hp = player.attr_hp
@@ -192,7 +190,6 @@ function Display:update(dt)
         end
         self:flash(4, true)
     end
-
 end
 
 ---@param self Game.GUI.DisplayHP

@@ -6,7 +6,7 @@ love.graphics.setBackgroundColor(0, 0, 0, 1)
 love.mouse.setVisible(false)
 
 collectgarbage("setstepmul", 200)
-collectgarbage("setpause", 300)
+collectgarbage("setpause", 200)
 
 ---@class GameState: JM.Scene
 ---@field load function
@@ -55,7 +55,7 @@ function UNPAUSE(state)
 end
 
 function love.load()
-    CHANGE_GAME_STATE(require 'scripts.gameState.splash', true, nil, nil, nil, nil, nil)
+    CHANGE_GAME_STATE(require 'scripts.gameState.game', true, nil, nil, nil, nil, nil)
 end
 
 function love.keypressed(key)
@@ -88,7 +88,7 @@ function love.update(dt)
         love.event.quit()
     end
 
-    Pack.Sound:update(dt)
+    Pack:update(dt)
     scene:update(dt)
 end
 

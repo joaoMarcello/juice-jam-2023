@@ -72,19 +72,16 @@ State:implements {
 
     ---@param camera JM.Camera.Camera
     draw = function(camera)
-        local l, t, r, b = camera:get_viewport_in_world_coord()
-        r, b = camera:world_to_screen(r, b)
+        -- local l, t, r, b = camera:get_viewport_in_world_coord()
+        -- r, b = camera:world_to_screen(r, b)
 
-        -- love.graphics.setColor(1, 1, 1, 0.6)
-        -- love.graphics.rectangle("fill", 0, 0, r, b)
-        local Font = Font.current
-        Font:push()
-        Font:set_font_size(32)
-        Font:printx("<color, 1, 1, 0>PAUSED", 0, 32 * 3, SCREEN_WIDTH, "center")
-        Font:set_font_size(12)
-        Font:printx("<color, 1, 1, 1>Press ESC if you want to quit", 0, 32 * 5, SCREEN_WIDTH, "center")
-        Font:pop()
-
+        -- local Font = Font.current
+        -- Font:push()
+        -- Font:set_font_size(32)
+        -- Font:printx("<color, 1, 1, 0>PAUSED", 0, 32 * 3, SCREEN_WIDTH, "center")
+        -- Font:set_font_size(12)
+        -- Font:printx("<color, 1, 1, 1>Press ESC if you want to quit", 0, 32 * 5, SCREEN_WIDTH, "center")
+        -- Font:pop()
     end
 }
 

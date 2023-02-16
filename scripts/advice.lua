@@ -14,7 +14,6 @@ Advice.__index = Advice
 --Height = 32*5 = 160
 
 function Advice:new(game, text, extra_update)
-
     local obj = setmetatable({}, self)
     Advice.__constructor__(obj, game, text, extra_update)
     return obj
@@ -67,7 +66,7 @@ function Advice:finish()
     img = nil
 
     r = img_arrow and img_arrow:release()
-    img = nil
+    img_arrow = nil
 end
 
 function Advice:key_pressed(key)
@@ -88,6 +87,7 @@ function Advice:key_pressed(key)
 
         if not r and self.textbox:screen_is_finished() then
             self.game:game_add_advice()
+            collectgarbage()
         end
     end
 end

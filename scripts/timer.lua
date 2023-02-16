@@ -97,7 +97,6 @@ function Timer:increment(value, reset_cycle)
     if self.time > self.time_warning then
         self.time_capture = self.time
     end
-
 end
 
 function Timer:decrement(value, reset_cycle)
@@ -142,7 +141,6 @@ function Timer:update(dt)
         and not self.actives_eff["pulse"]
         and self.time ~= self.time_init
     then
-
         if self.time == self.time_warning then
             dispatch_event(self, "redTimeWarning")
         elseif self.time > risk_time then
